@@ -1,3 +1,39 @@
+.fullPage {
+    min-height: 1vh;
+}
+
 .italic {
     font-style: italic;
+}
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.w100 {
+    width: 100%;
+}
+
+.m12Md {
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .m12Md {
+        margin: 0 12% 0 12%;
+    }
+}
+
+.backgroundPrimary {
+    background-color: var(--backgroundPrimary);
 }
