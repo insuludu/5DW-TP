@@ -37,3 +37,13 @@
 .backgroundPrimary {
     background-color: var(--backgroundPrimary);
 }
+
+.imagesize {
+    height: "600px";
+    position: "relative";
+}
+
+.link {
+    color: cornflowerblue;
+    text-decoration: underline;
+}
