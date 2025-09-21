@@ -5,7 +5,7 @@ import Alexis from "../images/Alexis.jpg";
 import Justin from "../images/Justin.jpg";
 import Jacob from "../images/Jacob.jpg";
 import Simon from "../images/Simon.jpg";
-import Alexandre from "../images/template-image.png";
+import Alexandre from "../images/Alexandre.png";
 import Stephane from "../images/Stephane.jpg";
 
 class Person {

@@ -13,8 +13,8 @@ export default function About() {
         <h1>coordonnées</h1>
         <MapEmbed />
         <h4>Nous contacter directement</h4>
-        <a href="http://localhost:3000/about" className={styles.link}>123-456-7890</a>
-        <a href="http://localhost:3000/about" className={styles.link}> botte_et_jambe@gmail.com</a>
+        <a href="http://localhost:3000/about" className={styles.link}> 450-123-4567 </a>
+        <a href="http://localhost:3000/about" className={styles.link}> bottesetjambes@gmail.com</a>
       </div>
     </div>
   );
