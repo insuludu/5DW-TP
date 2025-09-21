@@ -67,7 +67,7 @@ export default function ContactForm() {
                     <div className={styles.infoBlock}>
                         <h2>Nos Coordonnées</h2>
                         <p>420, Highway N<br />Bottes-et-jambes (Québec) T4M 3R3</p>
-                        <p>bottesetjambes@bottesetjambes.ca</p>
+                        <p>bottesetjambes@gmail.com</p>
                         <p>450-123-4567</p>
                         <p className={styles.humorText}>
                             Essayez pas d'appeler on répond pas
