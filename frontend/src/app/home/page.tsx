@@ -1,4 +1,5 @@
 import styles from "../styles/page.module.css";
+import HeaderSection from "../components/header";
 import "./_animations.css"
 import MissionSection from "./mission"
 import BestProducts from "./best-products"
@@ -8,6 +9,9 @@ export default function Home() {
 
   return (
     <section>
+        <div>
+            <HeaderSection />
+        </div>
         <div className={`row min-vh-100`}>
             <MissionSection />
         </div>
