@@ -4,6 +4,7 @@ import "./_animations.css"
 import MissionSection from "./mission"
 import BestProducts from "./best-products"
 import BestCategories from "./best-categories";
+import ContactPopup from "../components/ContactPopup";
 
 export default function Home() {
 
@@ -26,8 +27,10 @@ export default function Home() {
         </div>
 
         <div className={`row min-vh-100`}>
-            {/* Prochaine section ici */}
         </div>
+        <footer>
+            <ContactPopup/>
+        </footer>
     </section>
   );
 }
