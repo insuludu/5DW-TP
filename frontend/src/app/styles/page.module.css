@@ -61,4 +61,15 @@
 .categoryCard {
     width: 250px;
     border: solid 2px white;
-  }
+}
+
+
+.imagesize {
+    height: "600px";
+    position: "relative";
+}
+
+.link {
+    color: cornflowerblue;
+    text-decoration: underline;
+}
