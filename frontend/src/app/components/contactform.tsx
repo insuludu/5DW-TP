@@ -66,7 +66,7 @@ export default function ContactForm() {
                 <div className={styles.infoSection}>
                     <div className={styles.infoBlock}>
                         <h2>Nos Coordonnées</h2>
-                        <p>420, Highway N<br />Bottes-et-jambes (Québec) T4M 3R3</p>
+                        <p>Shangxin Supermarket, Chine, CN <br />重庆市 南岸区 揽湖路 1 1 号附37号 邮政编码: 400069</p>
                         <p>bottesetjambes@gmail.com</p>
                         <p>450-123-4567</p>
                         <p className={styles.humorText}>
