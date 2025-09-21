@@ -1,17 +1,29 @@
 import styles from "../styles/page.module.css";
+import "./_animations.css"
 import MissionSection from "./mission"
-import DescriptionSection from "./description"
+import BestProducts from "./best-products"
+import BestCategories from "./best-categories";
 
 export default function Home() {
+
   return (
-    <div>
-        <div className={`row vh-100`}>
+    <section>
+        <div className={`row min-vh-100`}>
             <MissionSection />
         </div>
-        <div className={`row vh-100`}>
-            <DescriptionSection />
-        </div>
-    </div>
+        <div className={`row min-vh-100 ${styles.backgroundPrimary}`}>
+          <div className={`row text-light p-4`}>
+              <p className={`display-3`}>Nos produits vedettes</p>
+          </div>
 
+          <BestProducts />
+          <div style={{height: "20px"}}></div>
+          <BestCategories/>
+        </div>
+
+        <div className={`row min-vh-100`}>
+            {/* Prochaine section ici */}
+        </div>
+    </section>
   );
 }

@@ -1,7 +1,10 @@
 :root {
-  --background: #ffffff;
+  --background: #EEEEEE;
+  --textLight: #eeeeee;
   --foreground: #171717;
   --backgroundPrimary: #D25D5D;
+  --backgroundSecondary: #B9375D;
+  --backgroundThird: #E7D3D3;
 }
 
 html,
