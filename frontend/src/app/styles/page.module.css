@@ -24,16 +24,41 @@
     width: 100%;
 }
 
-.m12Md {
+.m10Md {
     margin: 0;
 }
 
 @media (min-width: 768px) {
-    .m12Md {
-        margin: 0 12% 0 12%;
+    .m10Md {
+        margin: 0 10% 0 10%;
+        border-radius: 2em;
+        height: 600px;
+    }
+}
+
+.lgFlexChange {
+    flex-direction: column;
+}
+
+@media (min-width: 1200px) {
+    .lgFlexChange {
+        flex-direction: row;
     }
 }
 
 .backgroundPrimary {
     background-color: var(--backgroundPrimary);
 }
+
+.backgroundSecondary {
+    background-color: var(--backgroundSecondary);
+}
+
+.backgroundThird {
+    background-color: var(--backgroundThird);
+}
+
+.categoryCard {
+    width: 250px;
+    border: solid 2px white;
+  }
