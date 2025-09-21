@@ -429,3 +429,23 @@
         padding: 0.75rem 1rem;
     }
 }
+
+.footerLinks a {
+  color: black;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footerLinks a:hover {
+  color: rgb(133, 226, 195);
+}
+
+.headerLinks a {
+  color: black;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.headerLinks a:hover {
+  color: rgb(58, 173, 135);
+}

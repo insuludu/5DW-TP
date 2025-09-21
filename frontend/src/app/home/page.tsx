@@ -1,5 +1,6 @@
 import styles from "../styles/page.module.css";
 import HeaderSection from "../components/header";
+import FooterSection from "../components/footer";
 import "./_animations.css"
 import MissionSection from "./mission"
 import BestProducts from "./best-products"
@@ -27,6 +28,9 @@ export default function Home() {
 
         <div className={`row min-vh-100`}>
             {/* Prochaine section ici */}
+        </div>
+        <div>
+          <FooterSection />
         </div>
     </section>
   );
