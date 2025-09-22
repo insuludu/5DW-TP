@@ -6,6 +6,7 @@ import MissionSection from "./mission"
 import BestProducts from "./best-products"
 import BestCategories from "./best-categories";
 import ConfidenceIndex from "./confidence-index";
+import ContactPopup from "../components/ContactPopup";
 
 export default function Home() {
 
@@ -33,6 +34,9 @@ export default function Home() {
         <div>
           <FooterSection />
         </div>
+        <footer>
+            <ContactPopup/>
+        </footer>
     </section>
   );
 }

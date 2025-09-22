@@ -478,3 +478,187 @@
 .headerLinks a:hover {
   color: rgb(58, 173, 135);
 }
+
+/* popup css */
+/* popup css */
+.popup {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #E8C4C4 0%, #B54567 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.popup:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  padding-right: 2rem;
+}
+
+.popup span:first-child {
+  font-size: 1.3rem;
+  animation: bounce 2s infinite;
+}
+
+.popup span:last-child {
+  max-width: 0;
+  overflow: hidden;
+  transition: max-width 0.5s ease;
+}
+
+.popup:hover span:last-child {
+  max-width: 100px;
+}
+
+/* Container de la modal - Style Chatbox */
+.popupModal {
+  position: fixed;
+  bottom: 6rem;
+  right: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 450px;
+  max-width: calc(100vw - 2rem);
+  height: auto; /* Hauteur automatique */
+  max-height: calc(100vh - 8rem); /* Limite maximale */
+  overflow-y: auto;
+  z-index: 1002;
+  animation: slideUp 0.3s ease;
+  transform-origin: bottom right;
+  /* Force le contenu à respecter la largeur du popup */
+  contain: layout;
+}
+
+/* Container du contenu */
+.popupContent {
+  padding: 1.5rem;
+  position: relative;
+  width: 100%; /* Force la largeur à 100% du conteneur */
+  box-sizing: border-box; /* Inclut le padding dans la largeur */
+}
+
+/* Force le formulaire ContactForm à respecter la largeur du popup */
+.popupContent > * {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Ajuster les éléments du formulaire pour qu'ils respectent le conteneur */
+.popupContent .contactContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.popupContent .contactContent {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  gap: 1rem;
+}
+
+.popupContent .infoSection,
+.popupContent .formSection {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.popupContent .formGroup {
+  width: 100% !important;
+}
+
+.popupContent input,
+.popupContent textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .popup {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .popupModal {
+    bottom: 5rem;
+    right: 1rem;
+    left: 1rem;
+    width: calc(100% - 2rem); /* Ajusté pour mobile */
+    max-width: calc(100vw - 2rem);
+    height: auto;
+    max-height: calc(100vh - 7rem);
+  }
+  
+  .popupContent {
+    padding: 1rem;
+  }
+}
+
+/* Scrollbar personnalisée pour la modal */
+.popupModal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.popupModal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.popupModal::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.popupModal::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
