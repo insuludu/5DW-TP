@@ -7,13 +7,15 @@ export default function Header() {
         <header>
             <div style={{ backgroundColor: "#EEEEEE" }} className={` p-3 row`}>
                 <div className={` col-5`}>
-                    <Image
-                        src={imageLogo}
-                        width={280}
-                        height={58}
-                        style={{ objectFit: "contain" }}
-                        alt="image logo"
-                    />
+                    <a href="./">
+                        <Image
+                            src={imageLogo}
+                            width={280}
+                            height={58}
+                            style={{ objectFit: "contain" }}
+                            alt="image logo"
+                        />
+                    </a>
                 </div>
                 <div className={` p-3 col-2`}>
                     <input type="text" className={` col-10`} />
@@ -25,10 +27,10 @@ export default function Header() {
                     </button>
                 </div>
                 <div className={` p-3 col-2`}></div>
-                <div className={` p-3 col-3 row`}>
-                        <a href="../terms" className={` pt-1 col-4`}>POLITIQUE</a>
-                        <a href="../about" className={` pt-1 col-4`}>À PROPOS</a>
-                        <a href="../contact-us" className={` pt-1 col-4`}>CONTACTER</a>
+                <div className={` p-3 col-3 row ${styles.headerLinks}`}>
+                    <a href="../terms" className={` pt-1 col-4`}>POLITIQUE</a>
+                    <a href="../about" className={` pt-1 col-4`}>À PROPOS</a>
+                    <a href="../contact-us" className={` pt-1 col-4`}>CONTACTER</a>
                 </div>
             </div>
         </header>
