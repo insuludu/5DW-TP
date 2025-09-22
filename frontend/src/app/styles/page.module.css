@@ -451,6 +451,7 @@
 }
 
 /* popup css */
+/* popup css */
 .popup {
   position: fixed;
   bottom: 2rem;
@@ -503,17 +504,61 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 450px;
   max-width: calc(100vw - 2rem);
-  max-height: 600px;
+  height: auto; /* Hauteur automatique */
+  max-height: calc(100vh - 8rem); /* Limite maximale */
   overflow-y: auto;
   z-index: 1002;
   animation: slideUp 0.3s ease;
   transform-origin: bottom right;
+  /* Force le contenu à respecter la largeur du popup */
+  contain: layout;
 }
 
 /* Container du contenu */
 .popupContent {
   padding: 1.5rem;
   position: relative;
+  width: 100%; /* Force la largeur à 100% du conteneur */
+  box-sizing: border-box; /* Inclut le padding dans la largeur */
+}
+
+/* Force le formulaire ContactForm à respecter la largeur du popup */
+.popupContent > * {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Ajuster les éléments du formulaire pour qu'ils respectent le conteneur */
+.popupContent .contactContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.popupContent .contactContent {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  gap: 1rem;
+}
+
+.popupContent .infoSection,
+.popupContent .formSection {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.popupContent .formGroup {
+  width: 100% !important;
+}
+
+.popupContent input,
+.popupContent textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
 }
 
 /* Animations */
@@ -559,8 +604,10 @@
     bottom: 5rem;
     right: 1rem;
     left: 1rem;
-    width: auto;
-    max-height: 500px;
+    width: calc(100% - 2rem); /* Ajusté pour mobile */
+    max-width: calc(100vw - 2rem);
+    height: auto;
+    max-height: calc(100vh - 7rem);
   }
   
   .popupContent {

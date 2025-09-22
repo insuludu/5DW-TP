@@ -20,8 +20,8 @@ export default function ContactPopup() {
             </button>
             {
                 isOpen && (
-                    <div className={styles.popupModal}>
-                        <div className={styles.popupContent}>
+                    <div className={styles.popupModal} >
+                        <div className={styles.popupContent} >
                             <ContactForm />
                         </div>
                     </div>
