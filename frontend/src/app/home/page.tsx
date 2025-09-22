@@ -5,6 +5,7 @@ import "./_animations.css"
 import MissionSection from "./mission"
 import BestProducts from "./best-products"
 import BestCategories from "./best-categories";
+import ConfidenceIndex from "./confidence-index";
 
 export default function Home() {
 
@@ -26,8 +27,8 @@ export default function Home() {
           <BestCategories/>
         </div>
 
-        <div className={`row min-vh-100`}>
-            {/* Prochaine section ici */}
+        <div className={`row `}>
+            <ConfidenceIndex />
         </div>
         <div>
           <FooterSection />

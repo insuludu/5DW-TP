@@ -6,7 +6,7 @@ export default function Header() {
     return (
         <header>
             <div style={{ backgroundColor: "#EEEEEE" }} className={` p-3 row`}>
-                <div className={` col-5`}>
+                <div className={` col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center`}>
                     <a href="./">
                         <Image
                             src={imageLogo}
@@ -17,7 +17,7 @@ export default function Header() {
                         />
                     </a>
                 </div>
-                <div className={` p-3 col-2`}>
+                <div className={` p-3 col-lg-4 col-md-6`}>
                     <input type="text" className={` col-10`} />
                     <button className={` col-2`} >
                         {/*yo sim wtf le logo??????*/}
@@ -26,8 +26,7 @@ export default function Header() {
                         </svg>
                     </button>
                 </div>
-                <div className={` p-3 col-2`}></div>
-                <div className={` p-3 col-3 row ${styles.headerLinks}`}>
+                <div className={` p-3 col-lg-4 col-md-6 row ${styles.headerLinks}`}>
                     <a href="../terms" className={` pt-1 col-4`}>POLITIQUE</a>
                     <a href="../about" className={` pt-1 col-4`}>À PROPOS</a>
                     <a href="../contact-us" className={` pt-1 col-4`}>CONTACTER</a>

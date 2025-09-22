@@ -78,11 +78,16 @@
 
 /* Variables de couleurs basées sur votre palette */
 :root {
-    --color-primary: #B54567;     /* Rose foncé */
-    --color-secondary: #E07B7B;   /* Corail/saumon */
-    --color-tertiary: #E8C4C4;    /* Rose pâle */
-    --color-light: #F2E5E5;       /* Très pâle rose */
-    --color-white: #FFFFFF;       /* Blanc */
+    --color-primary: #B54567;
+    /* Rose foncé */
+    --color-secondary: #E07B7B;
+    /* Corail/saumon */
+    --color-tertiary: #E8C4C4;
+    /* Rose pâle */
+    --color-light: #F2E5E5;
+    /* Très pâle rose */
+    --color-white: #FFFFFF;
+    /* Blanc */
     --text-dark: #4A3642;
     --text-medium: #7D5A6B;
     --text-light: #A08595;
@@ -117,6 +122,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -133,6 +139,7 @@
         opacity: 0;
         transform: translateX(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -191,6 +198,7 @@
         opacity: 0;
         transform: translateX(30px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -228,8 +236,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .formGroup label {
@@ -280,9 +293,19 @@
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    75% { transform: translateX(8px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-8px);
+    }
+
+    75% {
+        transform: translateX(8px);
+    }
 }
 
 .errorMessage {
@@ -306,6 +329,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -383,8 +407,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Message d'erreur racine */
