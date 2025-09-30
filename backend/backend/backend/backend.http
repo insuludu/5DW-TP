@@ -1,0 +1,14 @@
+@TestController_HostAddress = http://localhost:3001
+
+GET {{TestController_HostAddress}}/test/
+Accept: application/json
+
+###
+
+GET {{TestController_HostAddress}}/test/100
+Accept: application/json
+
+###
+
+GET {{TestController_HostAddress}}/test/0
+Accept: application/json
