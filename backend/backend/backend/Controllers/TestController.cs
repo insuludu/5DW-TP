@@ -29,5 +29,14 @@ namespace backend.Controllers
 
             return _rnd.Next(0, max);
         }
+
+        [HttpGet("{min:int}/{max:int}")]
+        public ActionResult<int> GetWithMinMax(int min, int max)
+        {
+            if (max < 1)
+                return BadRequest();
+
+            return _rnd.Next(min, max);
+        }
     }
 }
