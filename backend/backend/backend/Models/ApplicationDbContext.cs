@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using backend.Seeder;
 
 namespace backend.Models
 {
@@ -11,5 +12,11 @@ namespace backend.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSeeding((context, _) => Seeder.Seeder.Seed(context));
+            base.OnConfiguring(optionsBuilder);
+        }
     }
 }
