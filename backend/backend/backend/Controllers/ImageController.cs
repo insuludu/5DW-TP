@@ -15,6 +15,12 @@ namespace backend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        ///     Simon Déry - 10 octobre 2025
+        ///     Permet de renvoyer le contenu d'une image au client avec son id
+        /// </summary>
+        /// <param name="id">L'id de l'image</param>
+        /// <returns>Contenu de l'image</returns>
         [HttpGet("{id}")]
         [Produces("image/png", "image/jpeg")]
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
