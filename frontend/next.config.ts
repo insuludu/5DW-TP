@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  
 };
+
+module.exports = {
+  images: {
+    remotePatterns: [new URL(process.env.API_BACKEND_URL + "/api/image/*")],
+  },
+}
 
 export default nextConfig;
