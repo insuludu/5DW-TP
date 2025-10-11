@@ -1,5 +1,6 @@
 ﻿using backend.Models;
 using backend.Models_DTO;
+using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,11 @@ namespace backend.Controllers
     public class ProductController : ControllerBase
     {
         private ApplicationDbContext _context;
-        public ProductController(ApplicationDbContext context)
+        private IDomainService _domainService;
+        public ProductController(ApplicationDbContext context, IDomainService domainService)
         {
             _context = context;
+            _domainService = domainService;
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace backend.Controllers
                     ID = i.Id,
                     Alt = i.ImageAlt,
                     Order = i.Order,
-                    Url = Constants.ImageApiRounte + i.Id.ToString()
+                    Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
                 }).FirstOrDefault()
             }).Take(count).ToList();
 

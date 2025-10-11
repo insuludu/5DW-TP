@@ -1,5 +1,6 @@
 
 using backend.Models;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -17,10 +18,9 @@ namespace backend
 
             // Add services to the container...
             builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IDomainService, DomainService>();
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 

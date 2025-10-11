@@ -2,6 +2,6 @@
 {
     public static class Constants
     {
-        public static string ImageApiRounte = "/api/image/";
+        public static string ImageApiRoute = "/api/image/";
     }
 }
