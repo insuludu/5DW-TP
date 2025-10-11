@@ -10,3 +10,17 @@ export interface StarProductDTO {
     name: string;
     imageData?: ImageDTO | null; 
 }
+
+export interface ShopProductDTO {
+    id: number;
+    name: string;
+    price: number;
+    discountedPrice?: number | null;
+    categories: CategoryDTO[];
+    imageData?: ImageDTO | null; 
+}
+
+export interface CategoryDTO {
+    id: number,
+    name: string;
+}

@@ -7,6 +7,7 @@ import BestProducts from "./best-products"
 import BestCategories from "./best-categories";
 import ConfidenceIndex from "./confidence-index";
 import ContactPopup from "../components/ContactPopup";
+import ShopNow from "./shop-now";
 
 export default function Home() {
 
@@ -15,9 +16,17 @@ export default function Home() {
         <div>
             <HeaderSection />
         </div>
+
         <div className={`row min-vh-100`}>
             <MissionSection />
         </div>
+
+        <div style={{height: "20px"}}></div>
+        <div className={`row mb-5`}>
+            <ShopNow />
+        </div>
+        <div style={{height: "20px"}}></div>
+
         <div className={`row min-vh-100 ${styles.backgroundPrimary}`}>
           <div className={`row text-light p-4`}>
               <p className={`display-3`}>Nos produits vedettes</p>
