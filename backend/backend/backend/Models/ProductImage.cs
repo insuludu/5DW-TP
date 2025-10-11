@@ -11,9 +11,14 @@ namespace backend.Models
 
         public Product Product { get; set; }
 
+        [Required]
         public int Order { get; set; }
 
+        [Required]
         public byte[]? ImageData { get; set; }
+
+        [Required]
+        public string ContentType { get; set; }
 
         public string ImageAlt { get; set; } = "Product Image";
     }

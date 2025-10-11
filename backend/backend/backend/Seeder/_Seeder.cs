@@ -17,9 +17,9 @@ namespace backend.Seeder
 
                 context.Set<Category>().AddRange([pikaCollection, toys, batBoyCollection, starFightersCollection, spaceFriendCollection]);
 
-                ProductImage spiderChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Spider-Chu", Order = 0, ImageData = GetImageFromFile("spider-chu-1.png")};
-                ProductImage batChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Bat-Chu", Order = 0, ImageData = GetImageFromFile("bat-chu-1.png")};
-                ProductImage superChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Super-Chu", Order = 0, ImageData = GetImageFromFile("super-chu-1.png")};
+                ProductImage spiderChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Spider-Chu", Order = 0, ImageData = GetImageFromFile("spider-chu-1.png"), ContentType = "image/png"};
+                ProductImage batChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Bat-Chu", Order = 0, ImageData = GetImageFromFile("bat-chu-1.png"), ContentType = "image/png"};
+                ProductImage superChuImage1 = new ProductImage { ImageAlt = "Image de produit 1: Super-Chu", Order = 0, ImageData = GetImageFromFile("super-chu-1.png"), ContentType = "image/png"};
 
                 context.Set<ProductImage>().AddRange([spiderChuImage1, batChuImage1, superChuImage1]);
 
