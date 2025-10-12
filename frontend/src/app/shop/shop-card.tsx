@@ -5,6 +5,7 @@ import styles from "@/app/styles/page.module.css"
 import Image, { StaticImageData } from "next/image";
 import NotFoundImage from "@/app/images/not-found.png"
 import { ShopProductDTO } from "@/interfaces";
+import { ProductEnumToString } from "@/utility";
 
 interface images {
     alt : string;
@@ -25,6 +26,9 @@ export default function ShopCard({product} : {product : ShopProductDTO}) {
     return (
         <div style={{height: "550px", border: "solid 3px white"}} className={`d-flex flex-column overflow-hidden`} onMouseEnter={() => SetIsHovered(true)} onMouseLeave={() => SetIsHovered(false)}>
             <div className={`flex-grow-1 position-relative`}>
+                <div style={{top: "30px", left: "0px", zIndex: "3"}} className={`text-light position-absolute ps-2 pe-2 ${styles.backgroundSecondary}`}>
+                    {ProductEnumToString(product.status)}
+                </div>
                 <Image src={images[0].url} alt={images[0].alt} fill style={{objectFit: "cover", opacity: IsHovered ? "0" : "1", zIndex : "2" , transition: "opacity ease-in-out 0.3s"}}/>
                 <Image src={images[1].url} alt={images[1].alt} fill style={{objectFit: "cover", opacity: IsHovered ? "1" : "0", zIndex : "1", position: "absolute", top: "0", left: "0", transition: "opacity ease-in-out 0.3s"}}/>
             </div>

@@ -7,7 +7,6 @@ namespace backend.Models
         Available,
         Unavailable,
         OutOfStock,
-        BackOrder,
         ComingSoon
     }
 

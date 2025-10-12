@@ -7,7 +7,7 @@ export default function Page() {
             <Header />
             <section className={`row mt-5 mb-5`}>
                 <div>
-                    <p className='fs-3'>Nos produits</p>
+                    <p className='ms-5 fs-3'>Nos produits</p>
                     <Catalog />
                 </div>
             </section>

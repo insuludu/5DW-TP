@@ -16,6 +16,7 @@ export interface ShopProductDTO {
     name: string;
     price: number;
     discountedPrice?: number | null;
+    status: number;
     categories: CategoryDTO[];
     imagesData?: ImageDTO[] | null; 
 }

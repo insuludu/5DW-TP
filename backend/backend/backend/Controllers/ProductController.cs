@@ -32,6 +32,7 @@ namespace backend.Controllers
                     Name = p.Name, 
                     Price = p.Price, 
                     DiscountedPrice = p.DiscountPrice, 
+                    Status = p.Status,
                     categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
                     imagesData = p.Images.Select(i => new ImageDTO { ID = i.Id, Alt = i.ImageAlt, Order = i.Order, 
                         Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString() }).Where(i => i.Order <= 1).Take(2).OrderBy(i => i.Order).ToList()
