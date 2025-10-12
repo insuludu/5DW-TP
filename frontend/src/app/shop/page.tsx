@@ -1,12 +1,14 @@
 import Header from "../components/header";
+import Catalog from "./catalog";
 
 export default function Page() {
     return(
         <div>
             <Header />
             <section className={`row mt-5 mb-5`}>
-                <div className={`m-3`}>
+                <div>
                     <p className='fs-3'>Nos produits</p>
+                    <Catalog />
                 </div>
             </section>
         </div>

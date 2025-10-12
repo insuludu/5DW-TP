@@ -662,3 +662,10 @@
 .popupModal::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.catalogGridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 375px);
+    gap: 30px; 
+    justify-content: center;
+}
