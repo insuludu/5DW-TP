@@ -37,7 +37,7 @@ namespace backend.Controllers
                     Alt = i.ImageAlt,
                     Order = i.Order,
                     Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
-                }).FirstOrDefault()
+                }).FirstOrDefault(i => i.Order == 0)
             }).Take(count).ToList();
 
             if (result.Count == 0)
