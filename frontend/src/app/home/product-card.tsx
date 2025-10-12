@@ -4,7 +4,6 @@ import NotFoundImage from "@/app/images/not-found.png"
 import { StarProductDTO } from '@/interfaces';
 
 export default function ProductCard({ product } : { product: StarProductDTO }) {
-    console.log(product.imageData?.url)
     return(
         <div className={`m-2`}>
             <div className={`best-product-product-card rounded-4 p-2 ${styles.backgroundThird}`}>

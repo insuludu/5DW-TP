@@ -19,6 +19,31 @@ namespace backend.Controllers
         }
 
         /// <summary>
+        ///     Simon Déry - 12 octobre 2025
+        ///     Permet d'obtenir des produits pour afficher dans le catalogue
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("CatalogProducts")]
+        public ActionResult GetCatalogProducts()
+        {
+            List<ShopProductDTO> result = _context.Products.Select(
+                p => new ShopProductDTO { 
+                    ID = p.ID, 
+                    Name = p.Name, 
+                    Price = p.Price, 
+                    DiscountedPrice = p.DiscountPrice, 
+                    categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
+                    imagesData = p.Images.Select(i => new ImageDTO { ID = i.Id, Alt = i.ImageAlt, Order = i.Order, 
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString() }).Where(i => i.Order <= 1).Take(2).OrderBy(i => i.Order).ToList()
+                }).ToList();
+
+            if (result.Count == 0)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        /// <summary>
         ///     Simon Déry - 10 octobre 2025
         ///     Permet d'obtenir les produits vedettes pour la page d'accueil
         /// </summary>

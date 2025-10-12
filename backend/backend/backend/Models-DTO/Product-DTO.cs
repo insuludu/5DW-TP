@@ -10,4 +10,21 @@
         public string Name { get; set; }
         public ImageDTO? ImageData { get; set; }
     }
+
+    public class ShopProductDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public float Price { get; set; }
+        public float? DiscountedPrice { get; set; }
+        public List<CategoryDTO>? categories { get; set; }
+        public List<ImageDTO>? imagesData { get; set; }
+    }
+
+    public class CategoryDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+    }
+
 }
