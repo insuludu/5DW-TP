@@ -9,7 +9,7 @@ export default function Catalog() {
                 {
                     Products.map(p => (
                     <div key={p} className={`mb-3 rounded-3 overflow-hidden`}>
-                        <ShopCard />
+                        <ShopCard index={p} />
                     </div>
                     ))
                 }
