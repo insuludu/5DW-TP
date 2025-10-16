@@ -71,12 +71,24 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
     };
 
     return (
-        <div className="card p-3 mb-4">
-            <h5 className="mb-3">Filtres</h5>
+        <div
+            className="filter-panel card p-3 mb-4"
+            style={{
+                backgroundColor: "var(--backgroundThird)",
+                color: "var(--foreground)",
+                borderRadius: "12px",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+        >
+            <h5 className="mb-3" style={{ color: "var(--backgroundPrimary)" }}>
+                Filtres
+            </h5>
 
             {/* --- Rabais --- */}
             <div className="mb-3">
-                <label className="form-label fw-bold">Rabais</label>
+                <label className="form-label fw-bold" style={{ color: "var(--foreground)" }}>
+                    Rabais
+                </label>
                 {discountOptions.map((option, index) => (
                     <div key={index} className="form-check">
                         <input
@@ -87,7 +99,11 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                             checked={selectedDiscount === option.value}
                             onChange={() => setSelectedDiscount(option.value)}
                         />
-                        <label className="form-check-label" htmlFor={`discount-${index}`}>
+                        <label
+                            className="form-check-label"
+                            htmlFor={`discount-${index}`}
+                            style={{ color: "var(--foreground)" }}
+                        >
                             {option.label}
                         </label>
                     </div>
@@ -96,7 +112,9 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
 
             {/* --- Prix --- */}
             <div className="mb-3">
-                <label className="form-label fw-bold">Prix personnalisé</label>
+                <label className="form-label fw-bold" style={{ color: "var(--foreground)" }}>
+                    Prix personnalisé
+                </label>
                 <div className="d-flex gap-2 align-items-center">
                     <input
                         type="number"
@@ -105,8 +123,9 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                         value={minPrice}
                         onChange={(e) => setMinPrice(e.target.value)}
                         min="0"
+                        style={{ borderColor: "var(--backgroundPrimary)" }}
                     />
-                    <span>-</span>
+                    <span style={{ color: "var(--foreground)" }}>-</span>
                     <input
                         type="number"
                         className="form-control"
@@ -114,6 +133,7 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(e.target.value)}
                         min="0"
+                        style={{ borderColor: "var(--backgroundPrimary)" }}
                     />
                 </div>
             </div>
@@ -121,7 +141,9 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
             {/* --- Catégories --- */}
             {categories.length > 0 && (
                 <div className="mb-3">
-                    <label className="form-label fw-bold">Catégories</label>
+                    <label className="form-label fw-bold" style={{ color: "var(--foreground)" }}>
+                        Catégories
+                    </label>
                     <div style={{ maxHeight: "200px", overflowY: "auto" }}>
                         {categories.map((category) => (
                             <div key={category.id} className="form-check">
@@ -132,7 +154,11 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                                     checked={selectedCategories.includes(category.id.toString())}
                                     onChange={() => handleCategoryChange(category.id.toString())}
                                 />
-                                <label className="form-check-label" htmlFor={`category-${category.id}`}>
+                                <label
+                                    className="form-check-label"
+                                    htmlFor={`category-${category.id}`}
+                                    style={{ color: "var(--foreground)" }}
+                                >
                                     {category.name}
                                 </label>
                             </div>
@@ -143,7 +169,9 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
 
             {/* --- Disponibilité --- */}
             <div className="mb-3">
-                <label className="form-label fw-bold">Disponibilité</label>
+                <label className="form-label fw-bold" style={{ color: "var(--foreground)" }}>
+                    Disponibilité
+                </label>
                 {statuses.map((status) => (
                     <div key={status.value} className="form-check">
                         <input
@@ -154,7 +182,11 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                             checked={selectedStatus === status.value}
                             onChange={() => setSelectedStatus(status.value)}
                         />
-                        <label className="form-check-label" htmlFor={`status-${status.value}`}>
+                        <label
+                            className="form-check-label"
+                            htmlFor={`status-${status.value}`}
+                            style={{ color: "var(--foreground)" }}
+                        >
                             {status.label}
                         </label>
                     </div>
@@ -163,10 +195,26 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
 
             {/* --- Boutons --- */}
             <div className="d-flex gap-2">
-                <button className="btn btn-primary flex-grow-1" onClick={applyFilters}>
+                <button
+                    className="btn flex-grow-1"
+                    style={{
+                        backgroundColor: "var(--backgroundPrimary)",
+                        color: "var(--textLight)",
+                        border: "none",
+                    }}
+                    onClick={applyFilters}
+                >
                     Appliquer
                 </button>
-                <button className="btn btn-outline-secondary" onClick={resetFilters}>
+                <button
+                    className="btn"
+                    style={{
+                        backgroundColor: "var(--backgroundSecondaryComplement)",
+                        color: "var(--foreground)",
+                        border: "none",
+                    }}
+                    onClick={resetFilters}
+                >
                     Réinitialiser
                 </button>
             </div>

@@ -21,17 +21,18 @@ async function GetCategories() {
 }
 
 interface PageProps {
-    searchParams: {
+    searchParams: Promise<{
         sort?: string;
         minPrice?: string;
         maxPrice?: string;
         status?: string;
         discount?: string;
         categories?: string;
-    };
+    }>;
 }
 
 export default async function Page({ searchParams }: PageProps) {
+    const params = await searchParams; // ✅ On attend la Promise
     const categories = await GetCategories();
 
     return (
@@ -39,7 +40,7 @@ export default async function Page({ searchParams }: PageProps) {
             <Header />
             <section className="container-fluid mt-5 mb-5">
                 <div className="row">
-                    {/* --- Panneau de filtres (Client Component) --- */}
+                    {/* --- Panneau de filtres --- */}
                     <div className="col-lg-3 col-md-4 mb-4">
                         <Suspense fallback={<div>Chargement des filtres...</div>}>
                             <FilterPanel categories={categories} />
@@ -56,12 +57,12 @@ export default async function Page({ searchParams }: PageProps) {
                         </div>
                         <div className="px-3">
                             <Catalog
-                                sort={searchParams.sort}
-                                minPrice={searchParams.minPrice}
-                                maxPrice={searchParams.maxPrice}
-                                status={searchParams.status}
-                                discount={searchParams.discount}
-                                categories={searchParams.categories}
+                                sort={params.sort}
+                                minPrice={params.minPrice}
+                                maxPrice={params.maxPrice}
+                                status={params.status}
+                                discount={params.discount}
+                                categories={params.categories}
                             />
                         </div>
                     </div>
