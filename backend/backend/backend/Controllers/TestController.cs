@@ -15,7 +15,7 @@ namespace backend.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "next")]
+        [HttpGet("next")]
         public ActionResult<int> Get()
         {
             return _rnd.Next();

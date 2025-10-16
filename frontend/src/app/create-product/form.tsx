@@ -1,13 +1,10 @@
 'use client';
 
-import styles from "../styles/page.module.css"
+import { CreateProductDTO } from "@/interfaces";
 import { useForm, SubmitHandler } from "react-hook-form";
+import styles from "@/app/styles/page.module.css"
 
-type FormFields = {
-    nom: string;
-    description: string;
-    prix: Float64Array;
-};
+const nextUrl = process.env.NEXT_PUBLIC_API_MIDDLEWARE_URL;
 
 export default function SimpleForm() {
     const {
@@ -17,19 +14,29 @@ export default function SimpleForm() {
         reset,
         setError,
         clearErrors
-    } = useForm<FormFields>({
+    } = useForm<CreateProductDTO>({
         mode: 'onChange',
         criteriaMode: 'all'
     });
 
-    const onSubmit: SubmitHandler<FormFields> = async (data) => {
+    const onSubmit: SubmitHandler<CreateProductDTO> = async (data) => {
         try {
             clearErrors("root");
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate async delay
+            
+            const response = await fetch(nextUrl + `/api/admin/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                cache: 'no-store',
+            });
 
-            console.log("Form submitted:", data);
-            alert(`Nom: ${data.nom}\nDescription: ${data.description}`);
+            if (!response.ok) {
+                throw new Error('Incapable de communiquer avec le middleware');
+            }
 
+            const result = await response.json();
+            console.log("Form submitted:", result);
+            
             reset();
         } catch (error) {
             console.error('Erreur lors de la soumission:', error);
@@ -40,8 +47,8 @@ export default function SimpleForm() {
     };
 
     return (
-        <section className={styles.contactContainer}>
-            <div className={`d-flex justify-content-center`}>
+        <section className={`${styles.contactContainer} d-flex justify-content-center`}>
+            <div className={`d-flex justify-content-center w-75`}>
                 <div className={styles.formSection}>
                     <div className={styles.formHeader}>
                         <h1>Formulaire d'ajout d'un nouvelle objet</h1>
@@ -66,25 +73,36 @@ export default function SimpleForm() {
                         </div>
 
                         {/* description */}
-                        <div className={`row mb-4`}>
-                            <label htmlFor="description" className={` d-flex align-items-center align-content-center col-12`}>Description *</label>
-                            <br /><br />
-                            <textarea className={`d-flex col-12`}
+                        <div className="row mb-4">
+                            <label htmlFor="description" className="d-flex align-items-center col-12 mb-2">Description *</label>
+
+                            <textarea
+                                className="form-control w-100 col-12"
                                 id="description"
                                 {...register("description", {
                                     required: "Une description est requise",
-                                    minLength: { value: 5, message: "La description doit contenir au moins 5 caractères" },
-                                    maxLength: { value: 500, message: "la description ne doit pas dépasser 500 caractères" }
+                                    minLength: {
+                                        value: 5,
+                                        message: "La description doit contenir au moins 5 caractères",
+                                    },
+                                    maxLength: {
+                                        value: 500,
+                                        message: "La description ne doit pas dépasser 500 caractères",
+                                    },
                                 })}
                                 placeholder="Entrez une description"
                                 rows={5}
                             />
-                            {errors.description && (
-                                <div style={{ color: "red" }}>{errors.description.message}</div>
-                            )}
 
-                            <br /><br />
+                            <div className="col-12 mt-2">
+                                {errors.description && (
+                                    <p style={{ color: "red", fontSize: "0.9em" }}>
+                                        {errors.description.message}
+                                    </p>
+                                )}
+                            </div>
                         </div>
+
 
                         {/* prix */}
                         <div className={` row mb-4`}>
@@ -96,6 +114,8 @@ export default function SimpleForm() {
                                         type="number"
                                         placeholder="Enter le prix du produit"
                                         className="form-control"
+                                        min={0}
+                                        step="0.01"
                                         {...register("prix", {
                                             required: "Un prix est requis",
                                         })}
@@ -106,6 +126,7 @@ export default function SimpleForm() {
                             </div>
                             <br /><br />
                         </div>
+
 
                         <button
                             type="submit"

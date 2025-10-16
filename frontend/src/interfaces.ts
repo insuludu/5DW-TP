@@ -21,6 +21,12 @@ export interface ShopProductDTO {
     imagesData?: ImageDTO[] | null; 
 }
 
+export interface CreateProductDTO{
+    nom: string;
+    description: string;
+    prix: Float64Array;
+}
+
 export interface CategoryDTO {
     id: number,
     name: string;
