@@ -1,34 +1,156 @@
 import { ShopProductDTO } from "@/interfaces";
 import ShopCard from "./shop-card";
-import styles from "@/app/styles/page.module.css"
+import styles from "@/app/styles/page.module.css";
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
-async function GetCatalogProducts() : Promise<ShopProductDTO[]> {
-    const response = await fetch(nextUrl +`/api/shop/catalog-products`, {
-        cache: 'no-store', 
+async function GetCatalogProducts(): Promise<ShopProductDTO[]> {
+    const response = await fetch(nextUrl + `/api/shop/catalog-products`, {
+        cache: "no-store",
     });
 
     if (!response.ok) {
-        throw new Error('Incapable de communiquer avec le middleware');
+        throw new Error("Incapable de communiquer avec le middleware");
     }
 
     return response.json();
 }
 
-export default async function Catalog() {
-    const Products : ShopProductDTO[] = await GetCatalogProducts();
+function getFinalPrice(product: ShopProductDTO): number {
+    return product.discountedPrice ?? product.price;
+}
+
+function filterProducts(
+    products: ShopProductDTO[],
+    minPrice?: string,
+    maxPrice?: string,
+    status?: string,
+    discount?: string,
+    categories?: string,
+    collections?: string
+): ShopProductDTO[] {
+    let filtered = [...products];
+
+    // --- Prix minimum ---
+    if (minPrice) {
+        const min = parseFloat(minPrice);
+        filtered = filtered.filter((p) => getFinalPrice(p) >= min);
+    }
+
+    // --- Prix maximum ---
+    if (maxPrice) {
+        const max = parseFloat(maxPrice);
+        filtered = filtered.filter((p) => getFinalPrice(p) <= max);
+    }
+
+    // --- Rabais ---
+    if (discount) {
+        if (discount === "discount") {
+            filtered = filtered.filter((p) => p.discountedPrice != null);
+        } else if (discount === "no-discount") {
+            filtered = filtered.filter((p) => p.discountedPrice == null);
+        }
+    }
+
+    // --- Catégories ---
+    if (categories) {
+        const categoryIds = categories.split(",").map((id) => parseInt(id));
+        filtered = filtered.filter((p) =>
+            p.categories.some((cat) => categoryIds.includes(cat.id))
+        );
+    }
+
+    // --- Collections ---
+    if (collections) {
+        const collectionIds = collections.split(",").map((id) => parseInt(id));
+        filtered = filtered.filter((p) =>
+            p.categories?.some((c) => collectionIds.includes(c.id))
+        );
+    }
+
+    // --- Disponibilité ---
+    if (status) {
+        switch (status) {
+            case "available":
+                filtered = filtered.filter((p) => Number(p.status) > 0);
+                break;
+            case "unavailable":
+                filtered = filtered.filter((p) => Number(p.status) === 0);
+                break;
+        }
+    }
+
+    return filtered;
+}
+
+function sortProducts(
+    products: ShopProductDTO[],
+    sortType?: string
+): ShopProductDTO[] {
+    const sorted = [...products];
+
+    switch (sortType) {
+        case "price-asc":
+            return sorted.sort((a, b) => getFinalPrice(a) - getFinalPrice(b));
+        case "price-desc":
+            return sorted.sort((a, b) => getFinalPrice(b) - getFinalPrice(a));
+        case "name-asc":
+            return sorted.sort((a, b) => a.name.localeCompare(b.name));
+        case "name-desc":
+            return sorted.sort((a, b) => b.name.localeCompare(a.name));
+        default:
+            return sorted;
+    }
+}
+
+interface CatalogProps {
+    sort?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    status?: string;
+    discount?: string;
+    categories?: string;
+    collections?: string;
+}
+
+export default async function Catalog({
+    sort,
+    minPrice,
+    maxPrice,
+    status,
+    discount,
+    categories,
+    collections,
+}: CatalogProps) {
+    const products: ShopProductDTO[] = await GetCatalogProducts();
+    const filteredProducts = filterProducts(
+        products,
+        minPrice,
+        maxPrice,
+        status,
+        discount,
+        categories,
+        collections
+    );
+    const sortedProducts = sortProducts(filteredProducts, sort);
+
     return (
-        <div className={``}>
-            <div className={`${styles.catalogGridContainer}`}>
-                {
-                    Products.map(p => (
-                    <div key={p.id} className={`mb-3 rounded-3 overflow-hidden`}>
-                        <ShopCard product={p} />
-                    </div>
-                    ))
-                }
-            </div>
+        <div>
+            {sortedProducts.length === 0 ? (
+                <div className="text-center py-5">
+                    <p className="text-muted">
+                        Aucun produit ne correspond à vos critères de filtrage.
+                    </p>
+                </div>
+            ) : (
+                <div className={styles.catalogGridContainer}>
+                    {sortedProducts.map((p) => (
+                        <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
+                            <ShopCard product={p} />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-    )
+    );
 }
