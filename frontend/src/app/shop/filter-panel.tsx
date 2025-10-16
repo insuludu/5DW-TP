@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useFilters } from "../hooks/useFilters";
 
 interface Category {
     id: number;
@@ -13,16 +12,14 @@ interface FilterPanelProps {
 }
 
 export default function FilterPanel({ categories = [] }: FilterPanelProps) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-
-    const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
-    const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
-    const [selectedStatus, setSelectedStatus] = useState(searchParams.get("status") || "");
-    const [selectedDiscount, setSelectedDiscount] = useState(searchParams.get("discount") || "");
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(
-        searchParams.get("categories")?.split(",").filter(Boolean) || []
-    );
+    const {
+        minPrice, setMinPrice,
+        maxPrice, setMaxPrice,
+        status, setStatus,
+        discount, setDiscount,
+        categories: selectedCategories, setCategories,
+        applyFilters, resetFilters,
+    } = useFilters();
 
     const statuses = [
         { value: "", label: "Tous" },
@@ -40,34 +37,7 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
         const newCategories = selectedCategories.includes(categoryId)
             ? selectedCategories.filter((c) => c !== categoryId)
             : [...selectedCategories, categoryId];
-
-        setSelectedCategories(newCategories);
-    };
-
-    const applyFilters = () => {
-        const params = new URLSearchParams(searchParams.toString());
-
-        minPrice ? params.set("minPrice", minPrice) : params.delete("minPrice");
-        maxPrice ? params.set("maxPrice", maxPrice) : params.delete("maxPrice");
-        selectedStatus ? params.set("status", selectedStatus) : params.delete("status");
-        selectedDiscount ? params.set("discount", selectedDiscount) : params.delete("discount");
-        selectedCategories.length > 0
-            ? params.set("categories", selectedCategories.join(","))
-            : params.delete("categories");
-
-        router.push(`?${params.toString()}`);
-    };
-
-    const resetFilters = () => {
-        setMinPrice("");
-        setMaxPrice("");
-        setSelectedStatus("");
-        setSelectedDiscount("");
-        setSelectedCategories([]);
-
-        const params = new URLSearchParams(searchParams.toString());
-        ["minPrice", "maxPrice", "status", "discount", "categories"].forEach((p) => params.delete(p));
-        router.push(`?${params.toString()}`);
+        setCategories(newCategories);
     };
 
     return (
@@ -96,8 +66,8 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                             type="radio"
                             name="discountOption"
                             id={`discount-${index}`}
-                            checked={selectedDiscount === option.value}
-                            onChange={() => setSelectedDiscount(option.value)}
+                            checked={discount === option.value}
+                            onChange={() => setDiscount(option.value)}
                         />
                         <label
                             className="form-check-label"
@@ -172,22 +142,22 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
                 <label className="form-label fw-bold" style={{ color: "var(--foreground)" }}>
                     Disponibilité
                 </label>
-                {statuses.map((status) => (
-                    <div key={status.value} className="form-check">
+                {statuses.map((s) => (
+                    <div key={s.value} className="form-check">
                         <input
                             className="form-check-input"
                             type="radio"
                             name="statusOption"
-                            id={`status-${status.value}`}
-                            checked={selectedStatus === status.value}
-                            onChange={() => setSelectedStatus(status.value)}
+                            id={`status-${s.value}`}
+                            checked={status === s.value}
+                            onChange={() => setStatus(s.value)}
                         />
                         <label
                             className="form-check-label"
-                            htmlFor={`status-${status.value}`}
+                            htmlFor={`status-${s.value}`}
                             style={{ color: "var(--foreground)" }}
                         >
-                            {status.label}
+                            {s.label}
                         </label>
                     </div>
                 ))}
