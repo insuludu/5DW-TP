@@ -109,5 +109,41 @@ namespace backend.Controllers
 
 			return Ok(result);
 		}
-	}
+
+
+        [HttpGet("SearchProducts")]
+        public ActionResult SearchProducts([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("La recherche ne peut pas être vide.");
+
+            List<ShopProductDTO> result = _context.Products
+                .Where(p => 
+					p.Name.ToLower().Contains(query.ToLower()) || 
+					p.Description.ToLower().Contains(query.ToLower())
+				)
+                .Select(p => new ShopProductDTO
+                {
+                    ID = p.ID,
+                    Name = p.Name,
+                    Price = p.Price,
+                    DiscountedPrice = p.DiscountPrice,
+                    Status = p.Status,
+                    categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
+                    imagesData = p.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).Where(i => i.Order <= 1).Take(2).OrderBy(i => i.Order).ToList()
+                })
+                .ToList();
+
+            if (result.Count == 0)
+                return NotFound();
+
+            return Ok(result);
+        }
+    }
 }

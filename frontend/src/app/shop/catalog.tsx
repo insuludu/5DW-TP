@@ -4,10 +4,16 @@ import styles from "@/app/styles/page.module.css";
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
-async function GetCatalogProducts(): Promise<ShopProductDTO[]> {
-    const response = await fetch(nextUrl + `/api/shop/catalog-products`, {
+async function GetCatalogProducts(search?: string): Promise<ShopProductDTO[]> {
+    const endpoint = search ? `/api/shop/search-products?query=${encodeURIComponent(search)}` : `/api/shop/catalog-products`;
+
+    const response = await fetch(nextUrl + endpoint, {
         cache: "no-store",
     });
+
+    if (response.status === 404) {
+        return [];
+    }
 
     if (!response.ok) {
         throw new Error("Incapable de communiquer avec le middleware");
@@ -111,6 +117,7 @@ interface CatalogProps {
     discount?: string;
     categories?: string;
     collections?: string;
+    search?: string;
 }
 
 export default async function Catalog({
@@ -121,8 +128,19 @@ export default async function Catalog({
     discount,
     categories,
     collections,
+    search,
 }: CatalogProps) {
-    const products: ShopProductDTO[] = await GetCatalogProducts();
+    const products: ShopProductDTO[] = await GetCatalogProducts(search);
+
+    if (!products || products.length === 0)
+        return (
+            <div className="text-center py-5">
+                <p className="text-muted">
+                    Aucun produit ne correspond à votre recherche.
+                </p>
+            </div>
+        );
+
     const filteredProducts = filterProducts(
         products,
         minPrice,

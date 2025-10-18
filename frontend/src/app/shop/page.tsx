@@ -28,6 +28,7 @@ interface PageProps {
         status?: string;
         discount?: string;
         categories?: string;
+        search?: string;
     }>;
 }
 
@@ -63,6 +64,7 @@ export default async function Page({ searchParams }: PageProps) {
                                 status={params.status}
                                 discount={params.discount}
                                 categories={params.categories}
+                                search={params.search}
                             />
                         </div>
                     </div>
