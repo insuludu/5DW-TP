@@ -2,7 +2,9 @@
 using backend.Models_DTO;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 
 namespace backend.Controllers
@@ -19,36 +21,100 @@ namespace backend.Controllers
 			_domainService = domainService;
 		}
 
+
+		
+		/// <summary>
+		///		Alexis Bergeron
+		///		Permet de creer un nouveaux produit a partir de la page de creation de produit
+		///		[FromForm] permet la conversion de l'object form automatiquement
+		/// </summary>
+		/// <param name="newProduct">le produit convertie de json vers CreateProductDTO</param>
+		/// <returns></returns>
 		[HttpPost("CreateProduct")]
-		public JsonResult CreateProduct([FromBody] Product newProduct)
+		public ActionResult CreateProduct([FromForm] CreateProductDTO newProduct)
 		{
 			string errorMessage = "";
 			try
 			{
 				if (!ModelState.IsValid)
 				{
-					errorMessage = "Les informations du produits contiennes une erreure.\n" +
-						" assurez vous de bien entrer les informations";
-					return new JsonResult(false);
+					return BadRequest(ModelState);
 				}
 
-				return new JsonResult(new { error = false })
+
+				List<Category> ProductCategories = new List<Category>();
+				foreach (string categories in newProduct.Categories)
 				{
-					StatusCode = 200
-				};
+					Category cat = _context.Categories.FirstOrDefault(c => c.Name == categories)!;
+					if (cat == null)
+					{
+						cat = new Category() { Name = categories };
+						_context.Categories.Add(cat);
+					}
+					ProductCategories.Add(cat);
+				}
+
+				List<ProductImage> ProductImages = new List<ProductImage>();
+				for (int x = 0; x < newProduct.ImagesData!.Count; x++)
+				{
+					ProductImage newimage = new ProductImage()
+					{
+						Order = x,
+						ContentType = newProduct.ImagesData[x].ContentType,
+						ImageAlt = newProduct.ImagesData[x].Name,
+						ImageData = ImageController.ConvertToByteArray(newProduct.ImagesData[x])
+					};
+					ProductImages.Add(newimage);
+					_context.ProductImages.Add(newimage);
+				}
+
+				_context.Products.Add(new Product()
+				{
+					Name = newProduct.Name,
+					Description = newProduct.Description,
+					Price = newProduct.Price,
+					DiscountPrice = newProduct.DiscountPrice,
+					UnitsInStock = newProduct.UnitsInStock,
+					Categories = ProductCategories,
+					Status = (ProductStatus)newProduct.Status,
+					Images = ProductImages
+				});
+
+				_context.SaveChanges();
+				return Ok();
 			}
 			catch (Exception)
 			{
 				errorMessage = "Une erreur s'est produite lors de l'envoi du formulaire. Veuillez réessayer." +
 					"\n Si le problème persiste veuillez contacter un administrateur";
-				return new JsonResult(new { error = true, errorMessage = errorMessage })
-				{
-					StatusCode = 400
-				};
+				return BadRequest(errorMessage);
 			}
 		}
 
+		/// <summary>
+		///     Alexis Bergeron
+		///     Permet de récupérer les status disponible pour un produit
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("ProductsStatus")]
+		public ActionResult GetStatus()
+		{
+			List<string> statusList = new List<string>(Enum.GetNames(typeof(ProductStatus)));
+			statusList.Remove(ProductStatus.COUNT.ToString());
+			return Ok(statusList);
+		}
 
+		/// <summary>
+		///     Alexis Bergeron
+		///     Permet de récupérer les categoris disponible pour un produit
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("ProductsCategories")]
+		public ActionResult GetCategories()
+		{
+			List<string> statusList = _context.Categories.Select(c => c.Name).ToList();
+			return Ok(statusList);
+		}
 
 		/// <summary>
 		///     Simon Déry - 12 octobre 2025

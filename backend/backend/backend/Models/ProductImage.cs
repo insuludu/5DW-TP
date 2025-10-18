@@ -18,7 +18,7 @@ namespace backend.Models
         public byte[]? ImageData { get; set; }
 
         [Required]
-        public string ContentType { get; set; }
+        public string ContentType { get; set; } = "image/png";
 
         public string ImageAlt { get; set; } = "Product Image";
     }
