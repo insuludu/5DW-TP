@@ -179,7 +179,12 @@ namespace backend.Controllers
 			return Ok(result);
 		}
 
-
+        /// <summary>
+		///		Jacob Manseau - 17 octobre 2025
+		///		Permet la recherche de produit pour le catalog
+		/// </summary>
+		/// <param name="query">Le texte rechercher</param>
+		/// <returns></returns>
         [HttpGet("SearchProducts")]
         public ActionResult SearchProducts([FromQuery] string query)
         {
@@ -189,8 +194,9 @@ namespace backend.Controllers
             List<ShopProductDTO> result = _context.Products
                 .Where(p => 
 					p.Name.ToLower().Contains(query.ToLower()) || 
-					p.Description.ToLower().Contains(query.ToLower())
-				)
+					p.Description.ToLower().Contains(query.ToLower()) ||
+                    p.Categories.Any(c => c.Name.ToLower().Contains(query.ToLower()))
+                )
                 .Select(p => new ShopProductDTO
                 {
                     ID = p.ID,
@@ -210,6 +216,42 @@ namespace backend.Controllers
                 .ToList();
 
             if (result.Count == 0)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///		Jacob Manseau - 18 octobre 2025
+        ///		Permet d'obtenir les informations d'un produit cliquer
+        /// </summary>
+        /// <param name="id">L'id du produit cliquer</param>
+        /// <returns></returns>
+        [HttpGet("GetProductById/{id}")]
+        public ActionResult GetProductById(int id)
+        {
+            var result = _context.Products
+                .Where(p => p.ID == id)
+                .Select(p => new DetailProductDTO
+                {
+                    ID = p.ID,
+                    Name = p.Name,
+					Description = p.Description,
+                    Price = p.Price,
+                    DiscountedPrice = p.DiscountPrice,
+                    Status = p.Status,
+                    categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
+                    imagesData = p.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).OrderBy(i => i.Order).ToList(),
+                })
+                .FirstOrDefault();
+
+            if (result == null)
                 return NotFound();
 
             return Ok(result);

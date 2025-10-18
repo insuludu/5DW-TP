@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Header from "../components/header";
+import Footer from "../components/footer";
 import Catalog from "./catalog";
 import SortSelector from "./sort-selector";
 import FilterPanel from "./filter-panel";
@@ -70,6 +71,7 @@ export default async function Page({ searchParams }: PageProps) {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

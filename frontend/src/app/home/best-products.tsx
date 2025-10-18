@@ -1,12 +1,13 @@
 import styles from '../styles/page.module.css'
 import ProductCard from './product-card';
 import { StarProductDTO } from '@/interfaces';
+import Link from 'next/link';
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
-async function GetStarProducts() : Promise<StarProductDTO[]> {
-    const response = await fetch(nextUrl +`/api/home/star-products`, {
-        cache: 'no-store', 
+async function GetStarProducts(): Promise<StarProductDTO[]> {
+    const response = await fetch(nextUrl + `/api/home/star-products`, {
+        cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -18,15 +19,17 @@ async function GetStarProducts() : Promise<StarProductDTO[]> {
 
 export default async function BestProducts() {
     const products = await GetStarProducts();
-    return(
+    return (
         <section id="best-products-section">
             <div className={`row mt-5 mb-5`}>
                 <p className='fs-3 text-light text-center'>Produits les plus populaires</p>
                 <div className={`d-flex justify-content-center align-items-center ${styles.lgFlexChange}`}>
                     {
-                        products.map(p=> (
+                        products.map(p => (
                             <div key={p.id}>
-                                <ProductCard product={p}/>
+                                <Link href={`/shop/product/${p.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <ProductCard product={p} />
+                                </Link>
                             </div>
 
                         ))

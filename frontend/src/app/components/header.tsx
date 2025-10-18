@@ -4,6 +4,7 @@ import imageLogo from "../images/Logo.png"
 import Image from "next/image"
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 export default function Header() {
     const [value, setValue] = useState("");
@@ -28,7 +29,7 @@ export default function Header() {
         <header>
             <div style={{ backgroundColor: "#f8f8f8", borderBottom: "2px solid #ccc", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.05)", }} className={` p-3 row`}>
                 <div className={` col-lg-4 col-md-6 pb-3 d-flex justify-content-center`}>
-                    <a href="./">
+                    <a href="/">
                         <Image
                             src={imageLogo}
                             width={280}
@@ -64,10 +65,10 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={` p-3 col-lg-4 d-flex ${styles.headerLinks} text-center`}>
-                    <a href="../terms" className={` pt-1 col-3`}>POLITIQUE</a>
-                    <a href="../about" className={` pt-1 col-3`}>À PROPOS</a>
-                    <a href="../contact-us" className={` pt-1 col-3`}>CONTACTER</a>
-                    <a href="../create-product" className={` pt-1 col-3`}>CRÉER</a>
+                    <Link href="/terms" className={` pt-1 col-3`}>POLITIQUE</Link>
+                    <Link href="/about" className={` pt-1 col-3`}>À PROPOS</Link>
+                    <Link href="/contact-us" className={` pt-1 col-3`}>CONTACTER</Link>
+                    <Link href="/create-product" className={` pt-1 col-3`}>CRÉER</Link>
                 </div>
             </div>
         </header>

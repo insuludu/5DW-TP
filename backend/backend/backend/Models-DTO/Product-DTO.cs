@@ -25,6 +25,18 @@ namespace backend.Models_DTO
         public List<ImageDTO>? imagesData { get; set; }
     }
 
+    public class DetailProductDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public float Price { get; set; }
+        public float? DiscountedPrice { get; set; }
+        public ProductStatus Status { get; set; }
+        public List<CategoryDTO>? categories { get; set; }
+        public List<ImageDTO>? imagesData { get; set; }
+    }
+
     public class CategoryDTO
     {
         public int ID { get; set; }

@@ -21,6 +21,17 @@ export interface ShopProductDTO {
     imagesData?: ImageDTO[] | null; 
 }
 
+export interface DetailProductDTO {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    discountedPrice?: number | null;
+    status: number;
+    categories: CategoryDTO[];
+    imagesData?: ImageDTO[] | null; 
+}
+
 export interface CreateProductDTO{
     Name: string;
     Description: string;
