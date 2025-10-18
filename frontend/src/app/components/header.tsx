@@ -64,9 +64,10 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={` p-3 col-lg-4 d-flex ${styles.headerLinks} text-center`}>
-                    <a href="../terms" className={` pt-1 col-4`}>POLITIQUE</a>
-                    <a href="../about" className={` pt-1 col-4`}>À PROPOS</a>
-                    <a href="../contact-us" className={` pt-1 col-4`}>CONTACTER</a>
+                    <a href="../terms" className={` pt-1 col-3`}>POLITIQUE</a>
+                    <a href="../about" className={` pt-1 col-3`}>À PROPOS</a>
+                    <a href="../contact-us" className={` pt-1 col-3`}>CONTACTER</a>
+                    <a href="../create-product" className={` pt-1 col-3`}>CRÉER</a>
                 </div>
             </div>
         </header>

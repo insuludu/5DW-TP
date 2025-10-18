@@ -22,7 +22,7 @@ namespace backend.Controllers
 		}
 
 
-		
+
 		/// <summary>
 		///		Alexis Bergeron
 		///		Permet de creer un nouveaux produit a partir de la page de creation de produit
@@ -55,17 +55,20 @@ namespace backend.Controllers
 				}
 
 				List<ProductImage> ProductImages = new List<ProductImage>();
-				for (int x = 0; x < newProduct.ImagesData!.Count; x++)
+				if (newProduct.ImagesData != null)
 				{
-					ProductImage newimage = new ProductImage()
+					for (int x = 0; x < newProduct.ImagesData!.Count; x++)
 					{
-						Order = x,
-						ContentType = newProduct.ImagesData[x].ContentType,
-						ImageAlt = newProduct.ImagesData[x].Name,
-						ImageData = ImageController.ConvertToByteArray(newProduct.ImagesData[x])
-					};
-					ProductImages.Add(newimage);
-					_context.ProductImages.Add(newimage);
+						ProductImage newimage = new ProductImage()
+						{
+							Order = x,
+							ContentType = newProduct.ImagesData[x].ContentType,
+							ImageAlt = newProduct.ImagesData[x].Name,
+							ImageData = ImageController.ConvertToByteArray(newProduct.ImagesData[x])
+						};
+						ProductImages.Add(newimage);
+						_context.ProductImages.Add(newimage);
+					}
 				}
 
 				_context.Products.Add(new Product()
@@ -81,7 +84,7 @@ namespace backend.Controllers
 				});
 
 				_context.SaveChanges();
-				return Ok();
+				return Ok(new { success = true });
 			}
 			catch (Exception)
 			{
@@ -112,7 +115,7 @@ namespace backend.Controllers
 		[HttpGet("ProductsCategories")]
 		public ActionResult GetCategories()
 		{
-			List<string> statusList = _context.Categories.Select(c => c.Name).ToList();
+			List<string> statusList = _context.Categories.Select(c => c.Name).ToList();
 			return Ok(statusList);
 		}
 
