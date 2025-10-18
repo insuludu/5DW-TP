@@ -7,7 +7,8 @@ namespace backend.Models
         Available,
         Unavailable,
         OutOfStock,
-        ComingSoon
+        ComingSoon,
+        COUNT
     }
 
     public class Product
@@ -22,7 +23,7 @@ namespace backend.Models
 
         [Required]
         public float Price { get; set; }
-
+            
         public float? DiscountPrice { get; set; } = null;
 
         public int UnitsInStock { get; set; } = 0;

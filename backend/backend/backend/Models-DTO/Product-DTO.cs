@@ -1,4 +1,5 @@
 ﻿using backend.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models_DTO
 {
@@ -30,4 +31,37 @@ namespace backend.Models_DTO
         public string Name { get; set; }
     }
 
+	public class CreateProductDTO
+	{
+		[Required(ErrorMessage = "Le nom du produit est requis.")]
+		[StringLength(100, MinimumLength = 3, ErrorMessage = "Le nom ne peut pas dépasser 100 caractères.")]
+		public string Name { get; set; }
+
+		[Required(ErrorMessage = "La description est requise.")]
+		[StringLength(1000, MinimumLength = 5, ErrorMessage = "La description ne peut pas dépasser 1000 caractères.")]
+		public string Description { get; set; }
+
+		[Required(ErrorMessage = "Le prix est requis.")]
+		[Range(0.00, 999999.99, ErrorMessage = "Le prix doit être supérieur ou éguale à 0")]
+		public float Price { get; set; }
+
+		[Range(0.00, 999999.99, ErrorMessage = "Le prix en rabais doit être supérieur ou éguale à 0")]
+		public float? DiscountPrice { get; set; }
+
+		[Required(ErrorMessage = "Le nombre d'unités en stock est requis.")]
+		[Range(0, int.MaxValue, ErrorMessage = "Le stock doit être positif.")]
+		public int UnitsInStock { get; set; }
+
+		[Required(ErrorMessage = "Au moins une catégorie doit être sélectionnée.")]
+		[MinLength(1, ErrorMessage = "Sélectionnez au moins une catégorie.")]
+		public string[] Categories { get; set; }
+
+		[Required(ErrorMessage = "Le statut est requis.")]
+		[Range(0, (int)ProductStatus.COUNT, ErrorMessage = "Le statut doit être valide.")]
+		public int Status { get; set; }
+
+		// Optional: Validate uploaded images
+		[MaxLength(10, ErrorMessage = "Vous ne pouvez pas téléverser plus de 10 images.")]
+		public List<IFormFile>? ImagesData { get; set; }
+	}
 }

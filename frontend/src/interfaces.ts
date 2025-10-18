@@ -22,9 +22,18 @@ export interface ShopProductDTO {
 }
 
 export interface CreateProductDTO{
-    nom: string;
-    description: string;
-    prix: Float64Array;
+    Name: string;
+    Description: string;
+    Price: number;
+    DiscountPrice?: number | null;
+    UnitsInStock: number;
+    Categories: string[];
+    Status: number;
+    ImagesData?: ImageDTO[] | null;
+}
+interface CreateProductImageDTO {
+    Order: number;
+    ImageData: number[]; // byte array as number array for JSON
 }
 
 export interface CategoryDTO {

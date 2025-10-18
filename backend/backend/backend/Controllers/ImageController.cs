@@ -38,5 +38,14 @@ namespace backend.Controllers
             return File(img.ImageData, img.ContentType);
         }
 
-    }
+		public static byte[] ConvertToByteArray(IFormFile file)
+		{
+			using (var memoryStream = new MemoryStream())
+			{
+				file.CopyTo(memoryStream);
+				return memoryStream.ToArray();
+			}
+		}
+
+	}
 }
