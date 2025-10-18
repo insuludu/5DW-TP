@@ -11,6 +11,21 @@ async function GetProductById(id: string): Promise<DetailProductDTO> {
     return res.json();
 }
 
+function getStatusLabel(status: number) {
+    switch (status) {
+        case 0:
+            return "En stock";
+        case 1:
+            return "Indisponible";
+        case 2:
+            return "Rupture de stock";
+        case 3:
+            return "Bientôt disponible";
+        default:
+            return "Statut inconnu";
+    }
+}
+
 export default async function Page({ params }: { params: { id: string } }) {
     const product = await GetProductById(params.id);
 
@@ -41,13 +56,12 @@ export default async function Page({ params }: { params: { id: string } }) {
                         </p>
 
                         <p className="fs-6 fs-md-5">
-                            <strong>Disponibilité :</strong>{" "}
-                            {product.status > 0 ? "En stock" : "Rupture"}
+                            <strong>Statut :</strong> {getStatusLabel(product.status)}
                         </p>
 
                         <p className="fs-6 fs-md-5">
                             <strong>Catégories :</strong>{" "}
-                            {product.categories.map((c) => c.name).join(", ")}
+                            {product.categories?.map((c) => c.name).join(", ") || "Aucune"}
                         </p>
 
                         {product.description && (
@@ -57,8 +71,13 @@ export default async function Page({ params }: { params: { id: string } }) {
                             </div>
                         )}
 
-                        <button className="btn btn-dark mt-3" disabled={product.status <= 0}>
-                            {product.status > 0 ? "Ajouter au panier" : "Indisponible"}
+                        {/* <button className="btn btn-dark mt-3" disabled={product.status !== 0}>
+                            {product.status === 0 ? "Ajouter au panier" : "Indisponible"}
+                        </button> */}
+
+                        {/* Temporaire pour le panier */}
+                        <button className="btn btn-dark mt-3" disabled>
+                            Panier temporairement indisponible
                         </button>
                     </div>
                 </div>
