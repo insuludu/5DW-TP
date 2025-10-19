@@ -194,19 +194,19 @@ export default function SimpleForm({ id }: { id: string }) {
             formData.append("Status", data.status.toString());
 
             // Append images
-            const imagesData = previews.map((preview) => {
-                const rewordedFile: ImageFormDTO = { file: null, image: null };
-
-                if (preview.file) {
-                    rewordedFile.file = new File([preview.file], preview.fileName, { type: preview.file.type, lastModified: preview.file.lastModified, });
-                } else if (preview.id) {
-                    const image: ImageDTO = { id: preview.id, url: preview.src, alt: preview.fileName, order: 0 }; rewordedFile.image = image;
+            previews.forEach((preview, i) => {
+                if (preview.file != null) {
+                    formData.append(`ImagesData[${i}].File`, preview.file);
+                    formData.append(`ImagesData[${i}].Image`, "");
+                } else {
+                    formData.append(`ImagesData[${i}].File`, "");
+                    
+                    formData.append(`ImagesData[${i}].Image.Id`, preview.id?.toString() || "");
+                    formData.append(`ImagesData[${i}].Image.Url`, preview.src || "");
+                    formData.append(`ImagesData[${i}].Image.Alt`, preview.fileName || "");
+                    formData.append(`ImagesData[${i}].Image.Order`, i.toString());
                 }
-
-                return rewordedFile;
             });
-
-            formData.append("ImagesData", JSON.stringify(imagesData));
 
             const response = await fetch(nextUrl + `edit`, {
                 method: 'POST',

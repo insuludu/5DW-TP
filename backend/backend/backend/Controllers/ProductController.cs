@@ -4,6 +4,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Formats.Asn1;
 using System.Text.Json;
@@ -109,7 +110,7 @@ namespace backend.Controllers
 			string errorMessage = "";
 			try
 			{
-				Product product = _context.Products.FirstOrDefault(p => p.ID == editedProduct.ID)!;
+				Product product = _context.Products.Where(p => p.ID == editedProduct.ID).Include(p => p.Images).Include(p => p.Categories).FirstOrDefault()!;
 
 				if (product == null)
 					throw new Exception("Le produit en modification est introuvable");
@@ -128,7 +129,7 @@ namespace backend.Controllers
 					}
 
 				List<ProductImage> images = new List<ProductImage>();
-				if (editedProduct.ImagesData != null)
+				if (editedProduct.ImagesData != null || editedProduct.ImagesData!.Count != 0)
 					for (int x = 0; x < editedProduct.ImagesData.Count; x++)
 					{
 						var imageForm = editedProduct.ImagesData[x];
