@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using Azure;
+using backend.Models;
 using backend.Models_DTO;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
@@ -242,43 +243,65 @@ namespace backend.Controllers
 
 		/// <summary>
 		///     Simon Déry - 12 octobre 2025
+		///     Modifier par Alexandre Chagnon le 18 octobre 2025 pour la pagination
 		///     Permet d'obtenir des produits pour afficher dans le catalogue
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet("CatalogProducts")]
-		public ActionResult GetCatalogProducts()
-		{
-			List<ShopProductDTO> result = _context.Products.Select(
-				p => new ShopProductDTO
-				{
-					ID = p.ID,
-					Name = p.Name,
-					Price = p.Price,
-					DiscountedPrice = p.DiscountPrice,
-					Status = p.Status,
-					categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
-					imagesData = p.Images.Select(i => new ImageDTO
-					{
-						ID = i.Id,
-						Alt = i.ImageAlt,
-						Order = i.Order,
-						Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
-					}).Where(i => i.Order <= 1).Take(2).OrderBy(i => i.Order).ToList()
-				}).ToList();
+        public ActionResult GetCatalogProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 3)
+        {
+            // Validation des paramètres
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 3;
 
-			if (result.Count == 0)
-				return NotFound();
+            // Calculer le nombre total de produits
+            int totalProducts = _context.Products.Count();
+            int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
-			return Ok(result);
-		}
+            // Récupérer les produits pour la page demandée
+            List<ShopProductDTO> products = _context.Products
+                .OrderBy(p => p.ID) // Important pour la cohérence de la pagination
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new ShopProductDTO
+                {
+                    ID = p.ID,
+                    Name = p.Name,
+                    Price = p.Price,
+                    DiscountedPrice = p.DiscountPrice,
+                    Status = p.Status,
+                    categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
+                    imagesData = p.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).Where(i => i.Order <= 1).Take(2).OrderBy(i => i.Order).ToList()
+                }).ToList();
 
-		/// <summary>
-		///     Simon Déry - 10 octobre 2025
-		///     Permet d'obtenir les produits vedettes pour la page d'accueil
-		/// </summary>
-		/// <param name="count">Nombre de produit à aller chercher</param>
-		/// <returns>List<StarProductDTO></returns>
-		[HttpGet("StarProducts")]
+            // Créer la réponse avec métadonnées
+            var result = new PaginatedProductsDTO
+            {
+                Products = products,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalProducts = totalProducts,
+                TotalPages = totalPages,
+                HasNextPage = page < totalPages,
+                HasPreviousPage = page > 1
+            };
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Simon Déry - 10 octobre 2025
+        ///     Permet d'obtenir les produits vedettes pour la page d'accueil
+        /// </summary>
+        /// <param name="count">Nombre de produit à aller chercher</param>
+        /// <returns>List<StarProductDTO></returns>
+        [HttpGet("StarProducts")]
 		public ActionResult GetStarProducts([FromQuery] int count = 1)
 		{
 			List<StarProductDTO> result = _context.Products.Select(p => new StarProductDTO
