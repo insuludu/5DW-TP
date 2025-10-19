@@ -16,41 +16,39 @@ interface PaginatedResponse {
 }
 
 async function GetCatalogProducts(
-    search?: string, 
-    page: number = 1, 
+    search?: string,
+    page: number = 1,
     sort?: string,
     minPrice?: string,
     maxPrice?: string,
     status?: string,
     discount?: string,
     categories?: string
-): Promise<PaginatedResponse | ShopProductDTO[]> {
-    let endpoint = "";
+): Promise<PaginatedResponse> {
+    const params = new URLSearchParams();
+    params.append("page", page.toString());
+    params.append("pageSize", "3");
     
     if (search) {
-        endpoint = `/api/shop/search-products?query=${encodeURIComponent(search)}`;
-    } else {
-        // Construire l'URL avec tous les paramètres
-        const params = new URLSearchParams();
-        params.append("page", page.toString());
-        params.append("pageSize", "3");
-        
-        if (sort) params.append("sort", sort);
-        if (minPrice) params.append("minPrice", minPrice);
-        if (maxPrice) params.append("maxPrice", maxPrice);
-        if (status) params.append("status", status);
-        if (discount) params.append("discount", discount);
-        if (categories) params.append("categories", categories);
-        
-        endpoint = `/api/shop/catalog-products?${params.toString()}`;
+        params.append("query", search);
     }
+    if (sort) params.append("sort", sort);
+    if (minPrice) params.append("minPrice", minPrice);
+    if (maxPrice) params.append("maxPrice", maxPrice);
+    if (status) params.append("status", status);
+    if (discount) params.append("discount", discount);
+    if (categories) params.append("categories", categories);
+    
+    const endpoint = search 
+        ? `/api/shop/search-products?${params.toString()}`
+        : `/api/shop/catalog-products?${params.toString()}`;
 
     const response = await fetch(nextUrl + endpoint, {
         cache: "no-store",
     });
 
     if (response.status === 404) {
-        return search ? [] : { products: [], currentPage: 1, pageSize: 3, totalProducts: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false };
+        return { products: [], currentPage: 1, pageSize: 3, totalProducts: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false };
     }
 
     if (!response.ok) {
@@ -81,21 +79,10 @@ export default async function Catalog({
     collections,
     search,
 }: CatalogProps) {
-    // Passer TOUS les paramètres à l'API (tri + filtres)
     const data = await GetCatalogProducts(search, 1, sort, minPrice, maxPrice, status, discount, categories);
     
-    // Gérer les deux types de réponse (recherche vs pagination)
-    let products: ShopProductDTO[];
-    let hasNextPage = false;
-    
-    if (Array.isArray(data)) {
-        // Réponse de recherche (tableau simple)
-        products = data;
-    } else {
-        // Réponse paginée
-        products = data.products;
-        hasNextPage = data.hasNextPage;
-    }
+    const products = data.products;
+    const hasNextPage = data.hasNextPage;
 
     if (!products || products.length === 0) {
         return (
@@ -123,39 +110,30 @@ export default async function Catalog({
                 </p>
             )}
 
-            {products.length === 0 ? (
-                <div className="text-center py-5">
+            <div className={styles.catalogGridContainer}>
+                {products.map((p) => (
+                    <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
+                        <ShopCard product={p} />
+                    </div>
+                ))}
+                
+                {/* IMPORTANT: Enlevez !search */}
+                {hasNextPage && (
+                    <CatalogClientWrapper
+                        initialProducts={products}
+                        hasMore={hasNextPage}
+                        searchQuery={search}
+                        filters={{ sort, minPrice, maxPrice, status, discount, categories, collections }}
+                    />
+                )}
+            </div>
+
+            {!hasNextPage && products.length > 0 && (
+                <div className="text-center py-4">
                     <p className="text-muted">
-                        Aucun produit ne correspond à vos critères de filtrage.
+                        Vous avez vu tous les produits disponibles
                     </p>
                 </div>
-            ) : (
-                <>
-                    <div className={styles.catalogGridContainer}>
-                        {products.map((p) => (
-                            <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
-                                <ShopCard product={p} />
-                            </div>
-                        ))}
-                        
-                        {/* Composant client pour charger plus de produits */}
-                        {!search && hasNextPage && (
-                            <CatalogClientWrapper
-                                initialProducts={products}
-                                hasMore={hasNextPage}
-                                filters={{ sort, minPrice, maxPrice, status, discount, categories, collections }}
-                            />
-                        )}
-                    </div>
-
-                    {!search && !hasNextPage && products.length > 0 && (
-                        <div className="text-center py-4">
-                            <p className="text-muted">
-                                Vous avez vu tous les produits disponibles
-                            </p>
-                        </div>
-                    )}
-                </>
             )}
         </div>
     );

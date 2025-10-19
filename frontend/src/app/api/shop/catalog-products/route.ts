@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         
         const fullURL = `${apiURL}?${backendParams.toString()}`;
         
-        console.log(`🔍 Middleware - Requête vers backend: ${fullURL}`);
+        console.log(` Middleware - Requête vers backend: ${fullURL}`);
 
         const res = await fetch(fullURL, {
             headers: { "Content-Type": "application/json" },

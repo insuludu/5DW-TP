@@ -19,6 +19,7 @@ interface PaginatedResponse {
 interface CatalogClientWrapperProps {
     initialProducts: ShopProductDTO[];
     hasMore: boolean;
+    searchQuery?: string;
     filters: {
         sort?: string;
         minPrice?: string;
@@ -33,6 +34,7 @@ interface CatalogClientWrapperProps {
 export default function CatalogClientWrapper({ 
     initialProducts, 
     hasMore, 
+    searchQuery,
     filters 
 }: CatalogClientWrapperProps) {
     const [additionalProducts, setAdditionalProducts] = useState<ShopProductDTO[]>([]);
@@ -47,11 +49,14 @@ export default function CatalogClientWrapper({
         try {
             const nextPage = currentPage + 1;
             
-            // Construire l'URL avec TOUS les paramètres (tri + filtres)
+            // Construire l'URL avec TOUS les paramètres
             const params = new URLSearchParams();
             params.append("page", nextPage.toString());
             params.append("pageSize", "3");
             
+            if (searchQuery) {
+                params.append("query", searchQuery);
+            }
             if (filters.sort) params.append("sort", filters.sort);
             if (filters.minPrice) params.append("minPrice", filters.minPrice);
             if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
@@ -59,9 +64,11 @@ export default function CatalogClientWrapper({
             if (filters.discount) params.append("discount", filters.discount);
             if (filters.categories) params.append("categories", filters.categories);
             
-            const url = `${nextUrl}/api/shop/catalog-products?${params.toString()}`;
+            const endpoint = searchQuery 
+                ? `/api/shop/search-products?${params.toString()}`
+                : `/api/shop/catalog-products?${params.toString()}`;
             
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(`${nextUrl}${endpoint}`, { cache: "no-store" });
 
             if (!response.ok) {
                 throw new Error("Erreur lors du chargement");
@@ -81,17 +88,14 @@ export default function CatalogClientWrapper({
 
     return (
         <>
-            {/* Afficher les produits additionnels */}
             {additionalProducts.map((product) => (
                 <div key={product.id} className="mb-3 rounded-3 overflow-hidden">
                     <ShopCard product={product} />
                 </div>
             ))}
 
-            {/* Bouton "Charger plus" */}
             {hasNextPage && (
                 <>
-                    {/* Spacer pour forcer le bouton sur une nouvelle ligne */}
                     <div style={{ gridColumn: '1 / -1', height: '0' }}></div>
                     
                     <div 

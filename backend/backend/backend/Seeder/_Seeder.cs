@@ -17,6 +17,7 @@ namespace backend.Seeder
                 Category starFightersCollection = new Category { Name = "Star Fighters Collection" };
                 Category starShip = new Category { Name = "Vaisseau Spatial" };
                 Category cars = new Category { Name = "Voitures" };
+                Category adventureHeroesCat = new Category { Name = "Héros de l'aventure" };
 
                 context.Set<Category>().AddRange([pikaCollection, toys, batBoyCollection, superHero, superVillain, starFightersCollection, starShip, cars]);
 
@@ -50,10 +51,21 @@ namespace backend.Seeder
                 ProductImage skyhawkStreakImage1 = new ProductImage { ImageAlt = "Image de produit 2: Skyhawk Streak", Order = 1, ImageData = GetImageFromFile("skyhawk-streak-1.png"), ContentType = "image/png" };
                 ProductImage rustyHookImage0 = new ProductImage { ImageAlt = "Image de produit 1: Rusty Hook", Order = 0, ImageData = GetImageFromFile("rusty-hook-0.png"), ContentType = "image/png" };
                 ProductImage rustyHookImage1 = new ProductImage { ImageAlt = "Image de produit 2: Rusty Hook", Order = 1, ImageData = GetImageFromFile("rusty-hook-1.png"), ContentType = "image/png" };
+                ProductImage adventureHeroesImage0 = new ProductImage { ImageAlt = "Image de produit 1: Adventure Heroes", Order = 0, ImageData = GetImageFromFile("adventure-heroes-0.png"), ContentType = "image/png" };
+                ProductImage adventureHeroesImage1 = new ProductImage { ImageAlt = "Image de produit 2: Adventure Heroes", Order = 1, ImageData = GetImageFromFile("adventure-heroes-1.png"), ContentType = "image/png" };
+                ProductImage iceKingImage0 = new ProductImage { ImageAlt = "Image de produit 1: Ice King", Order = 0, ImageData = GetImageFromFile("ice-king-0.png"), ContentType = "image/png" };
+                ProductImage iceKingImage1 = new ProductImage { ImageAlt = "Image de produit 2: Ice King", Order = 1, ImageData = GetImageFromFile("ice-king-1.png"), ContentType = "image/png" };
+                ProductImage pricessBubbleggumImage0 = new ProductImage { ImageAlt = "Image de produit 1: Pricess Bubbleggum", Order = 0, ImageData = GetImageFromFile("pricess-bubbleggum-0.png"), ContentType = "image/png" };
+                ProductImage pricessBubbleggumImage1 = new ProductImage { ImageAlt = "Image de produit 2: Pricess Bubbleggum", Order = 1, ImageData = GetImageFromFile("pricess-bubbleggum-1.png"), ContentType = "image/png" };
+                ProductImage marcelineImage0 = new ProductImage { ImageAlt = "Image de produit 1: Marceline", Order = 0, ImageData = GetImageFromFile("marceline-0.png"), ContentType = "image/png" };
+                ProductImage marcelineImage1 = new ProductImage { ImageAlt = "Image de produit 2: Marceline", Order = 1, ImageData = GetImageFromFile("marceline-1.png"), ContentType = "image/png" };
+                ProductImage lumpySpaceImage0 = new ProductImage { ImageAlt = "Image de produit 1: Lumpy Space", Order = 0, ImageData = GetImageFromFile("lumpy-space-0.png"), ContentType = "image/png" };
+                ProductImage lumpySpaceImage1 = new ProductImage { ImageAlt = "Image de produit 2: Lumpy Space", Order = 1, ImageData = GetImageFromFile("lumpy-space-1.png"), ContentType = "image/png" };
 
                 context.Set<ProductImage>().AddRange([spiderChuImage0, spiderChuImage1, batChuImage0, batChuImage1, superChuImage0, superChuImage1, superGuyImage0, superGuyImage1, evilGuyImage0, evilGuyImage1, 
-                    cosmicBasiliskImage0, cosmicBasiliskImage1, golemKnigthImage0, golemKnigthImage1, neoWyrmImage0, neoWyrmImage1, starforgeExplorerImage0, starforgeExplorerImage1, ironHaulerImage0, ironHaulerImage1,
-                    turboBlazeImage0, turboBlazeImage1, texDinocoImage0, texDinocoImage1, boltRacerImage0, boltRacerImage1, skyhawkStreakImage0, skyhawkStreakImage1, rustyHookImage0, rustyHookImage1]);
+                    cosmicBasiliskImage0, cosmicBasiliskImage1, golemKnigthImage0, golemKnigthImage1, neoWyrmImage0, neoWyrmImage1, starforgeExplorerImage0, starforgeExplorerImage1, ironHaulerImage0, ironHaulerImage1, 
+                    turboBlazeImage0, turboBlazeImage1, texDinocoImage0, texDinocoImage1, boltRacerImage0, boltRacerImage1, skyhawkStreakImage0, skyhawkStreakImage1, rustyHookImage0, rustyHookImage1, 
+                    adventureHeroesImage0, adventureHeroesImage1, iceKingImage0, iceKingImage1, pricessBubbleggumImage0, pricessBubbleggumImage1, marcelineImage0, marcelineImage1, lumpySpaceImage0, lumpySpaceImage1]);
 
                 Product spiderChu = new Product { Name = "Spider-Chu", Description = "Spider-Chu est le meilleur compagnons pour vous accompagner dans vos aventures épiques !", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, DiscountPrice = 20.99f, Categories = [pikaCollection, toys], Status = ProductStatus.Available, UnitsInStock = 50, Images = [spiderChuImage0, spiderChuImage1] };
                 Product batChu = new Product {  Name = "Bat-Chu", Description = "Bat-Chu est le meilleur compagnons pour vous accompagner dans vos aventures farfelues !", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, Categories = [pikaCollection, batBoyCollection, toys], Status = ProductStatus.Available, UnitsInStock = 50, Images = [batChuImage0, batChuImage1] };
@@ -70,8 +82,13 @@ namespace backend.Seeder
                 Product boltRacer = new Product { Name = "Bolt Racer", Description = "Le Bolt Racer, une merveille d'ingénierie aérodynamique, conçu pour fendre l'air.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, Categories = [toys, cars], Status = ProductStatus.Available, UnitsInStock = 50, Images = [boltRacerImage0, boltRacerImage1] };
                 Product skyhawkStreak = new Product { Name = "Skyhawk Streak", Description = "Le Skyhawk Streak n'est pas qu'une voiture, c'est un jet sur roues, atteignant des vitesses incroyables!", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 29.99f, Categories = [toys], Status = ProductStatus.Available, UnitsInStock = 100, Images = [skyhawkStreakImage0, skyhawkStreakImage1] };
                 Product rustyHook = new Product { Name = "Rusty Hook", Description = "Rusty Hook, un vieux camion de remorquage fiable et charmant, toujours prêt pour la rescousse.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 29.99f, Categories = [toys, cars], Status = ProductStatus.Available, UnitsInStock = 100, Images = [rustyHookImage0, rustyHookImage1] };
+                Product adventureHeroes = new Product { Name = "Adventure Heroes", Description = "Le duo de héros prêt pour l'aventure. Ils sont toujours là pour sauver la journée!", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, Categories = [toys, adventureHeroesCat], Status = ProductStatus.Available, UnitsInStock = 50, Images = [adventureHeroesImage0, adventureHeroesImage1] };
+                Product iceKing = new Product { Name = "Ice King", Description = "Le Roi des Glaces. Un personnage excentrique et puissant pour toutes vos aventures hivernales.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, Categories = [toys, adventureHeroesCat], Status = ProductStatus.Available, UnitsInStock = 50, Images = [iceKingImage0, iceKingImage1] };
+                Product pricessBubbleggum = new Product { Name = "Pricess Bubbleggum", Description = "La scientifique et dirigeante brillante. Elle est essentielle pour maintenir l'ordre et l'innovation.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 24.99f, Categories = [toys, adventureHeroesCat], Status = ProductStatus.Available, UnitsInStock = 50, Images = [pricessBubbleggumImage0, pricessBubbleggumImage1] };
+                Product marceline = new Product { Name = "Marceline", Description = "La reine vampire rockeuse. Une figurine cool avec une guitare-hache pour vos collections sombres.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 29.99f, Categories = [toys, adventureHeroesCat], Status = ProductStatus.Available, UnitsInStock = 100, Images = [marcelineImage0, marcelineImage1] };
+                Product lumpySpace = new Product { Name = "Lumpy Space", Description = "Le personnage cosmique excentrique. Plein de bosses et d'attitude, il est prêt pour l'espace.", CreationDate = DateTime.Now, ModifyDate = DateTime.Now, Price = 29.99f, Categories = [toys, adventureHeroesCat], Status = ProductStatus.Available, UnitsInStock = 100, Images = [lumpySpaceImage0, lumpySpaceImage1] };
 
-                context.Set<Product>().AddRange([spiderChu, batChu, superChu, superGuy, evilGuy, cosmicBasilisk, golemKnigth, neoWyrm, starforgeExplorer, ironHauler, turboBlaze, texDinoco, boltRacer, skyhawkStreak, rustyHook]);
+                context.Set<Product>().AddRange([spiderChu, batChu, superChu, superGuy, evilGuy, cosmicBasilisk, golemKnigth, neoWyrm, starforgeExplorer, ironHauler, turboBlaze, texDinoco, boltRacer, skyhawkStreak, rustyHook, adventureHeroes, iceKing, pricessBubbleggum, marceline, lumpySpace]);
                 context.SaveChanges();
             }
         }

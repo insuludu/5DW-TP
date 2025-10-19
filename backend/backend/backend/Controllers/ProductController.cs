@@ -413,22 +413,40 @@ namespace backend.Controllers
 
         /// <summary>
         ///		Jacob Manseau - 17 octobre 2025
-        ///		Permet la recherche de produit pour le catalog
+        ///		Modifié par Alexandre Chagnon - 19 octobre 2025 pour la pagination
+        ///		Permet la recherche de produit pour le catalog avec pagination
         /// </summary>
         /// <param name="query">Le texte rechercher</param>
+        /// <param name="page">Numéro de la page</param>
+		/// <param name="pageSize">Nombre de produits par page</param>
         /// <returns></returns>
         [HttpGet("SearchProducts")]
-        public ActionResult SearchProducts([FromQuery] string query)
+        public ActionResult SearchProducts([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 3)
         {
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("La recherche ne peut pas être vide.");
 
-            List<ShopProductDTO> result = _context.Products
+            // Validation des paramètres
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 3;
+
+            // Requête de base pour la recherche
+            var searchQuery = _context.Products
                 .Where(p =>
                     p.Name.ToLower().Contains(query.ToLower()) ||
                     p.Description.ToLower().Contains(query.ToLower()) ||
                     p.Categories.Any(c => c.Name.ToLower().Contains(query.ToLower()))
-                )
+                );
+
+            // Calculer le nombre total de résultats
+            int totalProducts = searchQuery.Count();
+            int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+
+            // Appliquer la pagination
+            List<ShopProductDTO> products = searchQuery
+                .OrderBy(p => p.ID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new ShopProductDTO
                 {
                     ID = p.ID,
@@ -447,8 +465,17 @@ namespace backend.Controllers
                 })
                 .ToList();
 
-            if (result.Count == 0)
-                return NotFound();
+            // Créer la réponse avec métadonnées
+            var result = new PaginatedProductsDTO
+            {
+                Products = products,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalProducts = totalProducts,
+                TotalPages = totalPages,
+                HasNextPage = page < totalPages,
+                HasPreviousPage = page > 1
+            };
 
             return Ok(result);
         }
@@ -472,6 +499,7 @@ namespace backend.Controllers
                     Price = p.Price,
                     DiscountedPrice = p.DiscountPrice,
                     Status = p.Status,
+                    UnitsInStock = p.UnitsInStock,
                     categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
                     imagesData = p.Images.Select(i => new ImageDTO
                     {
