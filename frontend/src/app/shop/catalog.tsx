@@ -135,6 +135,11 @@ export default async function Catalog({
     if (!products || products.length === 0)
         return (
             <div className="text-center py-5">
+                {search && (
+                    <p className="fs-5 mb-4 text-center">
+                        Résultats pour « {search} »
+                    </p>
+                )}
                 <p className="text-muted">
                     Aucun produit ne correspond à votre recherche.
                 </p>
@@ -154,6 +159,12 @@ export default async function Catalog({
 
     return (
         <div>
+            {search && (
+                <p className="fs-5 mb-4 text-center">
+                    Résultats pour « {search} »
+                </p>
+            )}
+
             {sortedProducts.length === 0 ? (
                 <div className="text-center py-5">
                     <p className="text-muted">
