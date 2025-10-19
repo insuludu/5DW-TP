@@ -25,6 +25,8 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
         { value: "", label: "Tous" },
         { value: "available", label: "Disponible" },
         { value: "unavailable", label: "Indisponible" },
+        { value: "outofstock", label: "Rupture de stock" },
+        { value: "comingsoon", label: "Bientôt disponible" },
     ];
 
     const discountOptions = [

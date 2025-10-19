@@ -1,7 +1,7 @@
 export function ProductEnumToString(enumNumber : number) {
 
     if (enumNumber == 0)
-        return "Displonible";
+        return "Disponible";
     
     if (enumNumber == 1)
         return "Indisponible";

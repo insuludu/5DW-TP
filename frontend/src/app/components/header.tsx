@@ -18,6 +18,9 @@ export default function Header() {
         if (value.trim() !== "") {
             router.push(`/shop?search=${encodeURIComponent(value)}`);
         }
+        else {
+            router.push(`/shop`);
+        }
     }
 
     function handleKeyPress(event: KeyboardEvent<HTMLInputElement>): void {

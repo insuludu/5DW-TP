@@ -33,15 +33,33 @@ export interface DetailProductDTO {
 }
 
 export interface CreateProductDTO{
-    Name: string;
-    Description: string;
-    Price: number;
-    DiscountPrice?: number | null;
-    UnitsInStock: number;
-    Categories: string[];
-    Status: number;
-    ImagesData?: ImageDTO[] | null;
+    name: string;
+    description: string;
+    price: number;
+    discountPrice?: number | null;
+    unitsInStock: number;
+    categories: string[];
+    status: number;
+    imagesData?: ImageDTO[] | null;
 }
+
+export interface EditProductDTO{
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    discountPrice?: number | null;
+    unitsInStock: number;
+    categories: string[];
+    status: number;
+    imagesData?: ImageFormDTO[] | null;
+}
+
+export interface ImageFormDTO{
+    file?: File | null;
+    image?: ImageDTO | null;
+}
+
 interface CreateProductImageDTO {
     Order: number;
     ImageData: number[]; // byte array as number array for JSON
