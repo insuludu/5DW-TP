@@ -245,23 +245,105 @@ namespace backend.Controllers
         /// <summary>
         ///     Simon Déry - 12 octobre 2025
         ///     Modifier par Alexandre Chagnon le 18 octobre 2025 pour la pagination
+        ///     Modifié pour ajouter le tri et les filtres côté serveur
+        ///     Correction du tri par Jacob Manseau - 19 octobre 2025
         ///     Permet d'obtenir des produits pour afficher dans le catalogue
         /// </summary>
         /// <returns></returns>
         [HttpGet("CatalogProducts")]
-        public ActionResult GetCatalogProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 3)
+        public ActionResult GetCatalogProducts(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 3,
+            [FromQuery] string? sort = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] string? status = null,
+            [FromQuery] string? discount = null,
+            [FromQuery] string? categories = null)
         {
             // Validation des paramètres
             if (page < 1) page = 1;
             if (pageSize < 1 || pageSize > 100) pageSize = 3;
 
-            // Calculer le nombre total de produits
-            int totalProducts = _context.Products.Count();
+            // Commencer la requête
+            IQueryable<Product> query = _context.Products;
+
+            // Appliquer les filtres
+
+            // Filtre de prix minimum (utilise le prix avec rabais s'il existe)
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => (decimal)(p.DiscountPrice != null ? p.DiscountPrice.Value : p.Price) >= minPrice.Value);
+            }
+
+            // Filtre de prix maximum
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => (decimal)(p.DiscountPrice != null ? p.DiscountPrice.Value : p.Price) <= maxPrice.Value);
+            }
+
+            // Filtre de rabais
+            if (!string.IsNullOrEmpty(discount))
+            {
+                if (discount == "discount")
+                {
+                    query = query.Where(p => p.DiscountPrice != null);
+                }
+                else if (discount == "no-discount")
+                {
+                    query = query.Where(p => p.DiscountPrice == null);
+                }
+            }
+
+            // Filtre de catégories
+            if (!string.IsNullOrEmpty(categories))
+            {
+                var categoryIds = categories.Split(',').Select(int.Parse).ToList();
+                query = query.Where(p => p.Categories.Any(c => categoryIds.Contains(c.ID)));
+            }
+
+            // Filtre de statut/disponibilité
+            if (!string.IsNullOrEmpty(status))
+            {
+                ProductStatus statusEnum = status switch
+                {
+                    "available" => ProductStatus.Available,
+                    "unavailable" => ProductStatus.Unavailable,
+                    "outofstock" => ProductStatus.OutOfStock,
+                    "comingsoon" => ProductStatus.ComingSoon,
+                    _ => ProductStatus.Available
+                };
+
+                query = query.Where(p => p.Status == statusEnum);
+            }
+
+            // Appliquer le tri APRÈS les filtres
+            // IMPORTANT: On doit séparer les tris par prix des autres pour éviter les problèmes avec Entity Framework
+            switch (sort)
+            {
+                case "price-asc":
+                    query = query.OrderBy(p => p.DiscountPrice != null ? p.DiscountPrice : p.Price);
+                    break;
+                case "price-desc":
+                    query = query.OrderByDescending(p => p.DiscountPrice != null ? p.DiscountPrice : p.Price);
+                    break;
+                case "name-asc":
+                    query = query.OrderBy(p => p.Name);
+                    break;
+                case "name-desc":
+                    query = query.OrderByDescending(p => p.Name);
+                    break;
+                default:
+                    query = query.OrderBy(p => p.ID); // Par défaut
+                    break;
+            }
+
+            // Calculer le nombre total de produits (après filtres)
+            int totalProducts = query.Count();
             int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
-            // Récupérer les produits pour la page demandée
-            List<ShopProductDTO> products = _context.Products
-                .OrderBy(p => p.ID) // Important pour la cohérence de la pagination
+            // Récupérer les produits pour la page demandée (APRÈS le tri)
+            List<ShopProductDTO> products = query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(p => new ShopProductDTO
@@ -412,7 +494,6 @@ namespace backend.Controllers
                     Price = p.Price,
                     DiscountedPrice = p.DiscountPrice,
                     Status = p.Status,
-                    UnitsInStock = p.UnitsInStock,
                     categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
                     imagesData = p.Images.Select(i => new ImageDTO
                     {

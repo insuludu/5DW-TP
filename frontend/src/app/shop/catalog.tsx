@@ -15,10 +15,35 @@ interface PaginatedResponse {
     hasPreviousPage: boolean;
 }
 
-async function GetCatalogProducts(search?: string, page: number = 1): Promise<PaginatedResponse | ShopProductDTO[]> {
-    const endpoint = search 
-        ? `/api/shop/search-products?query=${encodeURIComponent(search)}&page=${page}&pageSize=1`
-        : `/api/shop/catalog-products?page=${page}&pageSize=1`;
+async function GetCatalogProducts(
+    search?: string, 
+    page: number = 1, 
+    sort?: string,
+    minPrice?: string,
+    maxPrice?: string,
+    status?: string,
+    discount?: string,
+    categories?: string
+): Promise<PaginatedResponse | ShopProductDTO[]> {
+    let endpoint = "";
+    
+    if (search) {
+        endpoint = `/api/shop/search-products?query=${encodeURIComponent(search)}`;
+    } else {
+        // Construire l'URL avec tous les paramètres
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("pageSize", "3");
+        
+        if (sort) params.append("sort", sort);
+        if (minPrice) params.append("minPrice", minPrice);
+        if (maxPrice) params.append("maxPrice", maxPrice);
+        if (status) params.append("status", status);
+        if (discount) params.append("discount", discount);
+        if (categories) params.append("categories", categories);
+        
+        endpoint = `/api/shop/catalog-products?${params.toString()}`;
+    }
 
     const response = await fetch(nextUrl + endpoint, {
         cache: "no-store",
@@ -33,113 +58,6 @@ async function GetCatalogProducts(search?: string, page: number = 1): Promise<Pa
     }
 
     return response.json();
-}
-
-function getFinalPrice(product: ShopProductDTO): number {
-    return product.discountedPrice ?? product.price;
-}
-
-function filterProducts(
-    products: ShopProductDTO[],
-    minPrice?: string,
-    maxPrice?: string,
-    status?: string,
-    discount?: string,
-    categories?: string,
-    collections?: string
-): ShopProductDTO[] {
-    let filtered = [...products];
-
-    // --- Prix minimum ---
-    if (minPrice) {
-        const min = parseFloat(minPrice);
-        filtered = filtered.filter((p) => getFinalPrice(p) >= min);
-    }
-
-    // --- Prix maximum ---
-    if (maxPrice) {
-        const max = parseFloat(maxPrice);
-        filtered = filtered.filter((p) => getFinalPrice(p) <= max);
-    }
-
-    // --- Rabais ---
-    if (discount) {
-        if (discount === "discount") {
-            filtered = filtered.filter((p) => p.discountedPrice != null);
-        } else if (discount === "no-discount") {
-            filtered = filtered.filter((p) => p.discountedPrice == null);
-        }
-    }
-
-    // --- Catégories ---
-    if (categories) {
-        const categoryIds = categories.split(",").map((id) => parseInt(id));
-        filtered = filtered.filter((p) =>
-            p.categories.some((cat) => categoryIds.includes(cat.id))
-        );
-    }
-
-    // --- Collections ---
-    if (collections) {
-        const collectionIds = collections.split(",").map((id) => parseInt(id));
-        filtered = filtered.filter((p) =>
-            p.categories?.some((c) => collectionIds.includes(c.id))
-        );
-    }
-
-    // --- Disponibilité (Status) ---
-    if (status) {
-        // Correspondance avec l'enum backend : Available=0, Unavailable=1, OutOfStock=2, ComingSoon=3
-        // Le status peut être un string ou un number, on gère les deux cas
-        switch (status) {
-            case "available":
-                filtered = filtered.filter((p) => {
-                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
-                    return statusValue === 0;
-                });
-                break;
-            case "unavailable":
-                filtered = filtered.filter((p) => {
-                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
-                    return statusValue === 1;
-                });
-                break;
-            case "outofstock":
-                filtered = filtered.filter((p) => {
-                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
-                    return statusValue === 2;
-                });
-                break;
-            case "comingsoon":
-                filtered = filtered.filter((p) => {
-                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
-                    return statusValue === 3;
-                });
-                break;
-        }
-    }
-
-    return filtered;
-}
-
-function sortProducts(
-    products: ShopProductDTO[],
-    sortType?: string
-): ShopProductDTO[] {
-    const sorted = [...products];
-
-    switch (sortType) {
-        case "price-asc":
-            return sorted.sort((a, b) => getFinalPrice(a) - getFinalPrice(b));
-        case "price-desc":
-            return sorted.sort((a, b) => getFinalPrice(b) - getFinalPrice(a));
-        case "name-asc":
-            return sorted.sort((a, b) => a.name.localeCompare(b.name));
-        case "name-desc":
-            return sorted.sort((a, b) => b.name.localeCompare(a.name));
-        default:
-            return sorted;
-    }
 }
 
 interface CatalogProps {
@@ -163,7 +81,8 @@ export default async function Catalog({
     collections,
     search,
 }: CatalogProps) {
-    const data = await GetCatalogProducts(search, 1);
+    // Passer TOUS les paramètres à l'API (tri + filtres)
+    const data = await GetCatalogProducts(search, 1, sort, minPrice, maxPrice, status, discount, categories);
     
     // Gérer les deux types de réponse (recherche vs pagination)
     let products: ShopProductDTO[];
@@ -196,17 +115,6 @@ export default async function Catalog({
         );
     }
 
-    const filteredProducts = filterProducts(
-        products,
-        minPrice,
-        maxPrice,
-        status,
-        discount,
-        categories,
-        collections
-    );
-    const sortedProducts = sortProducts(filteredProducts, sort);
-
     return (
         <div>
             {search && (
@@ -215,7 +123,7 @@ export default async function Catalog({
                 </p>
             )}
 
-            {sortedProducts.length === 0 ? (
+            {products.length === 0 ? (
                 <div className="text-center py-5">
                     <p className="text-muted">
                         Aucun produit ne correspond à vos critères de filtrage.
@@ -224,14 +132,14 @@ export default async function Catalog({
             ) : (
                 <>
                     <div className={styles.catalogGridContainer}>
-                        {sortedProducts.map((p) => (
+                        {products.map((p) => (
                             <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
                                 <ShopCard product={p} />
                             </div>
                         ))}
                         
-                        {/* Composant client intégré dans la MÊME grille */}
-                        {hasNextPage && (
+                        {/* Composant client pour charger plus de produits */}
+                        {!search && hasNextPage && (
                             <CatalogClientWrapper
                                 initialProducts={products}
                                 hasMore={hasNextPage}
