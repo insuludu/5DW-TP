@@ -133,14 +133,12 @@ export default function SimpleForm({ id }: { id: string }) {
         const fetchProduct = async () => {
             try {
                 const product = await GetProductById(id);
-                alert(JSON.stringify(product));
 
                 // Set hasDiscount if there's a discount price
                 if (product.discountPrice !== null && product.discountPrice !== undefined) {
                     setHasDiscount(true);
                 }
 
-                alert(JSON.stringify(product.imagesData));
                 // Populate the form with fetched data
                 setValue("name", product.name);
                 setValue("description", product.description);
@@ -165,7 +163,6 @@ export default function SimpleForm({ id }: { id: string }) {
                     setPreviews(previews);
                 }
             } catch (err) {
-                alert("fuck");
                 console.error("Failed to fetch product:", err);
             }
         };

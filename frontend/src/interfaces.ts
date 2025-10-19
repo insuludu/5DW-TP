@@ -28,6 +28,7 @@ export interface DetailProductDTO {
     price: number;
     discountedPrice?: number | null;
     status: number;
+    unitsInStock: number;
     categories: CategoryDTO[];
     imagesData?: ImageDTO[] | null; 
 }
