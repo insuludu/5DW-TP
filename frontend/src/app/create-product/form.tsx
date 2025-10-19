@@ -160,13 +160,9 @@ export default function SimpleForm() {
             }
 
             const result = await response.json();
-            console.log("Form submitted:", result);
-
-            reset();
-            setPreviews([]); // Clear images on successful submit
 
             // Optional: Show success message
-            alert("Produit créé avec succès!");
+            window.location.href = '/shop/product/' + result.id;
 
         } catch (error) {
             console.error('Erreur lors de la soumission:', error);
@@ -329,7 +325,7 @@ export default function SimpleForm() {
                                                 const decimalPart = value.toString().split(".")[1];
                                                 if (decimalPart && decimalPart.length > 2)
                                                     return "Le prix en rabais ne peut pas avoir plus de 2 décimales.";
-                                                
+
                                                 const regularPrice = formValues.price;
                                                 if (regularPrice !== undefined && value >= regularPrice)
                                                     return "Le prix en rabais doit être inférieur au prix régulier.";

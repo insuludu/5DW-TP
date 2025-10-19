@@ -73,7 +73,7 @@ namespace backend.Controllers
                     }
                 }
 
-                _context.Products.Add(new Product()
+                Product product = new Product()
                 {
                     Name = newProduct.Name,
                     Description = newProduct.Description,
@@ -83,10 +83,11 @@ namespace backend.Controllers
                     Categories = ProductCategories,
                     Status = (ProductStatus)newProduct.Status,
                     Images = ProductImages
-                });
+                };
+				_context.Products.Add(product);
 
                 _context.SaveChanges();
-                return Ok(new { success = true });
+                return Ok(new { success = true, id = product .ID});
             }
             catch (Exception)
             {
@@ -151,7 +152,11 @@ namespace backend.Controllers
                         {
                             var imageDB = _context.ProductImages.FirstOrDefault(i => i.Id == imageForm.Image.ID);
                             if (imageDB != null)
+                            {
+                                imageDB.Order = x;
+                                imageDB.ImageAlt = imageForm.Image.Alt;
                                 images.Add(imageDB);
+                            }
                         }
                     }
 

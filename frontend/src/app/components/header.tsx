@@ -71,7 +71,7 @@ export default function Header() {
                     <Link href="/terms" className={` pt-1 col-3`}>POLITIQUE</Link>
                     <Link href="/about" className={` pt-1 col-3`}>À PROPOS</Link>
                     <Link href="/contact-us" className={` pt-1 col-3`}>CONTACTER</Link>
-                    <Link href="/create-product" className={` pt-1 col-3`}>CRÉER</Link>
+                    <a href="/create-product" className="pt-1 col-3">CRÉER</a>
                 </div>
             </div>
         </header>
