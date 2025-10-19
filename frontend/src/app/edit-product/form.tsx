@@ -1,25 +1,43 @@
 'use client';
 
 import CreatableSelect from "react-select/creatable";
-import { CreateProductDTO } from "@/interfaces";
+import { EditProductDTO, ImageDTO, ImageFormDTO } from "@/interfaces";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import styles from "@/app/styles/page.module.css"
 import { useState, useEffect } from "react";
 import { ProductEnumToString } from "@/utility";
+import { Aladin } from "next/font/google";
 
 const nextUrl = process.env.NEXT_PUBLIC_API_MIDDLEWARE_URL + "/api/create/";
 
+async function GetProductById(id: string): Promise<EditProductDTO> {
+    const res = await fetch(`${nextUrl}product/${id}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("Erreur lors du chargement du produit");
 
-export default function SimpleForm() {
-    const [previews, setPreviews] = useState<Array<{ src: string; file: File; fileName: string }>>([]);
+    const object = await res.json();
+    return object;
+}
+
+async function urlToFile(url: string, fileName: string): Promise<File> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    // Try to keep the right type (image/png, image/jpeg, etc.)
+    const file = new File([blob], fileName, { type: blob.type || "image/png" });
+    return file;
+}
+
+export default function SimpleForm({ id }: { id: string }) {
+    const [previews, setPreviews] = useState<Array<{ id: number | null; src: string; file: File | null; fileName: string }>>([]);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [imageErrors, setImageErrors] = useState<string[]>([]);
+
 
     function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         setImageErrors([]);
         const files = e.target.files ? Array.from(e.target.files) : [];
 
         const newPreviews = files.map(file => ({
+            id: null,
             src: URL.createObjectURL(file),
             file: file,
             fileName: file.name // Store original name
@@ -93,16 +111,69 @@ export default function SimpleForm() {
         formState: { errors, isSubmitting, isValid },
         reset,
         setError,
-        clearErrors
-    } = useForm<CreateProductDTO>({
+        clearErrors,
+        setValue
+    } = useForm<EditProductDTO>({
         mode: 'onChange',
         criteriaMode: 'all',
         defaultValues: {
-            categories: []  // empty array for multi-select
+            name: "",
+            description: "",
+            price: 0,
+            discountPrice: null,
+            unitsInStock: 0,
+            categories: [],
+            status: -1,
         }
     });
 
-    const onSubmit: SubmitHandler<CreateProductDTO> = async (data) => {
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchProduct = async () => {
+            try {
+                const product = await GetProductById(id);
+                alert(JSON.stringify(product));
+
+                // Set hasDiscount if there's a discount price
+                if (product.discountPrice !== null && product.discountPrice !== undefined) {
+                    setHasDiscount(true);
+                }
+
+                alert(JSON.stringify(product.imagesData));
+                // Populate the form with fetched data
+                setValue("name", product.name);
+                setValue("description", product.description);
+                setValue("price", product.price);
+                setValue("discountPrice", product.discountPrice || null);
+                setValue("unitsInStock", product.unitsInStock);
+                setValue("categories", product.categories || []);
+                setValue("status", product.status);
+
+                if (product.imagesData != null) {
+
+                    const previews = await Promise.all(
+                        product.imagesData!.map(async (img, index) => {
+                            return {
+                                id: img.image!.id,
+                                src: img.image!.url,
+                                file: null,
+                                fileName: img.image!.alt,
+                            };
+                        })
+                    );
+                    setPreviews(previews);
+                }
+            } catch (err) {
+                alert("fuck");
+                console.error("Failed to fetch product:", err);
+            }
+        };
+
+        fetchProduct();
+    }, [id, setValue]);
+
+    const onSubmit: SubmitHandler<EditProductDTO> = async (data) => {
         try {
             clearErrors("root");
 
@@ -113,6 +184,7 @@ export default function SimpleForm() {
             const formData = new FormData();
 
             // Append normal fields
+            formData.append("ID", id);
             formData.append("Name", data.name);
             formData.append("Description", data.description);
             formData.append("Price", data.price.toLocaleString('fr-FR', { useGrouping: false }));
@@ -122,15 +194,21 @@ export default function SimpleForm() {
             formData.append("Status", data.status.toString());
 
             // Append images
-            previews.forEach((preview) => {
-                const renamedFile = new File([preview.file], preview.fileName, {
-                    type: preview.file.type,
-                    lastModified: preview.file.lastModified,
-                });
-                formData.append("ImagesData", renamedFile);
+            const imagesData = previews.map((preview) => {
+                const rewordedFile: ImageFormDTO = { file: null, image: null };
+
+                if (preview.file) {
+                    rewordedFile.file = new File([preview.file], preview.fileName, { type: preview.file.type, lastModified: preview.file.lastModified, });
+                } else if (preview.id) {
+                    const image: ImageDTO = { id: preview.id, url: preview.src, alt: preview.fileName, order: 0 }; rewordedFile.image = image;
+                }
+
+                return rewordedFile;
             });
 
-            const response = await fetch(nextUrl + `create`, {
+            formData.append("ImagesData", JSON.stringify(imagesData));
+
+            const response = await fetch(nextUrl + `edit`, {
                 method: 'POST',
                 body: formData,
             });
@@ -188,14 +266,15 @@ export default function SimpleForm() {
                         {/* nom */}
                         <div className={` row mb-4`}>
                             <label htmlFor="Name" className={`d-flex col-md-2 col-lg-2 align-items-center`}>Nom *</label>
-                            <input className={`d-flex col-12 col-md-10 col-lg-10 rounded-2 border-1`}
+                            <input
                                 id="Name"
-                                {...register("name", {
-                                    required: "Un nom est requis",
-                                    minLength: { value: 2, message: "le doit doit contenir au moins 2 caractères" },
-                                })}
                                 type="text"
                                 placeholder="Entrez le nom du produit"
+                                className="d-flex col-12 col-md-10 col-lg-10 rounded-2 border-1"
+                                {...register("name", {
+                                    required: "Un nom est requis",
+                                    minLength: { value: 2, message: "Le nom doit contenir au moins 2 caractères" },
+                                })}
                             />
                             {errors.name && <div style={{ color: "red" }}>{errors.name.message}</div>}
                             <br /><br />
@@ -329,7 +408,7 @@ export default function SimpleForm() {
                                                 const decimalPart = value.toString().split(".")[1];
                                                 if (decimalPart && decimalPart.length > 2)
                                                     return "Le prix en rabais ne peut pas avoir plus de 2 décimales.";
-                                                
+
                                                 const regularPrice = formValues.price;
                                                 if (regularPrice !== undefined && value >= regularPrice)
                                                     return "Le prix en rabais doit être inférieur au prix régulier.";
@@ -443,7 +522,6 @@ export default function SimpleForm() {
                                                 valueAsNumber: true,
                                                 validate: (v) => v >= 0 || "Veuillez sélectionner un statut",
                                             })}
-                                            defaultValue={-1}
                                         >
                                             <option key={-1} value={-1}>-- Sélectionnez un statut --</option>
                                             {status.map((s, i) => (

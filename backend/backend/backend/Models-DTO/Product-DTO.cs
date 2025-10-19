@@ -32,12 +32,26 @@ namespace backend.Models_DTO
         public string Description { get; set; }
         public float Price { get; set; }
         public float? DiscountedPrice { get; set; }
+		public int UnitsInStock { get; set; }
         public ProductStatus Status { get; set; }
-        public List<CategoryDTO>? categories { get; set; }
+		public List<CategoryDTO>? categories { get; set; }
         public List<ImageDTO>? imagesData { get; set; }
     }
 
-    public class CategoryDTO
+	public class EditProductDTO
+	{
+		public int ID { get; set; }
+		public string Name { get; set; }
+		public string Description { get; set; }
+		public float Price { get; set; }
+		public float? DiscountPrice { get; set; }
+		public int UnitsInStock { get; set; }
+		public int Status { get; set; }
+		public List<string>? Categories { get; set; }
+		public List<ImageFormDTO>? ImagesData { get; set; }
+	}
+
+	public class CategoryDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }
@@ -46,7 +60,7 @@ namespace backend.Models_DTO
 	public class CreateProductDTO
 	{
 		[Required(ErrorMessage = "Le nom du produit est requis.")]
-		[StringLength(100, MinimumLength = 3, ErrorMessage = "Le nom ne peut pas dépasser 100 caractères.")]
+		[StringLength(100, MinimumLength = 3, ErrorMessage = "Le nom doit contenir entre 2 et 100 caractères.")]
 		public string Name { get; set; }
 
 		[Required(ErrorMessage = "La description est requise.")]
@@ -75,5 +89,11 @@ namespace backend.Models_DTO
 		// Optional: Validate uploaded images
 		[MaxLength(10, ErrorMessage = "Vous ne pouvez pas téléverser plus de 10 images.")]
 		public List<IFormFile>? ImagesData { get; set; }
+	}
+
+	public class ImageFormDTO
+	{
+		public IFormFile? File { get; set; }
+		public ImageDTO? Image { get; set; }
 	}
 }
