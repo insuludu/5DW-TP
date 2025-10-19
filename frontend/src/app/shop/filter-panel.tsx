@@ -1,6 +1,7 @@
 "use client";
 
-import { useFilters } from "../hooks/useFilters";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Category {
     id: number;
@@ -12,14 +13,26 @@ interface FilterPanelProps {
 }
 
 export default function FilterPanel({ categories = [] }: FilterPanelProps) {
-    const {
-        minPrice, setMinPrice,
-        maxPrice, setMaxPrice,
-        status, setStatus,
-        discount, setDiscount,
-        categories: selectedCategories, setCategories,
-        applyFilters, resetFilters,
-    } = useFilters();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Initialiser à vide pour éviter l'erreur d'hydration
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+    const [status, setStatus] = useState("");
+    const [discount, setDiscount] = useState("");
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [mounted, setMounted] = useState(false);
+
+    // Synchroniser avec les paramètres URL après le montage
+    useEffect(() => {
+        setMounted(true);
+        setMinPrice(searchParams.get("minPrice") || "");
+        setMaxPrice(searchParams.get("maxPrice") || "");
+        setStatus(searchParams.get("status") || "");
+        setDiscount(searchParams.get("discount") || "");
+        setSelectedCategories(searchParams.get("categories")?.split(",").filter(Boolean) || []);
+    }, [searchParams]);
 
     const statuses = [
         { value: "", label: "Tous" },
@@ -39,8 +52,85 @@ export default function FilterPanel({ categories = [] }: FilterPanelProps) {
         const newCategories = selectedCategories.includes(categoryId)
             ? selectedCategories.filter((c) => c !== categoryId)
             : [...selectedCategories, categoryId];
-        setCategories(newCategories);
+        setSelectedCategories(newCategories);
     };
+
+    const applyFilters = () => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (minPrice) {
+            params.set("minPrice", minPrice);
+        } else {
+            params.delete("minPrice");
+        }
+
+        if (maxPrice) {
+            params.set("maxPrice", maxPrice);
+        } else {
+            params.delete("maxPrice");
+        }
+
+        if (status) {
+            params.set("status", status);
+        } else {
+            params.delete("status");
+        }
+
+        if (discount) {
+            params.set("discount", discount);
+        } else {
+            params.delete("discount");
+        }
+
+        if (selectedCategories.length > 0) {
+            params.set("categories", selectedCategories.join(","));
+        } else {
+            params.delete("categories");
+        }
+
+        router.push(`?${params.toString()}`);
+        router.refresh();
+    };
+
+    const resetFilters = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        
+        const search = params.get("search");
+        const sort = params.get("sort");
+        
+        const newParams = new URLSearchParams();
+        if (search) newParams.set("search", search);
+        if (sort) newParams.set("sort", sort);
+
+        setMinPrice("");
+        setMaxPrice("");
+        setStatus("");
+        setDiscount("");
+        setSelectedCategories([]);
+
+        router.push(`?${newParams.toString()}`);
+        router.refresh();
+    };
+
+    // Afficher un placeholder pendant l'hydration
+    if (!mounted) {
+        return (
+            <div
+                className="filter-panel card p-3 mb-4"
+                style={{
+                    backgroundColor: "var(--backgroundThird)",
+                    color: "var(--foreground)",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                }}
+            >
+                <h5 className="mb-3" style={{ color: "var(--backgroundPrimary)" }}>
+                    Filtres
+                </h5>
+                <p className="text-muted">Chargement...</p>
+            </div>
+        );
+    }
 
     return (
         <div

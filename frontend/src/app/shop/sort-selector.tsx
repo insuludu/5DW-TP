@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SortOption {
     value: string;
@@ -23,16 +23,64 @@ export default function SortSelector({
 }: SortSelectorProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    
+    // Initialiser à vide pour éviter l'erreur d'hydration
+    const [selectedSort, setSelectedSort] = useState("");
+    const [mounted, setMounted] = useState(false);
 
-    const [selectedSort, setSelectedSort] = useState(searchParams.get("sort") || "");
+    // Synchroniser avec les paramètres URL après le montage
+    useEffect(() => {
+        setMounted(true);
+        setSelectedSort(searchParams.get("sort") || "");
+    }, [searchParams]);
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         const params = new URLSearchParams(searchParams.toString());
-        value ? params.set("sort", value) : params.delete("sort");
+        
+        if (value) {
+            params.set("sort", value);
+        } else {
+            params.delete("sort");
+        }
+        
         router.push(`?${params.toString()}`);
+        router.refresh();
         setSelectedSort(value);
     };
+
+    // Afficher un placeholder pendant l'hydration
+    if (!mounted) {
+        return (
+            <div
+                className="sort-selector mb-3"
+                style={{
+                    padding: "0.5rem 1rem",
+                    borderRadius: "12px",
+                    display: "inline-block",
+                    minWidth: "200px",
+                }}
+            >
+                <select
+                    className="form-select"
+                    disabled
+                    style={{
+                        backgroundColor: "var(--backgroundThird)",
+                        color: "var(--foreground)",
+                        border: "1px solid var(--backgroundPrimary)",
+                        borderRadius: "8px",
+                        padding: "0.4rem 0.6rem",
+                        width: "100%",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        MozAppearance: "none",
+                    }}
+                >
+                    <option>Chargement...</option>
+                </select>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -49,7 +97,7 @@ export default function SortSelector({
                 onChange={handleChange}
                 className="form-select"
                 style={{
-                    backgroundColor: "var(--backgroundThird)", // menu rose
+                    backgroundColor: "var(--backgroundThird)",
                     color: "var(--foreground)",
                     border: "1px solid var(--backgroundPrimary)",
                     borderRadius: "8px",
