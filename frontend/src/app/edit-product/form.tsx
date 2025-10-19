@@ -6,7 +6,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import styles from "@/app/styles/page.module.css"
 import { useState, useEffect } from "react";
 import { ProductEnumToString } from "@/utility";
-import { Aladin } from "next/font/google";
+import { redirect } from 'next/navigation';
 
 const nextUrl = process.env.NEXT_PUBLIC_API_MIDDLEWARE_URL + "/api/create/";
 
@@ -237,11 +237,7 @@ export default function SimpleForm({ id }: { id: string }) {
             const result = await response.json();
             console.log("Form submitted:", result);
 
-            reset();
-            setPreviews([]); // Clear images on successful submit
-
-            // Optional: Show success message
-            alert("Produit créé avec succès!");
+            window.location.href = '/shop/product/' + id;
 
         } catch (error) {
             console.error('Erreur lors de la soumission:', error);
