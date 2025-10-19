@@ -494,6 +494,7 @@ namespace backend.Controllers
                     Price = p.Price,
                     DiscountedPrice = p.DiscountPrice,
                     Status = p.Status,
+                    UnitsInStock = p.UnitsInStock,
                     categories = p.Categories.Select(c => new CategoryDTO { ID = c.ID, Name = c.Name }).ToList(),
                     imagesData = p.Images.Select(i => new ImageDTO
                     {
