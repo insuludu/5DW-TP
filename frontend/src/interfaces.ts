@@ -51,3 +51,13 @@ export interface CategoryDTO {
     id: number,
     name: string;
 }
+
+export interface PaginatedResponse {
+    products: ShopProductDTO[];
+    currentPage: number;
+    pageSize: number;
+    totalProducts: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+}

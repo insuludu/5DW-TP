@@ -1,18 +1,31 @@
 import { ShopProductDTO } from "@/interfaces";
 import ShopCard from "./shop-card";
 import styles from "@/app/styles/page.module.css";
+import CatalogClientWrapper from "./catalog-client-wrapper";
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
-async function GetCatalogProducts(search?: string): Promise<ShopProductDTO[]> {
-    const endpoint = search ? `/api/shop/search-products?query=${encodeURIComponent(search)}` : `/api/shop/catalog-products`;
+interface PaginatedResponse {
+    products: ShopProductDTO[];
+    currentPage: number;
+    pageSize: number;
+    totalProducts: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+}
+
+async function GetCatalogProducts(search?: string, page: number = 1): Promise<PaginatedResponse | ShopProductDTO[]> {
+    const endpoint = search 
+        ? `/api/shop/search-products?query=${encodeURIComponent(search)}`
+        : `/api/shop/catalog-products?page=${page}&pageSize=3`;
 
     const response = await fetch(nextUrl + endpoint, {
         cache: "no-store",
     });
 
     if (response.status === 404) {
-        return [];
+        return search ? [] : { products: [], currentPage: 1, pageSize: 3, totalProducts: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false };
     }
 
     if (!response.ok) {
@@ -130,16 +143,33 @@ export default async function Catalog({
     collections,
     search,
 }: CatalogProps) {
-    const products: ShopProductDTO[] = await GetCatalogProducts(search);
+    const data = await GetCatalogProducts(search, 1);
+    
+    // Gérer les deux types de réponse (recherche vs pagination)
+    let products: ShopProductDTO[];
+    let hasNextPage = false;
+    
+    if (Array.isArray(data)) {
+        // Réponse de recherche (tableau simple)
+        products = data;
+    } else {
+        // Réponse paginée
+        products = data.products;
+        hasNextPage = data.hasNextPage;
+    }
 
-    if (!products || products.length === 0)
+    if (!products || products.length === 0) {
         return (
             <div className="text-center py-5">
                 <p className="text-muted">
-                    Aucun produit ne correspond à votre recherche.
+                    {search 
+                        ? "Aucun produit ne correspond à votre recherche."
+                        : "Aucun produit disponible."
+                    }
                 </p>
             </div>
         );
+    }
 
     const filteredProducts = filterProducts(
         products,
@@ -161,13 +191,32 @@ export default async function Catalog({
                     </p>
                 </div>
             ) : (
-                <div className={styles.catalogGridContainer}>
-                    {sortedProducts.map((p) => (
-                        <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
-                            <ShopCard product={p} />
+                <>
+                    <div className={styles.catalogGridContainer}>
+                        {sortedProducts.map((p) => (
+                            <div key={p.id} className="mb-3 rounded-3 overflow-hidden">
+                                <ShopCard product={p} />
+                            </div>
+                        ))}
+                        
+                        {/* Composant client intégré dans la MÊME grille */}
+                        {!search && hasNextPage && (
+                            <CatalogClientWrapper
+                                initialProducts={products}
+                                hasMore={hasNextPage}
+                                filters={{ sort, minPrice, maxPrice, status, discount, categories, collections }}
+                            />
+                        )}
+                    </div>
+
+                    {!search && !hasNextPage && products.length > 0 && (
+                        <div className="text-center py-4">
+                            <p className="text-muted">
+                                Vous avez vu tous les produits disponibles
+                            </p>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
         </div>
     );

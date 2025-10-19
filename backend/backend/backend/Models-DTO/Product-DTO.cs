@@ -76,4 +76,19 @@ namespace backend.Models_DTO
 		[MaxLength(10, ErrorMessage = "Vous ne pouvez pas téléverser plus de 10 images.")]
 		public List<IFormFile>? ImagesData { get; set; }
 	}
+
+    /// <summary>
+    ///     Alexandre Chagnon - 18 octobre 2025
+    ///     DTO pour la pagination des produits Contient les produits et les métadonnées de pagination
+    /// </summary>
+    public class PaginatedProductsDTO
+    {
+        public List<ShopProductDTO> Products { get; set; } = new List<ShopProductDTO>();
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int TotalProducts { get; set; }
+        public int TotalPages { get; set; }
+        public bool HasNextPage { get; set; }
+        public bool HasPreviousPage { get; set; }
+    }
 }
