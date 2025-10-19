@@ -6,7 +6,6 @@ import Image, { StaticImageData } from "next/image";
 import NotFoundImage from "@/app/images/not-found.png"
 import { ShopProductDTO } from "@/interfaces";
 import { ProductEnumToString } from "@/utility";
-import Link from "next/link";
 
 interface images {
     alt: string;
@@ -25,7 +24,7 @@ export default function ShopCard({ product }: { product: ShopProductDTO }) {
         images = [{ alt: product.imagesData[0].alt, url: product.imagesData[0].url }, { alt: product.imagesData[1].alt, url: product.imagesData[1].url }]
 
     return (
-        <Link
+        <a
             href={`/shop/product/${product.id}`}
             className="text-decoration-none text-dark"
             style={{ height: "550px" }}
@@ -54,6 +53,6 @@ export default function ShopCard({ product }: { product: ShopProductDTO }) {
                     }
                 </div>
             </div>
-        </Link>
+        </a>
     );
 }

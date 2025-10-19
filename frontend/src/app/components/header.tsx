@@ -4,7 +4,6 @@ import imageLogo from "../images/Logo.png";
 import Image from "next/image";
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function Header() {
     const [value, setValue] = useState("");
@@ -39,7 +38,7 @@ export default function Header() {
             >
                 <div className="container-fluid">
                     {/* Logo */}
-                    <Link href="/" className="navbar-brand d-flex align-items-center">
+                    <a href="/" className="navbar-brand d-flex align-items-center">
                         <Image
                             src={imageLogo}
                             width={180}
@@ -47,7 +46,7 @@ export default function Header() {
                             style={{ objectFit: "contain" }}
                             alt="image logo"
                         />
-                    </Link>
+                    </a>
 
                     {/* Hamburger Button */}
                     <button
@@ -93,13 +92,13 @@ export default function Header() {
                         {/* Nav links */}
                         <ul className="navbar-nav ms-auto text-center">
                             <li className="nav-item">
-                                <Link href="/terms" className="nav-link">POLITIQUE</Link>
+                                <a href="/terms" className="nav-link">POLITIQUE</a>
                             </li>
                             <li className="nav-item">
-                                <Link href="/about" className="nav-link">À PROPOS</Link>
+                                <a href="/about" className="nav-link">À PROPOS</a>
                             </li>
                             <li className="nav-item">
-                                <Link href="/contact-us" className="nav-link">CONTACTER</Link>
+                                <a href="/contact-us" className="nav-link">CONTACTER</a>
                             </li>
                             <li className="nav-item">
                                 <a href="/create-product" className="nav-link">CRÉER</a>

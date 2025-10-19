@@ -1,7 +1,6 @@
 import styles from '../styles/page.module.css'
 import ProductCard from './product-card';
 import { StarProductDTO } from '@/interfaces';
-import Link from 'next/link';
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
@@ -27,9 +26,9 @@ export default async function BestProducts() {
                     {
                         products.map(p => (
                             <div key={p.id}>
-                                <Link href={`/shop/product/${p.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <a href={`/shop/product/${p.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <ProductCard product={p} />
-                                </Link>
+                                </a>
                             </div>
 
                         ))

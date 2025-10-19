@@ -32,13 +32,13 @@ export default function Footer() {
                         <nav className={`${styles.footerLinks}`} aria-label="Footer navigation">
                             <div className="d-flex flex-row flex-wrap gap-3 gap-md-4">
                                 <a href="/terms" className="text-decoration-none d-inline-flex align-items-center transition-opacity fw-semibold" style={{ opacity: 0.85, color: '#2C3E50' }}>
-                                    <span className="me-2">📋</span> POLITIQUE
+                                    <span className="me-2"></span> POLITIQUE
                                 </a>
                                 <a href="/about" className="text-decoration-none d-inline-flex align-items-center transition-opacity fw-semibold" style={{ opacity: 0.85, color: '#2C3E50' }}>
-                                    <span className="me-2">ℹ️</span> À PROPOS
+                                    <span className="me-2"></span> À PROPOS
                                 </a>
                                 <a href="/contact-us" className="text-decoration-none d-inline-flex align-items-center transition-opacity fw-semibold" style={{ opacity: 0.85, color: '#2C3E50' }}>
-                                    <span className="me-2">✉️</span> CONTACTER
+                                    <span className="me-2"></span> CONTACTER
                                 </a>
                             </div>
                         </nav>

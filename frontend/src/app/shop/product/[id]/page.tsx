@@ -54,7 +54,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                         <span className="text-muted">
                                             <strong>{product.unitsInStock}</strong> unités disponibles
                                         </span>
-                                        {product.unitsInStock <= 5 && (
+                                        {product.unitsInStock <= 5 && product.unitsInStock > 0 && (
                                             <span className="badge bg-danger">
                                                 Derniers exemplaires !
                                             </span>
@@ -104,11 +104,21 @@ export default async function Page({ params }: { params: { id: string } }) {
                             </div>
                         )}
 
-                        {/* Panier (temporaire) */}
+                        {/* Actions */}
                         <div className="d-grid gap-2">
                             <button className="btn btn-dark btn-lg" disabled>
                                 Panier temporairement indisponible
                             </button>
+                            <a 
+                                href={`/edit-product?${product.id}`}
+                                className="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                    <path d="m15 5 4 4"/>
+                                </svg>
+                                Modifier le produit
+                            </a>
                         </div>
 
                         {/* <button className="btn btn-dark mt-3" disabled={product.status !== 0}>
@@ -117,7 +127,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </div>
                 </div>
             </section>
-            <Footer />
+            <Footer/>
         </div>
     );
 }
