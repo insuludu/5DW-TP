@@ -74,14 +74,34 @@ function filterProducts(
         );
     }
 
-    // --- Disponibilité ---
+    // --- Disponibilité (Status) ---
     if (status) {
+        // Correspondance avec l'enum backend : Available=0, Unavailable=1, OutOfStock=2, ComingSoon=3
+        // Le status peut être un string ou un number, on gère les deux cas
         switch (status) {
             case "available":
-                filtered = filtered.filter((p) => Number(p.status) > 0);
+                filtered = filtered.filter((p) => {
+                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
+                    return statusValue === 0;
+                });
                 break;
             case "unavailable":
-                filtered = filtered.filter((p) => Number(p.status) === 0);
+                filtered = filtered.filter((p) => {
+                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
+                    return statusValue === 1;
+                });
+                break;
+            case "outofstock":
+                filtered = filtered.filter((p) => {
+                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
+                    return statusValue === 2;
+                });
+                break;
+            case "comingsoon":
+                filtered = filtered.filter((p) => {
+                    const statusValue = typeof p.status === 'string' ? parseInt(p.status) : Number(p.status);
+                    return statusValue === 3;
+                });
                 break;
         }
     }
