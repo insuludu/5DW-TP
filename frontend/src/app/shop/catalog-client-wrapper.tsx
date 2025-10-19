@@ -20,6 +20,7 @@ interface PaginatedResponse {
 interface CatalogClientWrapperProps {
     initialProducts: ShopProductDTO[];
     hasMore: boolean;
+    searchQuery?: string;
     filters: {
         sort?: string;
         minPrice?: string;
@@ -100,7 +101,7 @@ function sortProducts(
     }
 }
 
-export default function CatalogClientWrapper({ initialProducts, hasMore, filters }: CatalogClientWrapperProps) {
+export default function CatalogClientWrapper({ initialProducts, hasMore, searchQuery, filters }: CatalogClientWrapperProps) {
     const [additionalProducts, setAdditionalProducts] = useState<ShopProductDTO[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(hasMore);
@@ -113,9 +114,13 @@ export default function CatalogClientWrapper({ initialProducts, hasMore, filters
         try {
             const nextPage = currentPage + 1;
             console.log(` Chargement de la page ${nextPage}`);
-            
+
+            const endpoint = searchQuery
+                ? `/api/shop/search-products?query=${encodeURIComponent(searchQuery)}&page=${nextPage}&pageSize=3`
+                : `/api/shop/catalog-products?page=${nextPage}&pageSize=3`;
+
             const response = await fetch(
-                `${nextUrl}/api/shop/catalog-products?page=${nextPage}&pageSize=3`,
+                `${nextUrl}${endpoint}`,
                 { cache: "no-store" }
             );
 
@@ -125,7 +130,7 @@ export default function CatalogClientWrapper({ initialProducts, hasMore, filters
 
             const data: PaginatedResponse = await response.json();
             console.log(` Reçu ${data.products.length} produits de la page ${nextPage}`, data.products);
-            
+
             setAdditionalProducts((prev) => [...prev, ...data.products]);
             setHasNextPage(data.hasNextPage);
             setCurrentPage(nextPage);

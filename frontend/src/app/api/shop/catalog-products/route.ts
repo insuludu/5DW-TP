@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         // Construire l'URL avec les paramètres de pagination
         const fullURL = `${apiURL}?page=${page}&pageSize=${pageSize}`;
         
-        console.log(`🔍 Middleware - Requête vers backend: ${fullURL}`);
+        console.log(` Middleware - Requête vers backend: ${fullURL}`);
 
         const res = await fetch(fullURL, {
             headers: { "Content-Type": "application/json" },

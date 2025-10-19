@@ -17,8 +17,8 @@ interface PaginatedResponse {
 
 async function GetCatalogProducts(search?: string, page: number = 1): Promise<PaginatedResponse | ShopProductDTO[]> {
     const endpoint = search 
-        ? `/api/shop/search-products?query=${encodeURIComponent(search)}`
-        : `/api/shop/catalog-products?page=${page}&pageSize=3`;
+        ? `/api/shop/search-products?query=${encodeURIComponent(search)}&page=${page}&pageSize=1`
+        : `/api/shop/catalog-products?page=${page}&pageSize=1`;
 
     const response = await fetch(nextUrl + endpoint, {
         cache: "no-store",
@@ -231,16 +231,17 @@ export default async function Catalog({
                         ))}
                         
                         {/* Composant client intégré dans la MÊME grille */}
-                        {!search && hasNextPage && (
+                        {hasNextPage && (
                             <CatalogClientWrapper
                                 initialProducts={products}
                                 hasMore={hasNextPage}
+                                searchQuery={search}
                                 filters={{ sort, minPrice, maxPrice, status, discount, categories, collections }}
                             />
                         )}
                     </div>
 
-                    {!search && !hasNextPage && products.length > 0 && (
+                    {!hasNextPage && products.length > 0 && (
                         <div className="text-center py-4">
                             <p className="text-muted">
                                 Vous avez vu tous les produits disponibles
