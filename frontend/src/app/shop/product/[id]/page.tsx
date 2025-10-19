@@ -39,46 +39,81 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </div>
 
                     <div className="col-12 col-md-6">
-                        <h1 className="fs-4 fs-md-2">{product.name}</h1>
-                        <p className="text-muted fs-6 fs-md-5">
-                            {product.discountedPrice ? (
-                                <>
-                                    <span className="text-decoration-line-through me-2">
-                                        {product.price.toFixed(2)}$
-                                    </span>
-                                    <strong className="text-danger">
-                                        {product.discountedPrice.toFixed(2)}$
-                                    </strong>
-                                </>
-                            ) : (
-                                <>{product.price.toFixed(2)}$</>
-                            )}
-                        </p>
+                        {/* En-tête de produit */}
+                        <div className="mb-4">
+                            <h1 className="fs-2 fw-bold mb-3">{product.name}</h1>
+                            
+                            {/* Statut et stock */}
+                            <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                <span className={`badge ${product.status === 0 ? 'bg-success' : 'bg-secondary'} fs-6`}>
+                                    {getStatusLabel(product.status)}
+                                </span>
+                                
+                                {product.unitsInStock !== undefined && (
+                                    <>
+                                        <span className="text-muted">
+                                            <strong>{product.unitsInStock}</strong> unités disponibles
+                                        </span>
+                                        {product.unitsInStock <= 5 && (
+                                            <span className="badge bg-danger">
+                                                Derniers exemplaires !
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            </div>
 
-                        <p className="fs-6 fs-md-5">
-                            <strong>Statut :</strong> {getStatusLabel(product.status)}
-                        </p>
+                            {/* Prix */}
+                            <div className="fs-3">
+                                {product.discountedPrice ? (
+                                    <>
+                                        <span className="text-decoration-line-through text-muted me-3 fs-5">
+                                            {product.price.toFixed(2)}$
+                                        </span>
+                                        <strong className="text-danger">
+                                            {product.discountedPrice.toFixed(2)}$
+                                        </strong>
+                                    </>
+                                ) : (
+                                    <strong>{product.price.toFixed(2)}$</strong>
+                                )}
+                            </div>
+                        </div>
 
-                        <p className="fs-6 fs-md-5">
-                            <strong>Catégories :</strong>{" "}
-                            {product.categories?.map((c) => c.name).join(", ") || "Aucune"}
-                        </p>
+                        {/* Catégories */}
+                        <div className="mb-4 pb-2">
+                            <h6 className="text-muted mb-2">Catégories</h6>
+                            <div className="d-flex flex-wrap gap-2">
+                                {product.categories && product.categories.length > 0 ? (
+                                    product.categories.map((c, index) => (
+                                        <span key={index} className="badge bg-light text-dark border">
+                                            {c.name}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="text-muted">Aucune catégorie</span>
+                                )}
+                            </div>
+                        </div>
 
+                        {/* Description */}
                         {product.description && (
-                            <div className="mt-4">
-                                <h5 className="fs-6 fs-md-5">Description :</h5>
-                                <p className="fs-6 fs-md-5">{product.description}</p>
+                            <div className="mb-4">
+                                <h5 className="fw-semibold mb-3 pb-2 border-bottom">Description</h5>
+                                <p className="text-muted lh-lg">{product.description}</p>
                             </div>
                         )}
+
+                        {/* Panier (temporaire) */}
+                        <div className="d-grid gap-2">
+                            <button className="btn btn-dark btn-lg" disabled>
+                                Panier temporairement indisponible
+                            </button>
+                        </div>
 
                         {/* <button className="btn btn-dark mt-3" disabled={product.status !== 0}>
                             {product.status === 0 ? "Ajouter au panier" : "Indisponible"}
                         </button> */}
-
-                        {/* Temporaire pour le panier */}
-                        <button className="btn btn-dark mt-3" disabled>
-                            Panier temporairement indisponible
-                        </button>
                     </div>
                 </div>
             </section>
