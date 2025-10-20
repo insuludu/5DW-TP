@@ -20,8 +20,10 @@ export default function ShopCard({ product }: { product: ShopProductDTO }) {
         images = [{ alt: "Pictore of product 1 : Image not found", url: NotFoundImage }, { alt: "Pictore of product 2 : Image not found", url: NotFoundImage }]
     else if (product.imagesData.length == 1)
         images = [{ alt: product.imagesData[0].alt, url: product.imagesData[0].url }, { alt: "Pictore of product 2 : Image not found", url: NotFoundImage }]
-    else
+    else if (product.imagesData.length == 2)
         images = [{ alt: product.imagesData[0].alt, url: product.imagesData[0].url }, { alt: product.imagesData[1].alt, url: product.imagesData[1].url }]
+    else
+        images = [{ alt: "Pictore of product 1 : Image not found", url: NotFoundImage }, { alt: "Pictore of product 2 : Image not found", url: NotFoundImage }]
 
     return (
         <a
