@@ -52,7 +52,7 @@ export default function CatalogClientWrapper({
             // Construire l'URL avec TOUS les paramètres
             const params = new URLSearchParams();
             params.append("page", nextPage.toString());
-            params.append("pageSize", "3");
+            params.append("pageSize", "12");
             
             if (searchQuery) {
                 params.append("query", searchQuery);

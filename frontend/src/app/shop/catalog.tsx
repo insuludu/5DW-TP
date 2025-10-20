@@ -27,7 +27,7 @@ async function GetCatalogProducts(
 ): Promise<PaginatedResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
-    params.append("pageSize", "3");
+    params.append("pageSize", "12");
     
     if (search) {
         params.append("query", search);
