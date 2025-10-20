@@ -14,6 +14,11 @@ namespace backend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        ///     Simon Déry - 10 octobre 2025
+        ///     Permet d'obtenir toutes les catégories, utilisé dans la page produit pour le aside de filtres
+        /// </summary>
+        /// <returns>List<CategoryDTO></returns>
         [HttpGet("All")]
         public ActionResult Get()
         {
@@ -29,6 +34,12 @@ namespace backend.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        ///     Simon Déry - 19 octobre 2025
+        ///     Permet d'obtenir les catégories vedettes pour la page d'accueil
+        /// </summary>
+        /// <param name="count">Nombre de catégories à aller chercher</param>
+        /// <returns>List<CategoryDTO></returns>
         [HttpGet("StarCategories")]
         public ActionResult Get([FromQuery] int count = 1)
         {
