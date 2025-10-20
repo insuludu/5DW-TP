@@ -13,6 +13,7 @@ namespace backend.Controllers
         {
             _context = context;
         }
+
         [HttpGet("All")]
         public ActionResult Get()
         {
@@ -21,6 +22,21 @@ namespace backend.Controllers
                 ID = p.ID,
                 Name = p.Name, 
             }).ToList();
+
+            if (result.Count == 0)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        [HttpGet("StarCategories")]
+        public ActionResult Get([FromQuery] int count = 1)
+        {
+            List<CategoryDTO> result = _context.Categories.Select(p => new CategoryDTO
+            {
+                ID = p.ID,
+                Name = p.Name,
+            }).Take(count).ToList();
 
             if (result.Count == 0)
                 return NotFound();
