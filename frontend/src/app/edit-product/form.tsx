@@ -422,7 +422,7 @@ export default function SimpleForm({ id }: { id: string }) {
 
                         {/* stock */}
                         <div className={` row mb-4`}>
-                            <label htmlFor="UnitsInStock" className={`d-flex col-12 col-md-2 col-lg-2 align-items-center`}>unité en stock</label>
+                            <label htmlFor="UnitsInStock" className={`d-flex col-12 col-md-2 col-lg-2 align-items-center`}>Unité en stock *</label>
                             <div className="col-12 col-md-10 col-lg-10">
                                 <div className="input-group">
                                     <input
@@ -459,7 +459,7 @@ export default function SimpleForm({ id }: { id: string }) {
                         {/* Categories et Status */}
                         <div className="row mb-4 align-items-start">
                             <label className="col-12 col-md-2 col-lg-2 mb-2 mb-md-0 d-flex align-items-center">
-                                Options
+                                Options *
                             </label>
 
                             <div className="col-12 col-md-10 col-lg-10">
