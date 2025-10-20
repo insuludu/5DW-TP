@@ -51,12 +51,6 @@ namespace backend.Models_DTO
 		public List<ImageFormDTO>? ImagesData { get; set; }
 	}
 
-	public class CategoryDTO
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-    }
-
 	public class CreateProductDTO
 	{
 		[Required(ErrorMessage = "Le nom du produit est requis.")]
