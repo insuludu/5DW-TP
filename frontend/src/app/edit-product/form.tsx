@@ -252,7 +252,7 @@ export default function SimpleForm({ id }: { id: string }) {
             <div className={`${styles.contactContent} d-flex justify-content-center w-75`}>
                 <div className={styles.formSection}>
                     <div className={styles.formHeader}>
-                        <h1>Formulaire d'ajout d'un nouvelle objet</h1>
+                        <h1>Formulaire de modification d'un produit</h1>
                         <p>Le * indique les champs nécessaires</p>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className={`row p-3`}>
