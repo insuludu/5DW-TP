@@ -80,3 +80,21 @@ export interface PaginatedResponse {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
 }
+
+export interface IRegisterForm {
+    firstName : string;
+    lastName : string;
+    email : string;
+    password : string;
+    passwordConfirm : string;
+}
+
+export interface IAddress {
+    StreetNumber : number;
+    Appartement : string;
+    StreetName : string;
+    City : string;
+    StateProvince : string;
+    Country : string;
+    PostalCode : string;
+}
