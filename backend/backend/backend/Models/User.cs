@@ -6,6 +6,6 @@ namespace backend.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public List<UserAdress> Adresses { get; set; } = new();
+        public List<UserAddress> Adresses { get; set; } = new();
     }
 }
