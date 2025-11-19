@@ -22,14 +22,16 @@ export default function SignupForm()
 
     return(
         <section className={`${styles.contactContainer} d-flex justify-content-center`}>
-            <div className={`${styles.contactContent} d-flex w-75`}>
+            <div className={`${styles.contactContent} flex-column d-flex w-75`}>
+                <div id="errors" className="alert alert-danger d-none" role="alert">
+                    
+                </div>
                 <div className={styles.formSection}>
                     <div className={styles.formHeader}>
                         <h1>Création d'un compte</h1>
                         <p>Le * indique les champs nécessaires</p>
                     </div>
-                    <div className="row">
-
+                    <div className="row w-100">
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="form-group">
                                 <label htmlFor="firstName">* Prenom</label>
@@ -44,6 +46,10 @@ export default function SignupForm()
                                             value: 2,
                                             message: 'Le prenom doit au moins 2 caractères'
                                         },
+                                        pattern: {
+                                            value: /^[a-zA-Z\u00C0-\u017F]+(?:[ '-][a-zA-Z\u00C0-\u017F]+)*$/,
+                                            message: "Le format est invalide"
+                                        }
                                     })
                                 }
                                 />
@@ -67,6 +73,10 @@ export default function SignupForm()
                                             value: 2,
                                             message: 'Le nom doit au moins 2 caractères'
                                         },
+                                        pattern: {
+                                            value: /^[a-zA-Z\u00C0-\u017F]+(?:[ '-][a-zA-Z\u00C0-\u017F]+)*$/,
+                                            message: "Le format est invalide"
+                                        }
                                     })
                                 }
                                 />
@@ -156,10 +166,11 @@ export default function SignupForm()
                                     color: 'white',
                                     cursor: !isValid ? 'not-allowed' : 'pointer',
                                     padding: '8px 16px',
-                                    marginTop: '20px'
+                                    marginTop: '20px',
+                                    width: '100%'
                                 }}
                                 >
-                                {isSubmitting ? "Submitting..." : "Submit"}
+                                {isSubmitting ? "Création en cours..." : "Continuer"}
                             </button>
                         </form>
                     </div>
