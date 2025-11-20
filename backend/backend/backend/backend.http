@@ -12,3 +12,15 @@ Accept: application/json
 
 GET {{TestController_HostAddress}}/test/0
 Accept: application/json
+
+### Register New User
+POST {{TestController_HostAddress}}/api/account/create
+Content-Type: application/json
+
+{
+    "firstName": "test",
+    "lastName": "user",
+    "email" : "test2@exemple.com",
+    "password": "StrongPassword123!",
+    "passwordConfirm": "StrongPassword123!"
+}

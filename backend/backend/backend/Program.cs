@@ -1,8 +1,12 @@
 
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace backend
 {
@@ -17,10 +21,36 @@ namespace backend
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()
+            builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+                options.User.RequireUniqueEmail = true
+            )
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
+
+            var key = Encoding.UTF8.GetBytes("s85Wo8weW4aausbUNnpXd7omaa9wPI5W");
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+
+                    ValidateIssuer = true,
+                    ValidIssuer = "http://localhost:3001",
+
+                    ValidateAudience = true,
+                    ValidAudience = "http://localhost:3000",
+
+                    ValidateLifetime = true,
+                };
+            });
 
             // Add services to the container...
             builder.Services.AddControllers();
