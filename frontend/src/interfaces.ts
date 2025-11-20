@@ -81,6 +81,17 @@ export interface PaginatedResponse {
     hasPreviousPage: boolean;
 }
 
+export interface CartProductDTO{
+    id: number;
+    name: string;
+    price: number;
+    discountedPrice?: number | null;
+    status: number;
+    imagesData?: ImageDTO | null;
+    amount: number;
+    selected: boolean;
+}
+
 export interface IRegisterForm {
     firstName : string;
     lastName : string;
