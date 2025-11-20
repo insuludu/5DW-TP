@@ -12,3 +12,12 @@ export function ProductEnumToString(enumNumber : number) {
     if (enumNumber == 3)
         return "Bientôt Disponible";
 }
+
+export function IdentityErrorCodeToMessage(errorcode : string)
+{
+    if (errorcode == "DuplicateEmail")
+        return "Cette adresse email existe déjà dans notre système.";
+
+    return "Erreur inconnue"
+
+}

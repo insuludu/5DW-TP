@@ -82,11 +82,16 @@ export interface PaginatedResponse {
 }
 
 export interface IRegisterForm {
-    firstName : string;
-    lastName : string;
-    email : string;
-    password : string;
-    passwordConfirm : string;
+    FirstName : string;
+    LastName : string;
+    Email : string;
+    Password : string;
+    PasswordConfirm : string;
+}
+
+export interface IRegisterFormResponse {
+    IsValid : boolean;
+    Errors : string[];
 }
 
 export interface IAddress {

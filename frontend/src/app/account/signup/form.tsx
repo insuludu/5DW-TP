@@ -1,12 +1,14 @@
 "use client"
 
 import styles from "@/app/styles/page.module.css"
-import { IRegisterForm } from "@/interfaces"
-import React from "react"
+import { IRegisterForm, IRegisterFormResponse } from "@/interfaces"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 
 export default function SignupForm()
 {
+    const [Errors, setErrors] = useState<string[]>([]);
+
     const {
         register,
         handleSubmit,
@@ -16,31 +18,53 @@ export default function SignupForm()
         mode: 'onChange'
     });
 
-    const onSubmit = (formData: IRegisterForm) => {
-        console.log(formData);
-    }
+    const onSubmit = async (formData: IRegisterForm) => {
+        const url = '/api/account/signup/create/'; 
+        setErrors([]);
+        const backendResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData), 
+        });
+
+        if (backendResponse.ok) {
+            const data = await backendResponse.json();
+            console.log('Registration Success:', data);
+        } else {
+            const errorData = await backendResponse.json();
+            if (errorData.Errors)
+            {
+                let errorMessages : string[] = errorData.Errors;
+                setErrors(errorMessages);
+            }
+            console.error('Registration Failed (Server Error):', errorData);
+        }
+    };
 
     return(
         <section className={`${styles.contactContainer} d-flex justify-content-center`}>
             <div className={`${styles.contactContent} flex-column d-flex w-75`}>
-                <div id="errors" className="alert alert-danger d-none" role="alert">
-                    
+                <div id="errors" className={`alert alert-danger ${Errors.length == 0 ? "d-none" : ""}`} role="alert">
+                    {Errors.map((e, i) => (
+                        <p className="m-0" key={i}>{e}</p>
+                    ))}
                 </div>
                 <div className={styles.formSection}>
                     <div className={styles.formHeader}>
                         <h1>Création d'un compte</h1>
-                        <p>Le * indique les champs nécessaires</p>
                     </div>
                     <div className="row w-100">
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className="form-group">
-                                <label htmlFor="firstName">* Prenom</label>
+                            <div className="form-group mb-2">
+                                <label htmlFor="firstName">Prenom</label>
                                 <input 
                                     id="firstName"
-                                    className={`form-control ${errors.firstName ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.FirstName ? 'is-invalid' : ''}`}
                                     type="text"
                                     placeholder="Votre Prenom ..."
-                                    {...register('firstName', {
+                                    {...register('FirstName', {
                                         required: 'Le prenom est requis.',
                                         minLength: {
                                             value: 2,
@@ -53,21 +77,21 @@ export default function SignupForm()
                                     })
                                 }
                                 />
-                                { errors.firstName &&
+                                { errors.FirstName &&
                                     <div className="invalid-feedback">
-                                        {errors.firstName.message}
+                                        {errors.FirstName.message}
                                     </div>
                                 }
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="lastName">* Nom</label>
+                            <div className="form-group mb-2">
+                                <label htmlFor="lastName">Nom</label>
                                 <input 
                                     id="lastName"
-                                    className={`form-control ${errors.lastName ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.LastName ? 'is-invalid' : ''}`}
                                     type="text"
                                     placeholder="Votre Nom ..."
-                                    {...register('lastName', {
+                                    {...register('LastName', {
                                         required: 'Le nom est requis.',
                                         minLength: {
                                             value: 2,
@@ -80,21 +104,21 @@ export default function SignupForm()
                                     })
                                 }
                                 />
-                                { errors.lastName &&
+                                { errors.LastName &&
                                     <div className="invalid-feedback">
-                                        {errors.lastName.message}
+                                        {errors.LastName.message}
                                     </div>
                                 }
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="email">* Email</label>
+                            <div className="form-group mb-2">
+                                <label htmlFor="email">Email</label>
                                 <input 
                                     id="lastName"
-                                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.Email ? 'is-invalid' : ''}`}
                                     type="email"
                                     placeholder="user@exemple.com"
-                                    {...register('email', {
+                                    {...register('Email', {
                                         required: 'Le email est requis.',
                                         pattern: {
                                             value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
@@ -103,21 +127,21 @@ export default function SignupForm()
                                     })
                                 }
                                 />
-                                { errors.email &&
+                                { errors.Email &&
                                     <div className="invalid-feedback">
-                                        {errors.email.message}
+                                        {errors.Email.message}
                                     </div>
                                 }
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="password">* Mot de passe</label>
+                            <div className="form-group mb-2">
+                                <label htmlFor="password">Mot de passe</label>
                                 <input 
                                     id="password"
-                                    className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.Password ? 'is-invalid' : ''}`}
                                     type="password"
                                     placeholder="••••••••"
-                                    {...register('password', {
+                                    {...register('Password', {
                                         required: 'Le mot de passe est requis.',
                                         pattern: {
                                             value: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9\s]).{8,}$/,
@@ -130,30 +154,30 @@ export default function SignupForm()
                                     })
                                 }
                                 />
-                                { errors.password &&
+                                { errors.Password &&
                                     <div className="invalid-feedback">
-                                        {errors.password.message}
+                                        {errors.Password.message}
                                     </div>
                                 }
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="passwordConfirm">* Confirmer votre mot de passe</label>
+                            <div className="form-group mb-2">
+                                <label htmlFor="passwordConfirm">Confirmer votre mot de passe</label>
                                 <input 
                                     id="passwordConfirm"
-                                    className={`form-control ${errors.passwordConfirm ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.PasswordConfirm ? 'is-invalid' : ''}`}
                                     type="password"
                                     placeholder="••••••••"
-                                    {...register('passwordConfirm', {
+                                    {...register('PasswordConfirm', {
                                         required: 'Veuillez confirmer votre mot de passe.',
                                         validate: (value) => 
-                                            value === getValues('password') || 'Les mots de passe ne correspondent pas.'
+                                            value === getValues('Password') || 'Les mots de passe ne correspondent pas.'
                                     })
                                 }
                                 />
-                                { errors.passwordConfirm &&
+                                { errors.PasswordConfirm &&
                                     <div className="invalid-feedback">
-                                        {errors.passwordConfirm.message}
+                                        {errors.PasswordConfirm.message}
                                     </div>
                                 }
                             </div>
