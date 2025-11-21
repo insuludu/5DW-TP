@@ -20,7 +20,7 @@ Content-Type: application/json
 {
     "firstName": "test",
     "lastName": "user",
-    "email" : "test2@exemple.com",
+    "email" : "test4@exemple.com",
     "password": "StrongPassword123!",
     "passwordConfirm": "StrongPassword123!"
 }

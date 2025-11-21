@@ -50,6 +50,15 @@ namespace backend
 
                     ValidateLifetime = true,
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies[Constants.AuthCookieName];
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             // Add services to the container...

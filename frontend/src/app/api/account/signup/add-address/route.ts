@@ -7,10 +7,13 @@ const apiURL = process.env.API_BACKEND_URL + "/api/account/addAddress"
 export async function POST(req: NextRequest) {
     let res: IAddressFormResponse = { IsValid: true, Errors: [] };
     const addressForm: IAddress = await req.json();
+    const cookies = req.headers.get('cookie')
+    console.log(cookies)
     const backendResponse = await fetch(apiURL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            'Cookie': cookies || '',
         },
         body: JSON.stringify(addressForm),
     });

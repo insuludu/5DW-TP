@@ -39,7 +39,16 @@ namespace backend.Controllers
             if (result.Succeeded)
             {
                 string token = await _userManager.GenerateJwtTokenAsync(user);
-                return Ok(token);
+                CookieOptions cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false, // Mettre à true lors du https
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                };
+
+                Response.Cookies.Append(Constants.AuthCookieName, token, cookieOptions);
+                return Ok();
             }
             else
             {

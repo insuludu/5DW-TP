@@ -33,8 +33,6 @@ export default function SignupForm()
         });
 
         if (backendResponse.ok) {
-            const data = await backendResponse.json();
-            console.log('Registration Success:', data);
             router.push(`/account/address`);
         } else {
             const errorData = await backendResponse.json();

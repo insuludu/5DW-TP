@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server"
 const apiURL = process.env.API_BACKEND_URL + "/api/account/create"
 
 export async function POST(req : NextRequest) {
-    let res : IRegisterFormResponse =  {IsValid: true, Errors: [] };
     const userForm : IRegisterForm = await req.json();
     const backendResponse = await fetch(apiURL, {
         method: 'POST',
@@ -14,8 +13,9 @@ export async function POST(req : NextRequest) {
         },
         body: JSON.stringify(userForm), 
     });
-
+    
     if (!backendResponse.ok) {
+        let res : IRegisterFormResponse =  {IsValid: true, Errors: [] };
         const data = await backendResponse.json(); 
         if (data.errors)
         {
@@ -24,9 +24,22 @@ export async function POST(req : NextRequest) {
                 res.Errors.push(IdentityErrorCodeToMessage(err));
             }
         }
+
+        return NextResponse.json(res, { status: backendResponse.status });
     }
+    else
+    {
+        const nextResponse = NextResponse.json(
+            { message: 'Login successful' },
+            { status: 200 }
+        );
+    
+        const setCookieHeaders = backendResponse.headers.get('Set-Cookie');
 
-    console.log(res)
-
-    return NextResponse.json(res, { status: backendResponse.status });;
+        if (setCookieHeaders) {
+            nextResponse.headers.set('Set-Cookie', setCookieHeaders);
+        }
+        
+        return nextResponse;
+    }
 }

@@ -3,5 +3,6 @@
     public static class Constants
     {
         public static string ImageApiRoute = "/api/image/";
+        public static string AuthCookieName = "authToken";
     }
 }
