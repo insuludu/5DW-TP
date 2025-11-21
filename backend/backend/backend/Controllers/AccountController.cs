@@ -61,5 +61,46 @@ namespace backend.Controllers
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             return Ok(new { userId, email, message = "Token is valid!" });
         }
+
+        /// <summary>
+        ///     Jacob Manseau - 20 novembre 2025
+        ///     Permet d'ajouter une adresse à l'utilisateur qui vien de créer son compte
+        /// </summary>
+        /// <param name="form">Objet contenant les information de l'adresse</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost(nameof(AddAddress))]
+        public async Task<IActionResult> AddAddress([FromBody] AddressForm form)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized user" });
+
+            var address = new UserAddress
+            {
+                UserID = Guid.Parse(userId),
+                StreetNumber = form.StreetNumber,
+                AppartementNumber = form.AppartementNumber,
+                StreetName = form.StreetName,
+                City = form.City,
+                StateProvince = form.StateProvince,
+                Country = form.Country,
+                PostalCode = form.PostalCode
+            };
+
+            _context.UserAddress.Add(address);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Address saved successfully" });
+        }
     }
 }

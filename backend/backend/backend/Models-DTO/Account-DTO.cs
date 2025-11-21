@@ -25,4 +25,26 @@ namespace backend.Models_DTO
         [JsonPropertyName("passwordConfirm")]
         public string PasswordConfirm { get; set; }
     }
+    public class AddressForm
+    {
+        [Required]
+        public int StreetNumber { get; set; }
+
+        public string AppartementNumber { get; set; }
+
+        [Required]
+        public string StreetName { get; set; }
+
+        [Required]
+        public string City { get; set; }
+
+        [Required]
+        public string StateProvince { get; set; }
+
+        [Required]
+        public string Country { get; set; }
+
+        [Required]
+        public string PostalCode { get; set; }
+    }
 }

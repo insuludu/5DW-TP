@@ -107,10 +107,15 @@ export interface IRegisterFormResponse {
 
 export interface IAddress {
     StreetNumber : number;
-    Appartement : string;
+    AppartementNumber? : string;
     StreetName : string;
     City : string;
     StateProvince : string;
     Country : string;
     PostalCode : string;
+}
+
+export interface IAddressFormResponse {
+    IsValid: boolean;
+    Errors: string[];
 }

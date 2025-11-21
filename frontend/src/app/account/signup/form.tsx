@@ -4,9 +4,12 @@ import styles from "@/app/styles/page.module.css"
 import { IRegisterForm, IRegisterFormResponse } from "@/interfaces"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation";
+
 
 export default function SignupForm()
 {
+    const router = useRouter();
     const [Errors, setErrors] = useState<string[]>([]);
 
     const {
@@ -32,6 +35,7 @@ export default function SignupForm()
         if (backendResponse.ok) {
             const data = await backendResponse.json();
             console.log('Registration Success:', data);
+            router.push(`/account/address`);
         } else {
             const errorData = await backendResponse.json();
             if (errorData.Errors)

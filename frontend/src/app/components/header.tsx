@@ -4,7 +4,6 @@ import imageLogo from "../images/Logo.png"
 import Image from "next/image"
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from 'next/link';
 
 export default function Header() {
     const [value, setValue] = useState("");
