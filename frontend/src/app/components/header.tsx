@@ -39,6 +39,7 @@ export default function Header() {
 
     return (
         <header>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
             <div style={{ backgroundColor: "#f8f8f8", borderBottom: "2px solid #ccc", boxShadow: "0 1px 4px rgba(0, 0, 0, 0.05)", position: "relative" }} className={` p-3 row`}>
                 <div className={` col-lg-4 col-md-6 pb-3 d-flex justify-content-center`}>
                     <a href="/">
@@ -86,7 +87,7 @@ export default function Header() {
                     </div>
 
                     {/* Bouton Hamburger Mobile */}
-                    <button 
+                    <button
                         className="d-lg-none btn btn-link text-dark p-0"
                         onClick={toggleMenu}
                         aria-label="Menu"
@@ -100,18 +101,18 @@ export default function Header() {
                             viewBox="0 0 16 16"
                         >
                             {isMenuOpen ? (
-                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
                             ) : (
-                                <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                                <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
                             )}
                         </svg>
                     </button>
                 </div>
 
                 {/* Menu Mobile Dropdown - Pleine largeur */}
-                <div 
+                <div
                     className="d-lg-none position-absolute bg-white"
-                    style={{ 
+                    style={{
                         top: "100%",
                         left: 0,
                         right: 0,
@@ -125,47 +126,47 @@ export default function Header() {
                     }}
                 >
                     <div className="d-flex flex-column">
-                        <a 
-                            href="/terms" 
+                        <a
+                            href="/terms"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
                             onClick={closeMenu}
-                            style={{ 
+                            style={{
                                 borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s" 
+                                transition: "background-color 0.2s"
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                             POLITIQUE
                         </a>
-                        <a 
-                            href="/about" 
+                        <a
+                            href="/about"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
                             onClick={closeMenu}
-                            style={{ 
+                            style={{
                                 borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s" 
+                                transition: "background-color 0.2s"
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                             À PROPOS
                         </a>
-                        <a 
-                            href="/contact-us" 
+                        <a
+                            href="/contact-us"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
                             onClick={closeMenu}
-                            style={{ 
+                            style={{
                                 borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s" 
+                                transition: "background-color 0.2s"
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                             CONTACTER
                         </a>
-                        <a 
-                            href="/create-product" 
+                        <a
+                            href="/create-product"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
                             onClick={closeMenu}
                             style={{ transition: "background-color 0.2s" }}

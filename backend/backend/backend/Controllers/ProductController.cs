@@ -516,5 +516,39 @@ namespace backend.Controllers
 
             return Ok(result);
         }
-    }
+
+		/// <summary>
+		///		Alexis Bergeron - 21 novembre 2025
+		///		Permet d'obtenir tout les produit enregistrer dans le cookie de l'utilisateur non connecte
+		/// </summary>
+		/// <param name="id">la list des ids des produits</param>
+		/// <returns></returns>
+		[HttpPost("GetCartProductsByIds")]
+		public ActionResult GetCartProductsByIds([FromBody] int[] ids)
+		{
+			var result = _context.Products
+				.Where(p => ids.Contains(p.ID))
+				.Select(p => new CartProductDTO
+				{
+					id = p.ID,
+					name = p.Name,
+					Price = p.Price,
+					DiscountPrice = p.DiscountPrice,
+					Status = (int)p.Status,
+					ImagesData = p.Images.Select(i => new ImageDTO
+					{
+						ID = i.Id,
+						Alt = i.ImageAlt,
+						Order = i.Order,
+						Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+					}).FirstOrDefault(),
+				})
+				.ToArray();
+
+			if (result == null)
+				return NotFound();
+
+			return Ok(result);
+		}
+	}
 }

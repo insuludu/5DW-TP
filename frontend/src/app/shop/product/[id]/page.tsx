@@ -2,6 +2,7 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { DetailProductDTO } from "@/interfaces";
 import ProductGallery from "./product-gallery";
+import AddToCartButton from "./cartbutton";
 
 const nextUrl = process.env.API_MIDDLEWARE_URL;
 
@@ -42,13 +43,13 @@ export default async function Page({ params }: { params: { id: string } }) {
                         {/* En-tête de produit */}
                         <div className="mb-4">
                             <h1 className="fs-2 fw-bold mb-3">{product.name}</h1>
-                            
+
                             {/* Statut et stock */}
                             <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
                                 <span className={`badge ${product.status === 0 ? 'bg-success' : 'bg-secondary'} fs-6`}>
                                     {getStatusLabel(product.status)}
                                 </span>
-                                
+
                                 {product.unitsInStock !== undefined && (
                                     <>
                                         <span className="text-muted">
@@ -106,28 +107,26 @@ export default async function Page({ params }: { params: { id: string } }) {
 
                         {/* Actions */}
                         <div className="d-grid gap-2">
-                            <button className="btn btn-dark btn-lg" disabled>
-                                Panier temporairement indisponible
-                            </button>
-                            <a 
+                            <AddToCartButton productId={product.id} />
+                            <a
                                 href={`/edit-product?id=${product.id}`}
                                 className="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                                    <path d="m15 5 4 4"/>
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                    <path d="m15 5 4 4" />
                                 </svg>
                                 Modifier le produit
                             </a>
                         </div>
 
                         {/* <button className="btn btn-dark mt-3" disabled={product.status !== 0}>
-                            {product.status === 0 ? "Ajouter au panier" : "Indisponible"}
-                        </button> */}
+                                {product.status === 0 ? "Ajouter au panier" : "Indisponible"}
+                            </button> */}
                     </div>
                 </div>
             </section>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
