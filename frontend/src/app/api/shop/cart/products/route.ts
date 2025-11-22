@@ -50,7 +50,6 @@ export async function GET(req: Request) {
             const enrichedProducts = products.map(product => ({
                 ...product,
                 amount: CartCookieHelper.getProductAmount(cart, product.id),
-                selected: false
             }));
             
             return NextResponse.json(enrichedProducts, { status: 200 });

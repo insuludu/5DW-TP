@@ -85,11 +85,11 @@ export interface CartProductDTO{
     id: number;
     name: string;
     price: number;
-    discountedPrice?: number | null;
+    discountPrice?: number | null;
     status: number;
     imagesData?: ImageDTO | null;
     amount: number;
-    selected: boolean;
+    maxQuantity: number;
 }
 
 export interface IRegisterForm {
