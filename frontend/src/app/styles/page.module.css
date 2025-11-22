@@ -381,7 +381,7 @@
     transform: translateY(-1px);
 }
 
-.submitButton.disabled {
+.submitButton:disabled {
     background: linear-gradient(135deg, var(--text-light) 0%, #BCA5B0 100%);
     cursor: not-allowed;
     box-shadow: none;
