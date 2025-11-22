@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import CartCard from "./cart-card";
 import { CartProductDTO } from "@/interfaces";
-import { AuthCookieName } from "@/constants";
+import Link from "next/link";
+import styles from "@/app/styles/page.module.css";
 
 export default function ListCart() {
     const [cartProducts, setCartProducts] = useState<CartProductDTO[]>([]);
@@ -11,9 +12,7 @@ export default function ListCart() {
 
     useEffect(() => {
         async function getProduct() {
-            // Choisir l'endpoint selon le statut
             const endpoint = '/api/shop/cart/products';
-
             const res = await fetch(endpoint);
             if (!res.ok) throw new Error("Failed to fetch cart products");
             const data = await res.json();
@@ -30,58 +29,27 @@ export default function ListCart() {
 
     async function handlechangeAmount(id: number, amount: number) {
         if (isUpdating) return;
-
         setIsUpdating(true);
 
-        // Choisir l'endpoint selon le statut
         const removeEndpoint = '/api/shop/cart/remove-product';
-
         const updateEndpoint = '/api/shop/cart/update-quantity';
 
         if (amount === 0) {
-            // Retirer le produit
-            setCartProducts(prev =>
-                prev.filter(p => p.id !== id)
-            );
-
+            setCartProducts(prev => prev.filter(p => p.id !== id));
             try {
                 const formData = new FormData();
                 formData.append('id', id.toString());
-
-                const response = await fetch(removeEndpoint, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    console.error('Error removing from cart:', data.error);
-                }
+                await fetch(removeEndpoint, { method: 'POST', body: formData });
             } catch (error) {
                 console.error('Network error:', error);
             }
         } else {
-            // Mettre à jour la quantité
-            setCartProducts(prev =>
-                prev.map(p => (p.id === id ? { ...p, amount } : p))
-            );
-
+            setCartProducts(prev => prev.map(p => (p.id === id ? { ...p, amount } : p)));
             try {
                 const formData = new FormData();
                 formData.append('id', id.toString());
                 formData.append('amount', amount.toString());
-
-                const response = await fetch(updateEndpoint, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    console.error('Error updating quantity:', data.error);
-                }
+                await fetch(updateEndpoint, { method: 'POST', body: formData });
             } catch (error) {
                 console.error('Network error:', error);
             }
@@ -91,26 +59,31 @@ export default function ListCart() {
     }
 
     return (
-        <div className="m-5">
-            <h1>Panier</h1>
+        <section className={`min-vh-100 ${styles.backgroundPrimary} py-5`}>
+            <div className="container">
+                <h1 className="display-4 text-light text-center mb-5">Panier</h1>
 
-            <div style={{ height: "40px" }} className="d-flex align-items-center mb-2 px-3">
-                <div style={{ width: "200px" }}></div>
-
-                <div className="flex-grow-1 ms-3">
-                    <div className="row align-items-center">
-                        <div className="col-9"></div>
-
-                        <div className="col-3 d-flex justify-content-end">
-                            <strong>Prix</strong>
-                        </div>
+                {cartProducts.length === 0 ? (
+                    <div className="text-center py-5">
+                        <p className="fs-5 mb-4 text-light">Votre panier est vide.</p>
+                        <Link href="./">
+                            <button className={`${styles.submitButton} w-50`}>Retour au magasin</button>
+                        </Link>
                     </div>
-                </div>
+                ) : (
+                    <div className="row g-4">
+                        {cartProducts.map(product => (
+                            <div key={product.id} className="col-12">
+                                <CartCard
+                                    product={product}
+                                    onSelectedChange={handleSelectedChange}
+                                    changeValue={handlechangeAmount}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
-
-            {cartProducts.map(product => (
-                <CartCard key={product.id} product={product} onSelectedChange={handleSelectedChange} changeValue={handlechangeAmount} />
-            ))}
-        </div>
+        </section>
     );
 }
