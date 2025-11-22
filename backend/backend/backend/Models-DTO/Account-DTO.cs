@@ -24,6 +24,10 @@ namespace backend.Models_DTO
         [Required]
         [JsonPropertyName("passwordConfirm")]
         public string PasswordConfirm { get; set; }
+        
+        [Required]
+        public string PhoneNumber { get; set; }
+
     }
 
     public class LoginDTO

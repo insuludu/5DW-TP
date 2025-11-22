@@ -184,6 +184,29 @@ export default function SignupForm()
                                 }
                             </div>
 
+                            <div className="form-group mb-2">
+                                <label htmlFor="phoneNumber">Numéro de téléphone (000-0000-0000)</label>
+                                <input 
+                                    id="phoneNumber"
+                                    className={`form-control ${errors.PhoneNumber ? 'is-invalid' : ''}`}
+                                    type="text"
+                                    placeholder="000-000-0000"
+                                    {...register('PhoneNumber', {
+                                        required: 'Veuillez entrer votre numéro de téléphone.',
+                                        pattern: {
+                                            value: /^\d{3}-\d{3}-\d{4}$/,
+                                            message: 'Votre numéro de téléphone doit avoir le format valide suivant: 000-000-0000',
+                                        }
+                                    })
+                                }
+                                />
+                                { errors.PhoneNumber &&
+                                    <div className="invalid-feedback">
+                                        {errors.PhoneNumber.message}
+                                    </div>
+                                }
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isSubmitting || !isValid}

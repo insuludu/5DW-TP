@@ -98,6 +98,7 @@ export interface IRegisterForm {
     Email : string;
     Password : string;
     PasswordConfirm : string;
+    PhoneNumber : string;
 }
 
 export interface IRegisterFormResponse {

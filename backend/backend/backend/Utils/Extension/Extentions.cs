@@ -18,7 +18,8 @@ namespace backend.Utils.Extension
                 FirstName = form.FirstName,
                 LastName = form.LastName,
                 Email = form.Email,
-                UserName = form.Email
+                UserName = form.Email,
+                PhoneNumber = form.PhoneNumber
             };
         }
 
