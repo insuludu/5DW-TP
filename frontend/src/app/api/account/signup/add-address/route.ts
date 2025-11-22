@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
     let res: IAddressFormResponse = { IsValid: true, Errors: [] };
     const addressForm: IAddress = await req.json();
     const cookies = req.headers.get('cookie')
-    console.log(cookies)
     const backendResponse = await fetch(apiURL, {
         method: "POST",
         headers: {
@@ -35,8 +34,6 @@ export async function POST(req: NextRequest) {
             }
         }
     }
-
-    console.log(res)
 
     return NextResponse.json(res, { status: backendResponse.status });
 }

@@ -119,3 +119,8 @@ export interface IAddressFormResponse {
     IsValid: boolean;
     Errors: string[];
 }
+
+export interface ILoginForm {
+    Email : string,
+    Password : string
+}

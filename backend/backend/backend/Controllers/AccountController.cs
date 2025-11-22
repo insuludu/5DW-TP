@@ -14,10 +14,13 @@ namespace backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        public AccountController(ApplicationDbContext context, UserManager<User> userManager)
+        private readonly SignInManager<User> _signInManager;
+
+        public AccountController(ApplicationDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _context = context;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         /// <summary>
@@ -60,6 +63,42 @@ namespace backend.Controllers
 
                 return BadRequest(ModelState);
             }
+        }
+
+        [HttpPost(nameof(Login))]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginForm)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            User user = await _userManager.FindByEmailAsync(loginForm.Email);
+
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid credentials." });
+            }
+
+            Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, loginForm.Password, false);
+
+            if (!result.Succeeded)
+            {
+                return Unauthorized(new { message = "Invalid credentials." });
+            }
+            else
+            {
+                string token = await _userManager.GenerateJwtTokenAsync(user);
+                CookieOptions cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false, // Mettre à true lors du https
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                };
+
+                Response.Cookies.Append(Constants.AuthCookieName, token, cookieOptions);
+                return Ok();
+            }
+
         }
 
         [Authorize]
