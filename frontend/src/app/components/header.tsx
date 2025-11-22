@@ -79,11 +79,25 @@ export default function Header() {
                 </div>
                 <div className="col-lg-4 col-md-12 d-flex justify-content-lg-end justify-content-center align-items-center p-3">
                     {/* Menu Desktop */}
-                    <div className="d-none d-lg-flex gap-3 flex-wrap">
-                        <a href="/terms" className="text-dark text-decoration-none fw-semibold">POLITIQUE</a>
-                        <a href="/about" className="text-dark text-decoration-none fw-semibold">À PROPOS</a>
-                        <a href="/contact-us" className="text-dark text-decoration-none fw-semibold">CONTACTER</a>
+                    <div className="d-none d-lg-flex gap-3 align-items-center">
                         <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
+                        
+                        {/* Bouton Panier Desktop */}
+                        <a 
+                            href="/shop/cart" 
+                            className="btn btn-outline-dark"
+                            style={{ padding: "0.375rem 0.75rem" }}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                viewBox="0 0 16 16"
+                            >
+                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                            </svg>
+                        </a>
                     </div>
 
                     {/* Bouton Hamburger Mobile */}
@@ -107,6 +121,23 @@ export default function Header() {
                             )}
                         </svg>
                     </button>
+
+                    {/* Bouton Panier Mobile */}
+                    <a 
+                        href="/shop/cart" 
+                        className="btn btn-outline-dark d-lg-none ms-3"
+                        style={{ padding: "0.375rem 0.75rem" }}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                        >
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                    </a>
                 </div>
 
                 {/* Menu Mobile Dropdown - Pleine largeur */}
@@ -126,45 +157,6 @@ export default function Header() {
                     }}
                 >
                     <div className="d-flex flex-column">
-                        <a
-                            href="/terms"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{
-                                borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            POLITIQUE
-                        </a>
-                        <a
-                            href="/about"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{
-                                borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            À PROPOS
-                        </a>
-                        <a
-                            href="/contact-us"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{
-                                borderBottom: "1px solid #eee",
-                                transition: "background-color 0.2s"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            CONTACTER
-                        </a>
                         <a
                             href="/create-product"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
