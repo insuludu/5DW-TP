@@ -125,3 +125,10 @@ export interface ILoginForm {
     Email : string,
     Password : string
 }
+
+export interface IUserData {
+    ID : string,
+    FirstName : string
+    LastName : string
+    Roles : string[]
+}

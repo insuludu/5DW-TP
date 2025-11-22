@@ -101,13 +101,35 @@ namespace backend.Controllers
 
         }
 
+        /// <summary>
+        ///     Simon Déry - 22 Novembre 2025
+        ///     Méthode vide qui permet de valider si le JWT est valide
+        /// </summary>
+        /// <returns>200, 401</returns>
         [Authorize]
-        [HttpGet("test-auth")]
-        public IActionResult TestAuth()
+        [HttpGet(nameof(ValidateToken))]
+        public async Task<IActionResult> ValidateToken()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            return Ok(new { userId, email, message = "Token is valid!" });
+
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
+
+            User? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized user" });
+
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new AccountInfoDTO
+            {
+                ID = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Roles = roles.ToList()
+            });
         }
 
         /// <summary>

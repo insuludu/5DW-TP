@@ -11,6 +11,12 @@ namespace backend.Utils.Extension
 {
     public static class Extensions
     {
+        /// <summary>
+        ///     Simon Déry - 20 Novembre 2025
+        ///     Permet de trasnformer un forumalire de création en utilisateur identity
+        /// </summary>
+        /// <param name="form">Le formulaire d'inscription rempli</param>
+        /// <returns>Le nouvel utilisateur créé</returns>
         public static User ToUser(this RegisterForm form)
         {
             return new User
@@ -23,6 +29,13 @@ namespace backend.Utils.Extension
             };
         }
 
+        /// <summary>
+        ///     Simon Déry - 21 Novembre 2025
+        ///     Permet de générer un JWT pour un utilisateur Identity
+        /// </summary>
+        /// <param name="userManager">Extension de usermanager</param>
+        /// <param name="user">L'utilisateur associé au nouveau JWT</param>
+        /// <returns>Le string du token JWt</returns>
         public async static Task<string> GenerateJwtTokenAsync(this UserManager<User> userManager, User user)
         {
             List<Claim> claims = new List<Claim>

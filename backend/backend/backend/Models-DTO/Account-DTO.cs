@@ -60,4 +60,12 @@ namespace backend.Models_DTO
         [Required]
         public string PostalCode { get; set; }
     }
+
+    public class AccountInfoDTO()
+    {
+        public Guid ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public List<string> Roles { get; set; }
+    }
 }
