@@ -3,8 +3,8 @@ import { CreateProductDTO } from "@/interfaces";
 
 const backendUrl = process.env.API_BACKEND_URL + "/api/product/GetEditProduct/";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   console.log(`${backendUrl}${id}`);
 

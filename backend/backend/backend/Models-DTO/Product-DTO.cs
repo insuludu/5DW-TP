@@ -105,4 +105,16 @@ namespace backend.Models_DTO
         public bool HasNextPage { get; set; }
         public bool HasPreviousPage { get; set; }
     }
+
+	public class CartProductDTO
+	{
+		public int id { get; set; }
+		public string name { get; set; }
+		public float Price { get; set; }
+		public float? DiscountPrice { get; set; }
+		public int Status { get; set; }
+		public ImageDTO? ImagesData { get; set; }
+		public int Amount { get; set; } = 1;
+		public bool Selected { get; set; } = true;
+}
 }
