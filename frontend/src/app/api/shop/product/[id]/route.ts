@@ -3,8 +3,8 @@ import { ShopProductDTO } from "@/interfaces";
 
 const backendUrl = process.env.API_BACKEND_URL + "/api/product/GetProductById/";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
 
     try {
         const res = await fetch(backendUrl + id, {

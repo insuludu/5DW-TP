@@ -3,20 +3,41 @@
 import { useEffect, useState } from "react";
 import CartCard from "./cart-card";
 import { CartProductDTO } from "@/interfaces";
+import { AuthCookieName } from "@/constants";
 
 export default function ListCart() {
     const [cartProducts, setCartProducts] = useState<CartProductDTO[]>([]);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isGuest, setIsGuest] = useState(true);
+
+    // Détecter si l'utilisateur est connecté
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            // Vérifier si le cookie d'authentification existe
+            const hasAuthCookie = document.cookie
+                .split('; ')
+                .some(cookie => cookie.startsWith(`${AuthCookieName}=`));
+            
+            setIsGuest(!hasAuthCookie);
+        };
+        
+        checkAuthStatus();
+    }, []);
 
     useEffect(() => {
         async function getProduct() {
-            const res = await fetch('/api/shop/cart/products');
+            // Choisir l'endpoint selon le statut
+            const endpoint = isGuest 
+                ? '/api/shop/guest-cart/products'
+                : '/api/shop/cart/products';
+
+            const res = await fetch(endpoint);
             if (!res.ok) throw new Error("Failed to fetch cart products");
             const data = await res.json();
             setCartProducts(data);
         }
         getProduct();
-    }, []);
+    }, [isGuest]);
 
     function handleSelectedChange(id: number, selected: boolean) {
         setCartProducts(prev =>
@@ -29,32 +50,65 @@ export default function ListCart() {
 
         setIsUpdating(true);
 
-        if (amount == 0) {
+        // Choisir l'endpoint selon le statut
+        const removeEndpoint = isGuest
+            ? '/api/shop/guest-cart/remove-product'
+            : '/api/shop/cart/remove-product';
+
+        const updateEndpoint = isGuest
+            ? '/api/shop/guest-cart/update-quantity'
+            : '/api/shop/cart/update-quantity';
+
+        if (amount === 0) {
+            // Retirer le produit
             setCartProducts(prev =>
                 prev.filter(p => p.id !== id)
             );
+            
             try {
                 const formData = new FormData();
                 formData.append('id', id.toString());
 
-                const response = await fetch('/api/shop/cart/remove-product', {
+                const response = await fetch(removeEndpoint, {
                     method: 'POST',
                     body: formData,
                 });
 
                 const data = await response.json();
 
-                if (response.ok) {
-                } else {
-                    console.error('Error removing to cart:', data.error);
+                if (!response.ok) {
+                    console.error('Error removing from cart:', data.error);
                 }
             } catch (error) {
                 console.error('Network error:', error);
             }
         } else {
+            // Mettre à jour la quantité
             setCartProducts(prev =>
                 prev.map(p => (p.id === id ? { ...p, amount } : p))
             );
+
+            // Pour les invités, appeler l'API de mise à jour
+            if (isGuest) {
+                try {
+                    const formData = new FormData();
+                    formData.append('id', id.toString());
+                    formData.append('amount', amount.toString());
+
+                    const response = await fetch(updateEndpoint, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        console.error('Error updating quantity:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Network error:', error);
+                }
+            }
         }
 
         setIsUpdating(false);
