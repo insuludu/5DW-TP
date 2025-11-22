@@ -64,20 +64,22 @@ export default function CartCard({ product, onSelectedChange, changeValue }: Car
                                 <button
                                     onClick={() => changeValue(product.id, product.amount + 1)}
                                     className="text-xl text-white btn p-0 border-0 bg-transparent mx-2"
+                                    disabled={product.amount >= product.maxQuantity }
                                 >
                                     <i className="bi bi-plus"></i>
                                 </button>
                             </div>
+                                {product.amount >= product.maxQuantity ? <label className={` text-danger`}>Quantité maximal atteinte</label> : <></>}
                         </div>
 
                         <div className="col-3 d-flex justify-content-end">
-                            {product.discountedPrice == null ? (
+                            {product.discountPrice == null ? (
                                 <p className="fs-4 fw-bold mb-0">{product.price.toFixed(2)}$</p>
                             ) : (
                                 <p className="fs-4 fw-bold mb-0">
                                     <span className="text-decoration-line-through">{product.price.toFixed(2)}$</span>
                                     <span className="text-danger">
-                                        {" "} {product.discountedPrice.toFixed(2)}$ (-{(100 - product.discountedPrice / product.price * 100).toFixed(0)}%)
+                                        {" "} {product.discountPrice.toFixed(2)}$ (-{(100 - product.discountPrice / product.price * 100).toFixed(0)}%)
                                     </span>
                                 </p>
                             )}
