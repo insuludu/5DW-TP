@@ -115,6 +115,6 @@ namespace backend.Models_DTO
 		public int Status { get; set; }
 		public ImageDTO? ImagesData { get; set; }
 		public int Amount { get; set; } = 1;
-		public bool Selected { get; set; } = true;
-}
+		public int MaxQuantity { get; set; }
+	}
 }

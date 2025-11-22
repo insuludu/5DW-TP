@@ -535,6 +535,7 @@ namespace backend.Controllers
 					Price = p.Price,
 					DiscountPrice = p.DiscountPrice,
 					Status = (int)p.Status,
+                    MaxQuantity = p.UnitsInStock,
 					ImagesData = p.Images.Select(i => new ImageDTO
 					{
 						ID = i.Id,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { CartCookieName } from "@/constants";
+import { AuthCookieName, CartCookieName } from "@/constants";
 import { cookies } from "next/headers";
 import { CartCookieHelper } from "@/lib/cart-cookie-helper";
 
@@ -22,6 +22,11 @@ export async function POST(req: Request) {
         }
 
         const cookieStore = await cookies();
+        const connexion_cookie = cookieStore.get(AuthCookieName);
+
+        if (connexion_cookie != null)
+            return NextResponse.json({ message : "Aucun cookie modifier puisque l'utilisateur est connecté"}, { status: 200 });
+
         const cart_cookie = cookieStore.get(CartCookieName);
 
         const cart = CartCookieHelper.parseCart(cart_cookie?.value);
