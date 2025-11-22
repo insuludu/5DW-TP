@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { CartProductDTO } from "@/interfaces";
 import { AuthCookieName, CartCookieName } from "@/constants";
 import { cookies } from "next/headers";
+import { CartCookieHelper } from "@/lib/cart-cookie-helper";
 
 // const backendUrlLoggedIn = process.env.API_BACKEND_URL + "/api/product/GetProductById/";
 // const backendUrlOffline = process.env.API_BACKEND_URL + "/api/product/GetProductById/";
@@ -23,23 +24,31 @@ export async function POST(req: Request) {
             return response;
         }
         else if (connexion_cookie == null) {
-            let cart: number[] = JSON.parse(cart_cookie?.value!);
-
-            if (cart.includes(id)) {
-                cart = cart.filter(item => item !== id);
+            if (!cart_cookie?.value) {
+                return NextResponse.json({
+                    message: "Panier déjà vide",
+                    cart: []
+                }, { status: 200 });
             }
 
-            const response = NextResponse.json({ message: "Cart updated!", cart });
-            response.cookies.set(
-                CartCookieName,
-                JSON.stringify(cart),
-                {
-                    httpOnly: true,
-                    path: "/",
-                    maxAge: 60 * 60 * 24 * 7,
-                    sameSite: "lax",
-                }
-            );
+            const cart = CartCookieHelper.parseCart(cart_cookie.value);
+
+            const updatedCart = CartCookieHelper.removeProduct(cart, id);
+
+            const response = NextResponse.json({
+                message: "Produit retiré du panier",
+                cart: updatedCart,
+                totalItems: CartCookieHelper.getTotalItems(updatedCart)
+            }, { status: 200 });
+
+            response.cookies.set({
+                name: CartCookieName,
+                value: CartCookieHelper.serialize(updatedCart),
+                httpOnly: true,
+                path: "/",
+                maxAge: 60 * 60 * 24 * 7,
+                sameSite: "lax",
+            });
 
             return response;
         }

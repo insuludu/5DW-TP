@@ -70,7 +70,7 @@ export default function CartCard({ product, onSelectedChange, changeValue }: Car
                             </div>
                         </div>
 
-                        <div className="col-2">
+                        <div className="col-3 d-flex justify-content-end">
                             {product.discountedPrice == null ? (
                                 <p className="fs-4 fw-bold mb-0">{product.price.toFixed(2)}$</p>
                             ) : (
@@ -81,10 +81,6 @@ export default function CartCard({ product, onSelectedChange, changeValue }: Car
                                     </span>
                                 </p>
                             )}
-                        </div>
-
-                        <div className="col-1 d-flex justify-content-center">
-                            <input type="checkbox" checked={product.selected} onChange={(e) => onSelectedChange(product.id, e.target.checked)} />
                         </div>
                     </div>
                 </div>
