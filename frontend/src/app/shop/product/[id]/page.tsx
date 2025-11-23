@@ -107,7 +107,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
                         {/* Actions */}
                         <div className="d-grid gap-2">
-                            <AddToCartButton productId={product.id} />
+                            <AddToCartButton productId={product.id} maxQuantity={product.unitsInStock} />
                             <a
                                 href={`/edit-product?id=${product.id}`}
                                 className="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2"
