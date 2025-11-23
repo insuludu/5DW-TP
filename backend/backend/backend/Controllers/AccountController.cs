@@ -133,6 +133,28 @@ namespace backend.Controllers
         }
 
         /// <summary>
+        ///     Vérifie si l'utilisateur est authentifié
+        /// </summary>
+        /// <returns>200 si authentifié avec isAuthenticated: true, 401 sinon</returns>
+        [Authorize]
+        [HttpGet(nameof(Status))]
+        public IActionResult Status()
+        {
+            return Ok(new { isAuthenticated = true });
+        }
+
+        /// <summary>
+        ///     Déconnecte l'utilisateur en supprimant le cookie
+        /// </summary>
+        /// <returns>200</returns>
+        [HttpPost(nameof(Logout))]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete(Constants.AuthCookieName);
+            return Ok(new { success = true });
+        }
+
+        /// <summary>
         ///     Jacob Manseau - 20 novembre 2025
         ///     Permet d'ajouter une adresse à l'utilisateur qui vien de créer son compte
         /// </summary>

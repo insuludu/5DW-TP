@@ -2,14 +2,36 @@
 import styles from "../styles/page.module.css"
 import imageLogo from "../images/Logo.png"
 import Image from "next/image"
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import LoginStatusWrapper from "./login/loginStatusWrapper";
 
 export default function Header() {
     const [value, setValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+
+    useEffect(() => {
+        // Vérifier l'état de connexion via une API route
+        const checkAuthStatus = async () => {
+            try {
+                console.log('Vérification du statut d\'authentification...');
+                const response = await fetch('/api/account/status');
+                const data = await response.json();
+                console.log('Réponse status:', data);
+                setIsLoggedIn(data.isAuthenticated);
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'authentification:', error);
+                setIsLoggedIn(false);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        checkAuthStatus();
+    }, []);
 
     function handleChange(event: ChangeEvent<HTMLInputElement>): void {
         setValue(event.target.value);
@@ -36,6 +58,22 @@ export default function Header() {
 
     function closeMenu() {
         setIsMenuOpen(false);
+    }
+
+    async function handleLogout() {
+        try {
+            const response = await fetch('/api/account/logout', {
+                method: 'POST',
+            });
+            
+            if (response.ok) {
+                setIsLoggedIn(false);
+                router.push('/');
+                router.refresh();
+            }
+        } catch (error) {
+            console.error('Erreur lors de la déconnexion:', error);
+        }
     }
 
     return (
@@ -83,13 +121,25 @@ export default function Header() {
                     <div className="d-none d-lg-flex gap-3 align-items-center">
                         <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
                         
-                        {/* Boutons Connexion/Inscription Desktop */}
-                        <a href="/account/login" className="btn btn-outline-dark">
-                            Se connecter
-                        </a>
-                        <a href="/account/signup" className="btn btn-dark">
-                            S'inscrire
-                        </a>
+                        {/* Affichage conditionnel selon l'état de connexion */}
+                        {!isLoading && (
+                            isLoggedIn ? (
+                                // Bouton Déconnexion
+                                <button onClick={handleLogout} className="btn btn-outline-danger">
+                                    Se déconnecter
+                                </button>
+                            ) : (
+                                // Boutons Connexion/Inscription
+                                <>
+                                    <a href="/account/login" className="btn btn-outline-dark">
+                                        Se connecter
+                                    </a>
+                                    <a href="/account/signup" className="btn btn-dark">
+                                        S'inscrire
+                                    </a>
+                                </>
+                            )
+                        )}
                         
                         {/* Bouton Panier Desktop */}
                         <a 
@@ -176,26 +226,51 @@ export default function Header() {
                         >
                             CRÉER
                         </a>
-                        <a
-                            href="/login"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{ transition: "background-color 0.2s" }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            SE CONNECTER
-                        </a>
-                        <a
-                            href="/signup"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{ transition: "background-color 0.2s" }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            S'INSCRIRE
-                        </a>
+                        
+                        {/* Affichage conditionnel mobile */}
+                        {!isLoading && (
+                            isLoggedIn ? (
+                                <button
+                                    onClick={() => {
+                                        handleLogout();
+                                        closeMenu();
+                                    }}
+                                    className="text-danger text-decoration-none fw-semibold p-3 text-center"
+                                    style={{ 
+                                        transition: "background-color 0.2s",
+                                        border: "none",
+                                        background: "transparent"
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                    SE DÉCONNECTER
+                                </button>
+                            ) : (
+                                <>
+                                    <a
+                                        href="/account/login"
+                                        className="text-dark text-decoration-none fw-semibold p-3 text-center"
+                                        onClick={closeMenu}
+                                        style={{ transition: "background-color 0.2s" }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                        SE CONNECTER
+                                    </a>
+                                    <a
+                                        href="/account/signup"
+                                        className="text-dark text-decoration-none fw-semibold p-3 text-center"
+                                        onClick={closeMenu}
+                                        style={{ transition: "background-color 0.2s" }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                        S'INSCRIRE
+                                    </a>
+                                </>
+                            )
+                        )}
                     </div>
                 </div>
             </div>
