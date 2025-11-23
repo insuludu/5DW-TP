@@ -1,16 +1,34 @@
 import { NextResponse } from "next/server";
-import { AuthCookieName, CartCookieName } from "@/constants";
+import { CartCookieName } from "@/constants";
 import { cookies } from "next/headers";
+import { AuthHelper } from "@/lib/auth-helper";
+
+const backendUrl = process.env.API_BACKEND_URL + "/api/cart/clear";
 
 export async function POST(req: Request) {
     try {
-        const cookieStore = await cookies();
-        const connexion_cookie = cookieStore.get(AuthCookieName);
+        const isAuthenticated = await AuthHelper.isAuthenticated();
 
-        // Si utilisateur connecté, gérer côté backend
-        if (connexion_cookie != null) {
+        if (isAuthenticated) {
+            // Utilisateur connecté : vider le panier via le backend
+            const cookieStore = await cookies();
+            const authCookie = cookieStore.get("authToken");
+            
+            const backendResponse = await fetch(backendUrl, {
+                method: "POST",
+                headers: {
+                    'Cookie': `authToken=${authCookie?.value}`,
+                },
+            });
+
+            if (!backendResponse.ok) {
+                return NextResponse.json({ 
+                    error: "Erreur lors du vidage du panier" 
+                }, { status: backendResponse.status });
+            }
+
             return NextResponse.json({ 
-                message: "Panier géré côté serveur pour utilisateur connecté"
+                message: "Panier vidé avec succès" 
             }, { status: 200 });
         }
 
