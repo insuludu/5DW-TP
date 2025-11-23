@@ -71,7 +71,7 @@ export default function LoginForm() {
                             </div>
 
                             <div className="form-group mb-2">
-                                <label htmlFor="Password">Mot de passe (optionnel)</label>
+                                <label htmlFor="Password">Mot de passe</label>
                                 <input
                                     id="Password"
                                     className={`form-control ${errors.Password ? "is-invalid" : ""}`}

@@ -56,6 +56,9 @@ export default function AddressForm() {
                 <div className={styles.formSection}>
                     <div className={styles.formHeader}>
                         <h1>Adresse du compte</h1>
+                        <p style={{ fontSize: "1rem", color: "#555", marginTop: "5px" }}>
+                            Indiquez votre adresse afin que nous puissions livrer vos achats.
+                        </p>
                     </div>
                     <div className="row w-100">
                         <form onSubmit={handleSubmit(onSubmit)}>
@@ -209,6 +212,20 @@ export default function AddressForm() {
                                 }}
                             >
                                 {isSubmitting ? "Enregistrement..." : "Sauvegarder l'adresse"}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => router.push("/home")}
+                                style={{
+                                    backgroundColor: "#6c757d",
+                                    color: "white",
+                                    padding: "8px 16px",
+                                    marginTop: "10px",
+                                    width: "100%",
+                                }}
+                            >
+                                Passer pour le moment
                             </button>
 
                         </form>
