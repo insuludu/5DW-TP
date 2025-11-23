@@ -17,9 +17,33 @@ export default function SignupForm()
         handleSubmit,
         formState : { errors, isSubmitting, isValid },
         getValues,
+        setValue,
     } = useForm<IRegisterForm>({
         mode: 'onChange'
     });
+
+    // Fonction pour formater automatiquement le numéro de téléphone
+    const formatPhoneNumber = (value: string) => {
+        // Enlever tous les caractères non-numériques
+        const numbers = value.replace(/\D/g, '');
+        
+        // Limiter à 10 chiffres
+        const limited = numbers.slice(0, 10);
+        
+        // Ajouter les tirets automatiquement
+        if (limited.length <= 3) {
+            return limited;
+        } else if (limited.length <= 6) {
+            return `${limited.slice(0, 3)}-${limited.slice(3)}`;
+        } else {
+            return `${limited.slice(0, 3)}-${limited.slice(3, 6)}-${limited.slice(6)}`;
+        }
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = formatPhoneNumber(e.target.value);
+        setValue('PhoneNumber', formatted, { shouldValidate: true });
+    };
 
     const onSubmit = async (formData: IRegisterForm) => {
         const url = '/api/account/signup/create/'; 
@@ -116,7 +140,7 @@ export default function SignupForm()
                             <div className="form-group mb-2">
                                 <label htmlFor="email">Email</label>
                                 <input 
-                                    id="lastName"
+                                    id="email"
                                     className={`form-control ${errors.Email ? 'is-invalid' : ''}`}
                                     type="email"
                                     placeholder="user@exemple.com"
@@ -145,14 +169,20 @@ export default function SignupForm()
                                     placeholder="••••••••"
                                     {...register('Password', {
                                         required: 'Le mot de passe est requis.',
-                                        pattern: {
-                                            value: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9\s]).{8,}$/,
-                                            message: 'Votre mot de passe doit contenir au moins 8 caractères, dont une majuscule/minuscule, un chiffre et un caractère spécial (!@#$%^&*).',
-                                        },
                                         minLength: {
                                             value: 8,
                                             message: 'Votre mot de passe doit contenir au moins 8 caractères'
                                         },
+                                        validate: {
+                                            hasUpperCase: (value) => 
+                                                /[A-Z]/.test(value) || 'Le mot de passe doit contenir au moins une majuscule.',
+                                            hasLowerCase: (value) => 
+                                                /[a-z]/.test(value) || 'Le mot de passe doit contenir au moins une minuscule.',
+                                            hasNumber: (value) => 
+                                                /[0-9]/.test(value) || 'Le mot de passe doit contenir au moins un chiffre.',
+                                            hasSpecialChar: (value) => 
+                                                /[^a-zA-Z0-9\s]/.test(value) || 'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*).',
+                                        }
                                     })
                                 }
                                 />
@@ -161,6 +191,9 @@ export default function SignupForm()
                                         {errors.Password.message}
                                     </div>
                                 }
+                                <small className="form-text text-muted">
+                                    Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.
+                                </small>
                             </div>
 
                             <div className="form-group mb-2">
@@ -185,7 +218,7 @@ export default function SignupForm()
                             </div>
 
                             <div className="form-group mb-2">
-                                <label htmlFor="phoneNumber">Numéro de téléphone (000-0000-0000)</label>
+                                <label htmlFor="phoneNumber">Numéro de téléphone</label>
                                 <input 
                                     id="phoneNumber"
                                     className={`form-control ${errors.PhoneNumber ? 'is-invalid' : ''}`}
@@ -196,7 +229,8 @@ export default function SignupForm()
                                         pattern: {
                                             value: /^\d{3}-\d{3}-\d{4}$/,
                                             message: 'Votre numéro de téléphone doit avoir le format valide suivant: 000-000-0000',
-                                        }
+                                        },
+                                        onChange: handlePhoneChange
                                     })
                                 }
                                 />
@@ -205,6 +239,9 @@ export default function SignupForm()
                                         {errors.PhoneNumber.message}
                                     </div>
                                 }
+                                <small className="form-text text-muted">
+                                    Entrez simplement les 10 chiffres, les tirets seront ajoutés automatiquement.
+                                </small>
                             </div>
 
                             <button
