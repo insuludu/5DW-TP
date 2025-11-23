@@ -21,12 +21,6 @@ export default function ListCart() {
         getProduct();
     }, []);
 
-    function handleSelectedChange(id: number, selected: boolean) {
-        setCartProducts(prev =>
-            prev.map(p => (p.id === id ? { ...p, selected } : p))
-        );
-    }
-
     async function handlechangeAmount(id: number, amount: number) {
         if (isUpdating) return;
         setIsUpdating(true);
@@ -76,7 +70,6 @@ export default function ListCart() {
                             <div key={product.id} className="col-12">
                                 <CartCard
                                     product={product}
-                                    onSelectedChange={handleSelectedChange}
                                     changeValue={handlechangeAmount}
                                 />
                             </div>

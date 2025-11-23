@@ -13,11 +13,10 @@ interface images {
 
 interface CartCardProps {
     product: CartProductDTO;
-    onSelectedChange: (id: number, selected: boolean) => void;
     changeValue: (id: number, amount: number) => void;
 }
 
-export default function CartCard({ product, onSelectedChange, changeValue }: CartCardProps) {
+export default function CartCard({ product, changeValue }: CartCardProps) {
     let images: images;
 
     if (product.imagesData != null)
