@@ -83,6 +83,14 @@ export default function Header() {
                     <div className="d-none d-lg-flex gap-3 align-items-center">
                         <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
                         
+                        {/* Boutons Connexion/Inscription Desktop */}
+                        <a href="/account/login" className="btn btn-outline-dark">
+                            Se connecter
+                        </a>
+                        <a href="/account/signup" className="btn btn-dark">
+                            S'inscrire
+                        </a>
+                        
                         {/* Bouton Panier Desktop */}
                         <a 
                             href="/shop/cart" 
@@ -149,7 +157,7 @@ export default function Header() {
                         left: 0,
                         right: 0,
                         width: "100%",
-                        maxHeight: isMenuOpen ? "300px" : "0",
+                        maxHeight: isMenuOpen ? "400px" : "0",
                         overflow: "hidden",
                         transition: "max-height 0.3s ease-in-out",
                         zIndex: 1000,
@@ -167,6 +175,26 @@ export default function Header() {
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                             CRÉER
+                        </a>
+                        <a
+                            href="/login"
+                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
+                            onClick={closeMenu}
+                            style={{ transition: "background-color 0.2s" }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        >
+                            SE CONNECTER
+                        </a>
+                        <a
+                            href="/signup"
+                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
+                            onClick={closeMenu}
+                            style={{ transition: "background-color 0.2s" }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        >
+                            S'INSCRIRE
                         </a>
                     </div>
                 </div>

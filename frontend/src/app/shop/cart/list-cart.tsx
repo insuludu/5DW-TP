@@ -76,7 +76,6 @@ export default function ListCart() {
                         ))}
                     </div>
                 )}
-                // Ajoutez après la liste des produits, avant la fermeture de la div principale
 
                 {cartProducts.length > 0 && (
                     <div className="row mt-4">
