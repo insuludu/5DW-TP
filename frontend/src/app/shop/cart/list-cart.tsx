@@ -83,6 +83,30 @@ export default function ListCart() {
                         ))}
                     </div>
                 )}
+                // Ajoutez après la liste des produits, avant la fermeture de la div principale
+
+                {cartProducts.length > 0 && (
+                    <div className="row mt-4">
+                        <div className="col-12 col-lg-6 offset-lg-6">
+                            <div className={`p-4 ${styles.backgroundThird} rounded-4 shadow`}>
+                                <div className="d-flex justify-content-between mb-3">
+                                    <span className="fs-5">Total avant taxes</span>
+                                    <span className="fs-4 fw-bold">
+                                        {cartProducts.reduce((sum, item) => {
+                                            const price = item.discountPrice ?? item.price;
+                                            return sum + (price * item.amount);
+                                        }, 0).toFixed(2)}$
+                                    </span>
+                                </div>
+                                <Link href="/checkout">
+                                    <button className={`${styles.submitButton} w-100 py-3`}>
+                                        Passer la commande
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );

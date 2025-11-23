@@ -1,4 +1,3 @@
-
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,6 +60,18 @@ namespace backend
                 };
             });
 
+            // AJOUT: Configuration CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // Next.js frontend
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
             // Add services to the container...
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
@@ -77,8 +88,12 @@ namespace backend
                 app.MapOpenApi();
             }
 
-            app.UseAuthorization();
+            // IMPORTANT: CORS doit être avant Authentication et Authorization
+            app.UseCors("AllowFrontend");
 
+            // AJOUT: UseAuthentication doit être avant UseAuthorization
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
