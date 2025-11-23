@@ -24,7 +24,7 @@ export async function POST(req: Request) {
                     "Content-Type": "application/json",
                     'Cookie': `authToken=${authCookie?.value}`,
                 },
-                body: JSON.stringify({ productId: id }),
+                body: JSON.stringify(id),
             });
 
             if (!backendResponse.ok) {

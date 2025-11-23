@@ -67,9 +67,7 @@ export default function AddToCartButton({ productId, maxQuantity }: { productId:
     const handleClick = async () => {
         setIsLoading(true);
 
-        const endpoint = isGuest
-            ? '/api/shop/guest-cart/add-product'
-            : '/api/shop/cart/add-product';
+        const endpoint = '/api/shop/cart/add-product';
 
         const formData = new FormData();
         formData.append('id', productId.toString());

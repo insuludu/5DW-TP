@@ -17,8 +17,10 @@ namespace backend.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProducts> OrderProducts { get; set; }
         public DbSet<UserAddress> UserAddress { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<productCart> ProductCarts { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSeeding((context, _) => Seeder.Seeder.Seed(context));
             base.OnConfiguring(optionsBuilder);

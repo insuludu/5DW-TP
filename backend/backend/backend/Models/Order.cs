@@ -42,7 +42,7 @@ namespace backend.Models
         [Required]
         public string OrderNumber { get; set; }
 
-        [Required]
+		[Required]
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
         public List<OrderProducts> Products { get; set; } = new();
