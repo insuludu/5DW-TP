@@ -147,10 +147,8 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
                 orderStatus: 1
             });
 
-            alert("Commande annulée avec succès!");
         } catch (err) {
             console.error(err);
-            alert("Erreur lors de l'annulation de la commande");
         } finally {
             setIsCancelling(false);
         }
@@ -167,9 +165,9 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
                         <h4 className="fw-bold mb-1">
                             Commande #{order.orderNumber}
                         </h4>
-                        <span className={`badge ${statusInfo.color} px-3 py-2`}>
-                            {statusInfo.label}
-                        </span>
+                        <span className={`badge ${statusInfo.color} px-3 py-2 inline-block text-white rounded`}>
+    {statusInfo.label}
+</span>
                     </div>
                     <div className="col text-end">
                         <p className="fs-4 fw-bold mb-0">
