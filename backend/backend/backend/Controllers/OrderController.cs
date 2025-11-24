@@ -373,7 +373,7 @@ namespace backend.Controllers
                 OrderStatus = x.OrderStatus,
                 OrderNumber = x.OrderNumber,
                 TotalBeforeTaxes = x.SubTotal,
-                Total = x.SubTotal * 1.1495m,
+                Total = x.SubTotal * 1.14975m,
                 ProductDTO = x.Products.Select(p => new CartProductDTO {
                     id = p.Product.ID,
                     name = p.Product.Name,
@@ -411,7 +411,7 @@ namespace backend.Controllers
                 OrderStatus = order.OrderStatus,
                 OrderNumber = order.OrderNumber,
                 TotalBeforeTaxes = order.SubTotal,
-                Total = order.SubTotal * 1.1495m,
+                Total = order.SubTotal * 1.14975m,
                 ProductDTO = order.Products.Select(p => new CartProductDTO
                 {
                     id = p.Product.ID,
