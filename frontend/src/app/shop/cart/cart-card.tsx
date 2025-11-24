@@ -24,6 +24,9 @@ export default function CartCard({ product, changeValue }: CartCardProps) {
     else
         images = { alt: "Picture of product : Image not found", url: NotFoundImage };
 
+    const unitPrice = product.discountPrice ?? product.price;
+    const totalPrice = unitPrice * product.amount;
+
     return (
         <div
             className={`d-flex flex-column flex-md-row p-3 mb-4 ${styles.backgroundThird} rounded-4 shadow`}
@@ -32,10 +35,10 @@ export default function CartCard({ product, changeValue }: CartCardProps) {
             <div className="d-flex flex-row w-100">
                 {/* Image */}
                 <a href={`/shop/product/${product.id}`} className="text-decoration-none text-dark flex-shrink-0">
-                    <div 
+                    <div
                         className="position-relative"
-                        style={{ 
-                            width: "100px", 
+                        style={{
+                            width: "100px",
                             height: "100px",
                             minWidth: "100px"
                         }}
@@ -67,6 +70,9 @@ export default function CartCard({ product, changeValue }: CartCardProps) {
                                 </span>
                             </p>
                         )}
+                        <p className="fw-bold mt-1 text-success">
+                            Total : {totalPrice.toFixed(2)}$
+                        </p>
                     </div>
 
                     {/* Contrôle quantité */}
@@ -102,17 +108,24 @@ export default function CartCard({ product, changeValue }: CartCardProps) {
             </div>
 
             {/* Prix (desktop seulement) */}
-            <div className="d-none d-md-flex align-items-center ms-3 flex-shrink-0">
+            <div className="d-none d-md-flex flex-column justify-content-center ms-3 flex-shrink-0 text-end">
+
+                {/* Prix unitaire */}
                 {product.discountPrice == null ? (
-                    <p className="fs-5 fw-bold mb-0 text-nowrap">{product.price.toFixed(2)}$</p>
+                    <p className="fs-5 fw-bold mb-1 text-nowrap">{product.price.toFixed(2)}$</p>
                 ) : (
-                    <p className="fs-6 fw-bold mb-0 text-nowrap">
+                    <p className="fs-6 fw-bold mb-1 text-nowrap">
                         <span className="text-decoration-line-through">{product.price.toFixed(2)}$</span>
                         <span className="text-danger ms-2">
                             {product.discountPrice.toFixed(2)}$ (-{(100 - product.discountPrice / product.price * 100).toFixed(0)}%)
                         </span>
                     </p>
                 )}
+
+                {/* 🟢 Prix total desktop */}
+                <p className="fw-bold mt-1 fs-6 text-success">
+                    Total : {totalPrice.toFixed(2)}$
+                </p>
             </div>
         </div>
     );
