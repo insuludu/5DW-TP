@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using backend.Models;
+﻿using backend.Models;
+using backend.Models_DTO;
+using backend.Services;
 using backend.Validators;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -14,12 +18,15 @@ namespace backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+		private IDomainService _domainService;
 
-        public OrdersController(ApplicationDbContext context, UserManager<User> userManager)
+
+		public OrdersController(ApplicationDbContext context, UserManager<User> userManager, IDomainService domainService)
         {
             _context = context;
             _userManager = userManager;
-        }
+			_domainService = domainService;
+		}
 
         // EF21 - Vérifier le statut d'authentification avant de créer la commande
         [HttpPost("check-auth")]
@@ -326,6 +333,86 @@ namespace backend.Controllers
             var randomPart = new Random().Next(10000, 99999);
             return $"ORD-{datePart}-{randomPart}";
         }
-    }
+
+        [HttpPost("getOrders")]
+		public async Task<IActionResult> GetOrders()
+        {
+			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			if (string.IsNullOrEmpty(userId))
+				return Unauthorized(new { message = "Unauthorized userId" });
+
+			User? user = await _userManager.FindByIdAsync(userId);
+
+			if (user == null)
+				return Unauthorized(new { message = "Unauthorized userId" });
+
+            List<OrderFullDTO> orders = _context.Orders.Where(x => x.UserID == user.Id).Select(x => new OrderFullDTO
+            {
+                OrderStatus = x.OrderStatus,
+                OrderNumber = x.OrderNumber,
+                TotalBeforeTaxes = x.SubTotal,
+                Total = x.SubTotal * 1.1495m,
+                ProductDTO = x.Products.Select(p => new CartProductDTO {
+                    id = p.Product.ID,
+                    name = p.Product.Name,
+                    Price = p.Product.Price,
+                    DiscountPrice = p.Product.DiscountPrice,
+                    Status = (int)p.Product.Status,
+                    Amount = p.Quantity,
+                    MaxQuantity = p.Product.UnitsInStock,
+                    ImagesData = p.Product.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).FirstOrDefault(),
+                }).ToList()
+            }).ToList();
+
+            return Ok(orders);
+		}
+
+        [HttpPost("getOrdersByNumber")]
+        public IActionResult GetOrdersbyNumber([FromBody] string ordernumber)
+        {
+            if (ordernumber == null)
+                return NotFound();
+
+            Order? order = _context.Orders.FirstOrDefault(x => x.OrderNumber == ordernumber);
+
+            if (order == null)
+                return NotFound();
+
+            List<OrderFullDTO> orders = new List<OrderFullDTO> { new OrderFullDTO
+            {
+                OrderStatus = order.OrderStatus,
+                OrderNumber = order.OrderNumber,
+                TotalBeforeTaxes = order.SubTotal,
+                Total = order.SubTotal * 1.1495m,
+                ProductDTO = order.Products.Select(p => new CartProductDTO
+                {
+                    id = p.Product.ID,
+                    name = p.Product.Name,
+                    Price = p.Product.Price,
+                    DiscountPrice = p.Product.DiscountPrice,
+                    Status = (int)p.Product.Status,
+                    Amount = p.Quantity,
+                    MaxQuantity = p.Product.UnitsInStock,
+                    ImagesData = p.Product.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).FirstOrDefault(),
+                }).ToList()
+            } };
+
+			return Ok(orders);
+		}
+
+	}
 
 }
