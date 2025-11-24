@@ -355,7 +355,7 @@ namespace backend.Controllers
             return $"ORD-{datePart}-{randomPart}";
         }
 
-        [HttpPost("getOrders")]
+        [HttpGet("getOrders")]
 		public async Task<IActionResult> GetOrders()
         {
 			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
