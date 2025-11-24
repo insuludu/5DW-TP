@@ -333,7 +333,7 @@ namespace backend.Controllers
         /// <param name="orderNumber">Order number de la commande</param>
         /// <returns></returns>
         [HttpPost("remove")]
-        public IActionResult CancelOrder(string orderNumber)
+        public IActionResult CancelOrder([FromBody] string orderNumber)
         {
             Order? order = _context.Orders.FirstOrDefault(o => o.OrderNumber == orderNumber);
 

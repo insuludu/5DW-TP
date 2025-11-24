@@ -42,7 +42,7 @@ export default function OrderSingle({ orderNumber }: { orderNumber: string }) {
 
                 const res = await fetch("/api/orders/get-order", {
                     method: "POST",
-                    body: formData // No Content-Type header needed
+                    body: formData
                 })
 
                 if (res.status === 401) {
@@ -63,7 +63,6 @@ export default function OrderSingle({ orderNumber }: { orderNumber: string }) {
 
         getOrder();
     }, [orderNumber]);
-
 
     if (isLoading) {
         return (
@@ -90,7 +89,7 @@ export default function OrderSingle({ orderNumber }: { orderNumber: string }) {
     return (
         <section className={`min-vh-100 ${styles.backgroundPrimary} py-5`}>
             <div className="container">
-                <OrderCardOne order={order} />
+                <OrderCardOne order={order} setOrder={setOrder} />
             </div>
         </section>
     );
@@ -100,17 +99,19 @@ export default function OrderSingle({ orderNumber }: { orderNumber: string }) {
 // SINGLE ORDER CARD
 // -------------------------
 
-function OrderCardOne({ order }: { order: OrderFullDTO }) {
+function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (order: OrderFullDTO) => void }) {
     const [isExpanded, setIsExpanded] = useState(true);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const getOrderStatusBadge = (status: number) => {
         const statusMap: Record<number, { label: string; color: string }> = {
-            0: { label: "En attente", color: "bg-warning" },
-            1: { label: "En traitement", color: "bg-info" },
-            2: { label: "Expédiée", color: "bg-primary" },
-            3: { label: "Livrée", color: "bg-success" },
-            4: { label: "Annulée", color: "bg-danger" }
-        };
+        0: { label: "Confirmée", color: "bg-success" },     // Confirmed
+        1: { label: "Annulée", color: "bg-danger" },       // Canceled
+        2: { label: "En préparation", color: "bg-info" },  // Preperation
+        3: { label: "En expédition", color: "bg-primary" },// Shipping
+        4: { label: "Livrée", color: "bg-success" },       // Shipped
+        5: { label: "Retour", color: "bg-warning" }        // Returned
+    };
 
         return statusMap[status] || { label: "Inconnu", color: "bg-secondary" };
     };
@@ -126,6 +127,34 @@ function OrderCardOne({ order }: { order: OrderFullDTO }) {
         return map[status] || "Statut inconnu";
     };
 
+    const cancelOrder = async () => {
+        if (!confirm("Voulez-vous vraiment annuler cette commande ?")) return;
+
+        setIsCancelling(true);
+
+        try {
+            const res = await fetch("/api/orders/remove", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: order.orderNumber })
+            });
+
+            if (!res.ok) throw new Error("Annulation échouée");
+
+            // Update the order status to "Annulée" (4)
+            setOrder({
+                ...order,
+                orderStatus: 1
+            });
+
+            alert("Commande annulée avec succès!");
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de l'annulation de la commande");
+        } finally {
+            setIsCancelling(false);
+        }
+    };
 
     const statusInfo = getOrderStatusBadge(order.orderStatus);
 
@@ -146,9 +175,20 @@ function OrderCardOne({ order }: { order: OrderFullDTO }) {
                         <p className="fs-4 fw-bold mb-0">
                             Total: {order.total.toFixed(2)}$
                         </p>
-                        <p className="text-secondary mb-0" style={{ fontSize: "0.85rem" }}>
+                        <p className="text-secondary mb-2" style={{ fontSize: "0.85rem" }}>
                             Avant taxes: {order.totalBeforeTaxes.toFixed(2)}$
                         </p>
+
+                        {/* Cancel Order Button - Only show if not already cancelled */}
+                        {order.orderStatus !== 4 && (
+                            <button
+                                className="btn btn-danger btn-sm"
+                                disabled={isCancelling}
+                                onClick={cancelOrder}
+                            >
+                                {isCancelling ? "Annulation..." : "Annuler la commande"}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
