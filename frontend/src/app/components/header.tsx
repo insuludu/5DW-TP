@@ -88,7 +88,7 @@ export default function Header() {
                 method: 'POST',
             });
             window.location.reload();  
-            
+
             if (response.ok) {
                 setIsLoggedIn(false);
                 router.push('/');
@@ -144,6 +144,9 @@ export default function Header() {
                     <div className="d-none d-lg-flex gap-3 align-items-center">
                         {roles?.includes("Admin") && (
                             <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
+                        )}
+                        {isLoggedIn && (
+                            <a href="/shop/orders" className="btn btn-outline-dark">Mes commandes</a>
                         )}
 
                         {/* Affichage conditionnel selon l'état de connexion */}
@@ -252,6 +255,15 @@ export default function Header() {
                         >
                             CRÉER
                         </a>
+                        )}
+
+                        {isLoggedIn && (
+                            <a href="/shop/orders" className="text-dark text-decoration-none fw-semibold p-3 text-center" onClick={closeMenu} style={{ transition: "background-color 0.2s" }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                            >
+                                MES COMMANDES
+                            </a>
                         )}
 
                         {/* Affichage conditionnel mobile */}

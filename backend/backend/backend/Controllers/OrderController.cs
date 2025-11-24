@@ -325,6 +325,27 @@ namespace backend.Controllers
             });
         }
 
+        /// <summary>
+        ///     Simon Déry - 23 novembre 2025
+        ///     Annuler une commande
+        /// </summary>
+        /// <param name="orderNumber">Order number de la commande</param>
+        /// <returns></returns>
+        public IActionResult CancelOrder(string orderNumber)
+        {
+            Order? order = _context.Orders.FirstOrDefault(o => o.OrderNumber == orderNumber);
+
+            if (order is null)
+            {
+                return NotFound();
+            }
+
+            order.OrderStatus = OrderStatus.Canceled;
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
         // Méthode privée pour générer un numéro de commande unique
         private string GenerateOrderNumber()
         {
