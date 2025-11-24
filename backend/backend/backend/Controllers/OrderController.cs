@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 
 namespace backend.Controllers
@@ -368,12 +369,12 @@ namespace backend.Controllers
 			if (user == null)
 				return Unauthorized(new { message = "Unauthorized userId" });
 
-            List<OrderFullDTO> orders = _context.Orders.Where(x => x.UserID == user.Id).Select(x => new OrderFullDTO
+			List<OrderFullDTO> orders = _context.Orders.Where(x => x.UserID == user.Id).Select(x => new OrderFullDTO
             {
                 OrderStatus = x.OrderStatus,
                 OrderNumber = x.OrderNumber,
-                TotalBeforeTaxes = x.SubTotal,
-                Total = x.SubTotal * 1.14975m,
+                TotalBeforeTaxes = (decimal)x.Products.Sum(p => (p.DiscountPrice ?? p.Price) * p.Quantity),
+                Total = (decimal)x.Products.Sum(p => (p.DiscountPrice ?? p.Price) * p.Quantity) * 1.14975m,
                 ProductDTO = x.Products.Select(p => new CartProductDTO {
                     id = p.Product.ID,
                     name = p.Product.Name,
