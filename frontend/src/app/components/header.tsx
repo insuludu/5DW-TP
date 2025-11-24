@@ -103,7 +103,7 @@ export default function Header() {
 
     function handleOrderCheck() {
         if (orderNumber.trim() === "") return alert("Veuillez entrer un numéro de commande.");
-        router.push(`/shop/order/${orderNumber}`);
+        router.push(`/shop/orders?ordernumber=${orderNumber}`);
         setIsModalOpen(false);
         setOrderNumber("");
     }

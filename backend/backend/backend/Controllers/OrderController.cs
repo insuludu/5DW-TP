@@ -397,18 +397,18 @@ namespace backend.Controllers
             return Ok(orders);
 		}
 
-        [HttpPost("getOrdersByNumber")]
-        public IActionResult GetOrdersbyNumber([FromBody] string ordernumber)
-        {
+		[HttpPost("getOrdersByNumber")]
+		public IActionResult GetOrdersbyNumber([FromBody] string ordernumber)
+		{
             if (ordernumber == null)
                 return NotFound();
 
-            Order? order = _context.Orders.FirstOrDefault(x => x.OrderNumber == ordernumber);
+            Order? order = _context.Orders.Include(o => o.Products).ThenInclude(pc => pc.Product).ThenInclude(p => p.Images).FirstOrDefault(x => x.OrderNumber == ordernumber);
 
             if (order == null)
                 return NotFound();
 
-            List<OrderFullDTO> orders = new List<OrderFullDTO> { new OrderFullDTO
+            OrderFullDTO orders = new OrderFullDTO
             {
                 OrderStatus = order.OrderStatus,
                 OrderNumber = order.OrderNumber,
@@ -431,7 +431,7 @@ namespace backend.Controllers
                         Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
                     }).FirstOrDefault(),
                 }).ToList()
-            } };
+            };
 
 			return Ok(orders);
 		}
