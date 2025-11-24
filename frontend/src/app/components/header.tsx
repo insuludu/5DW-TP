@@ -87,12 +87,12 @@ export default function Header() {
             const response = await fetch('/api/account/logout', {
                 method: 'POST',
             });
-            window.location.reload();  
+
 
             if (response.ok) {
                 setIsLoggedIn(false);
-                router.push('/');
-                router.refresh();
+                window.location.reload();
+                window.location.replace("/home");
             }
         } catch (error) {
             console.error('Erreur lors de la déconnexion:', error);
@@ -141,35 +141,25 @@ export default function Header() {
                 </div>
                 <div className="col-lg-4 col-md-12 d-flex justify-content-lg-end justify-content-center align-items-center p-3">
                     {/* Menu Desktop */}
-                    <div className="d-none d-lg-flex gap-3 align-items-center">
+                    <div className="d-none d-lg-flex flex-wrap gap-2 align-items-center">
                         {roles?.includes("Admin") && (
                             <a href="/create-product" className="btn btn-outline-dark">Créer produit</a>
                         )}
                         {isLoggedIn && (
                             <a href="/shop/orders" className="btn btn-outline-dark">Mes commandes</a>
                         )}
-
-                        {/* Affichage conditionnel selon l'état de connexion */}
                         {!isLoading && (
                             isLoggedIn ? (
-                                // Bouton Déconnexion
                                 <button onClick={handleLogout} className="btn btn-outline-danger">
                                     Se déconnecter
                                 </button>
                             ) : (
-                                // Boutons Connexion/Inscription
                                 <>
-                                    <a href="/account/login" className="btn btn-outline-dark">
-                                        Se connecter
-                                    </a>
-                                    <a href="/account/signup" className="btn btn-dark">
-                                        S'inscrire
-                                    </a>
+                                    <a href="/account/login" className="btn btn-outline-dark">Se connecter</a>
+                                    <a href="/account/signup" className="btn btn-dark">S'inscrire</a>
                                 </>
                             )
                         )}
-
-                        {/* Bouton Panier Desktop */}
                         <a
                             href="/shop/cart"
                             className="btn btn-outline-dark"
@@ -245,16 +235,16 @@ export default function Header() {
                 >
                     <div className="d-flex flex-column">
                         {roles?.includes("Admin") && (
-                        <a
-                            href="/create-product"
-                            className="text-dark text-decoration-none fw-semibold p-3 text-center"
-                            onClick={closeMenu}
-                            style={{ transition: "background-color 0.2s" }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            CRÉER
-                        </a>
+                            <a
+                                href="/create-product"
+                                className="text-dark text-decoration-none fw-semibold p-3 text-center"
+                                onClick={closeMenu}
+                                style={{ transition: "background-color 0.2s" }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                            >
+                                CRÉER
+                            </a>
                         )}
 
                         {isLoggedIn && (
