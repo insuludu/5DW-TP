@@ -32,17 +32,41 @@ namespace backend.Validators
             if (value.Length < 2)
             {
                 result.AddError(fieldName, $"{fieldName} doit contenir au moins 2 caractères");
+                return;
             }
 
             if (value.Length > 50)
             {
                 result.AddError(fieldName, $"{fieldName} ne peut pas dépasser 50 caractères");
+                return;
             }
 
-            // Accepter lettres, espaces, traits d'union, apostrophes (pour noms comme "O'Brien", "Jean-Paul")
-            if (!Regex.IsMatch(value, @"^[a-zA-ZÀ-ÿ\s'-]+$"))
+            // Pattern amélioré: lettres, espaces, traits d'union et apostrophes
+            if (!Regex.IsMatch(value, @"^[a-zA-ZÀ-ÿ]+(?:[\s'-][a-zA-ZÀ-ÿ]+)*$"))
             {
-                result.AddError(fieldName, $"{fieldName} contient des caractères invalides");
+                result.AddError(fieldName, $"{fieldName} ne peut contenir que des lettres");
+                return;
+            }
+
+            // Vérifier qu'il n'y a pas que des espaces ou caractères spéciaux
+            if (!Regex.IsMatch(value, @"[a-zA-ZÀ-ÿ]{2,}"))
+            {
+                result.AddError(fieldName, $"{fieldName} doit contenir au moins 2 lettres consécutives");
+                return;
+            }
+
+            // Éviter les répétitions excessives (ex: "aaaaaaa")
+            if (Regex.IsMatch(value, @"(.)\1{4,}"))
+            {
+                result.AddError(fieldName, $"{fieldName} contient trop de caractères répétés");
+                return;
+            }
+
+            // Vérifier que ça ne contient pas de chiffres
+            if (Regex.IsMatch(value, @"\d"))
+            {
+                result.AddError(fieldName, $"{fieldName} ne doit pas contenir de chiffres");
+                return;
             }
         }
 
