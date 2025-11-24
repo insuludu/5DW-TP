@@ -7,15 +7,14 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation";
 
 
-export default function SignupForm()
-{
+export default function SignupForm() {
     const router = useRouter();
     const [Errors, setErrors] = useState<string[]>([]);
 
     const {
         register,
         handleSubmit,
-        formState : { errors, isSubmitting, isValid },
+        formState: { errors, isSubmitting, isValid },
         getValues,
         setValue,
     } = useForm<IRegisterForm>({
@@ -26,10 +25,10 @@ export default function SignupForm()
     const formatPhoneNumber = (value: string) => {
         // Enlever tous les caractères non-numériques
         const numbers = value.replace(/\D/g, '');
-        
+
         // Limiter à 10 chiffres
         const limited = numbers.slice(0, 10);
-        
+
         // Ajouter les tirets automatiquement
         if (limited.length <= 3) {
             return limited;
@@ -46,30 +45,36 @@ export default function SignupForm()
     };
 
     const onSubmit = async (formData: IRegisterForm) => {
-        const url = '/api/account/signup/create/'; 
+        const url = '/api/account/signup/create/';
         setErrors([]);
         const backendResponse = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData), 
+            body: JSON.stringify(formData),
         });
 
         if (backendResponse.ok) {
-            router.push(`/account/address`);
+            const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+
+            if (redirectPath) {
+                router.push(`/account/address`);
+            } else {
+                sessionStorage.removeItem('redirectAfterLogin');
+                router.push(`/account/address`);
+            }
         } else {
             const errorData = await backendResponse.json();
-            if (errorData.Errors)
-            {
-                let errorMessages : string[] = errorData.Errors;
+            if (errorData.Errors) {
+                let errorMessages: string[] = errorData.Errors;
                 setErrors(errorMessages);
             }
             console.error('Registration Failed (Server Error):', errorData);
         }
     };
 
-    return(
+    return (
         <section className={`${styles.contactContainer} d-flex justify-content-center`}>
             <div className={`${styles.contactContent} flex-column d-flex w-75`}>
                 <div id="errors" className={`alert alert-danger ${Errors.length == 0 ? "d-none" : ""}`} role="alert">
@@ -85,7 +90,7 @@ export default function SignupForm()
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="form-group mb-2">
                                 <label htmlFor="firstName">Prenom</label>
-                                <input 
+                                <input
                                     id="firstName"
                                     className={`form-control ${errors.FirstName ? 'is-invalid' : ''}`}
                                     type="text"
@@ -101,9 +106,9 @@ export default function SignupForm()
                                             message: "Le format est invalide"
                                         }
                                     })
-                                }
+                                    }
                                 />
-                                { errors.FirstName &&
+                                {errors.FirstName &&
                                     <div className="invalid-feedback">
                                         {errors.FirstName.message}
                                     </div>
@@ -112,7 +117,7 @@ export default function SignupForm()
 
                             <div className="form-group mb-2">
                                 <label htmlFor="lastName">Nom</label>
-                                <input 
+                                <input
                                     id="lastName"
                                     className={`form-control ${errors.LastName ? 'is-invalid' : ''}`}
                                     type="text"
@@ -128,9 +133,9 @@ export default function SignupForm()
                                             message: "Le format est invalide"
                                         }
                                     })
-                                }
+                                    }
                                 />
-                                { errors.LastName &&
+                                {errors.LastName &&
                                     <div className="invalid-feedback">
                                         {errors.LastName.message}
                                     </div>
@@ -139,7 +144,7 @@ export default function SignupForm()
 
                             <div className="form-group mb-2">
                                 <label htmlFor="email">Email</label>
-                                <input 
+                                <input
                                     id="email"
                                     className={`form-control ${errors.Email ? 'is-invalid' : ''}`}
                                     type="email"
@@ -151,9 +156,9 @@ export default function SignupForm()
                                             message: "Le email n'est pas valide."
                                         }
                                     })
-                                }
+                                    }
                                 />
-                                { errors.Email &&
+                                {errors.Email &&
                                     <div className="invalid-feedback">
                                         {errors.Email.message}
                                     </div>
@@ -162,7 +167,7 @@ export default function SignupForm()
 
                             <div className="form-group mb-2">
                                 <label htmlFor="password">Mot de passe</label>
-                                <input 
+                                <input
                                     id="password"
                                     className={`form-control ${errors.Password ? 'is-invalid' : ''}`}
                                     type="password"
@@ -174,19 +179,19 @@ export default function SignupForm()
                                             message: 'Votre mot de passe doit contenir au moins 8 caractères'
                                         },
                                         validate: {
-                                            hasUpperCase: (value) => 
+                                            hasUpperCase: (value) =>
                                                 /[A-Z]/.test(value) || 'Le mot de passe doit contenir au moins une majuscule.',
-                                            hasLowerCase: (value) => 
+                                            hasLowerCase: (value) =>
                                                 /[a-z]/.test(value) || 'Le mot de passe doit contenir au moins une minuscule.',
-                                            hasNumber: (value) => 
+                                            hasNumber: (value) =>
                                                 /[0-9]/.test(value) || 'Le mot de passe doit contenir au moins un chiffre.',
-                                            hasSpecialChar: (value) => 
+                                            hasSpecialChar: (value) =>
                                                 /[^a-zA-Z0-9\s]/.test(value) || 'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*).',
                                         }
                                     })
-                                }
+                                    }
                                 />
-                                { errors.Password &&
+                                {errors.Password &&
                                     <div className="invalid-feedback">
                                         {errors.Password.message}
                                     </div>
@@ -198,19 +203,19 @@ export default function SignupForm()
 
                             <div className="form-group mb-2">
                                 <label htmlFor="passwordConfirm">Confirmer votre mot de passe</label>
-                                <input 
+                                <input
                                     id="passwordConfirm"
                                     className={`form-control ${errors.PasswordConfirm ? 'is-invalid' : ''}`}
                                     type="password"
                                     placeholder="••••••••"
                                     {...register('PasswordConfirm', {
                                         required: 'Veuillez confirmer votre mot de passe.',
-                                        validate: (value) => 
+                                        validate: (value) =>
                                             value === getValues('Password') || 'Les mots de passe ne correspondent pas.'
                                     })
-                                }
+                                    }
                                 />
-                                { errors.PasswordConfirm &&
+                                {errors.PasswordConfirm &&
                                     <div className="invalid-feedback">
                                         {errors.PasswordConfirm.message}
                                     </div>
@@ -219,7 +224,7 @@ export default function SignupForm()
 
                             <div className="form-group mb-2">
                                 <label htmlFor="phoneNumber">Numéro de téléphone</label>
-                                <input 
+                                <input
                                     id="phoneNumber"
                                     className={`form-control ${errors.PhoneNumber ? 'is-invalid' : ''}`}
                                     type="text"
@@ -232,9 +237,9 @@ export default function SignupForm()
                                         },
                                         onChange: handlePhoneChange
                                     })
-                                }
+                                    }
                                 />
-                                { errors.PhoneNumber &&
+                                {errors.PhoneNumber &&
                                     <div className="invalid-feedback">
                                         {errors.PhoneNumber.message}
                                     </div>
@@ -255,7 +260,7 @@ export default function SignupForm()
                                     marginTop: '20px',
                                     width: '100%'
                                 }}
-                                >
+                            >
                                 {isSubmitting ? "Création en cours..." : "Continuer"}
                             </button>
                         </form>
