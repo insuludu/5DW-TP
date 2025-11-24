@@ -143,7 +143,7 @@ export default function Header() {
                     {/* Menu Desktop */}
                     <div className="d-none d-lg-flex gap-3 align-items-center">
                         {roles?.includes("Admin") && (
-                            <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
+                            <a href="/create-product" className="btn btn-outline-dark">Créer produit</a>
                         )}
                         {isLoggedIn && (
                             <a href="/shop/orders" className="btn btn-outline-dark">Mes commandes</a>
