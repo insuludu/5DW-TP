@@ -3,7 +3,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using backend.Seeder;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -11,7 +11,7 @@ namespace backend
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +86,13 @@ namespace backend
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+            }
+
+            // Seed des rôles
+            using (var scope = app.Services.CreateScope())
+            {
+                await RoleSeeder.SeedAsync(scope.ServiceProvider);
+                await UserSeeder.SeedAsync(scope.ServiceProvider);
             }
 
             // IMPORTANT: CORS doit être avant Authentication et Authorization

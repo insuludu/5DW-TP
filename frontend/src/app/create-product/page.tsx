@@ -1,41 +1,57 @@
-'use client';
+"use client";
 
 import Footer from "../components/footer";
 import Header from "../components/header";
-import PasswordPopup from "../components/adminlogin";
 import ProductForm from "./form";
-
-import React, { useState } from 'react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [open, setOpen] = useState(true); // show popup on page load (or false to control later)
-  const [authenticated, setAuthenticated] = useState(false);
+  const [roles, setRoles] = useState<string[] | null>(null); 
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+
+        if (!res.ok) {
+          console.error("API /me failed");
+          return setRoles([]);
+        }
+
+        const data = await res.json();
+
+        setRoles(data.roles || []);
+      } catch (err) {
+        console.error("Error fetching /api/auth/me:", err);
+        setRoles([]);
+      }
+    }
+
+    fetchRoles();
+  }, []);
+
+  // When roles are received, check access
+  useEffect(() => {
+    if (roles === null) return; // still loading
+
+    if (!roles.includes("Admin")) {
+      router.push("/error");
+    }
+  }, [roles, router]);
+
+  // Optional loading UI
+  if (roles === null || !roles.includes("Admin")) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <section>
       <Header />
-
-      {/* Password popup */}
-      <PasswordPopup
-        show={open}
-        onClose={() => setOpen(false)}
-        onSuccess={() => {
-          setAuthenticated(true);
-          setOpen(false);
-        }}
-      />
-
-      {/* Only show form if authenticated */}
       <div>
-        {authenticated ? (
-          <ProductForm />
-        ) : (
-          <div className="flex h-64 items-center justify-center text-gray-600">
-            Accès restreint - veuillez entrer le mot de passe.
-          </div>
-        )}
+        <ProductForm />
       </div>
-
       <Footer />
     </section>
   );

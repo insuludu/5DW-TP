@@ -2,6 +2,16 @@
 
 namespace backend.Models
 {
+    public enum OrderStatus
+    {
+        Confirmed,
+        Canceled,
+        Preperation,
+        Shipping,
+        Shipped,
+        Returned
+    }
+    
     public class Order
     {
         public int OrderID { get; set; }
@@ -44,6 +54,8 @@ namespace backend.Models
 
 		[Required]
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Confirmed;
 
         public List<OrderProducts> Products { get; set; } = new();
 

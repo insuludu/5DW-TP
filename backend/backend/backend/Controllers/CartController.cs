@@ -99,6 +99,7 @@ namespace backend.Controllers
             if (user == null)
                 return Unauthorized(new { message = "Unauthorized userId" });
 
+<<<<<<< HEAD
             Cart? cart = _context.Carts.FirstOrDefault(x => x.UserID == user.Id);
 
             if (cart != null)
