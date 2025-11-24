@@ -90,7 +90,7 @@ namespace backend.Controllers
 
         // ENF03 - Endpoint pour validation asynchrone des champs
         [HttpPost("validate-field")]
-        public IActionResult ValidateField([FromBody] FieldValidationRequest request)
+        public async Task<IActionResult> ValidateField([FromBody] FieldValidationRequest request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.FieldName) || request.Value == null)
             {
@@ -109,6 +109,21 @@ namespace backend.Controllers
                     break;
                 case "email":
                     OrderValidator.ValidateEmail(request.Value, result);
+
+                    // Vérifier si l'email existe déjà pour un utilisateur authentifié
+                    if (result.IsValid)
+                    {
+                        var emailExists = await _context.Users.AnyAsync(u => u.Email.ToLower() == request.Value.Trim().ToLower());
+                        if (emailExists)
+                        {
+                            result.IsValid = false;
+                            if (!result.Errors.ContainsKey("Email"))
+                            {
+                                result.Errors["Email"] = new List<string>();
+                            }
+                            result.Errors["Email"].Add("Cet email est déjà associé à un compte. Veuillez vous connecter.");
+                        }
+                    }
                     break;
                 case "phonenumber":
                     OrderValidator.ValidatePhoneNumber(request.Value, result);
@@ -174,6 +189,23 @@ namespace backend.Controllers
                 if (currentUser != null)
                 {
                     userId = currentUser.Id;
+                }
+            }
+            else
+            {
+                // Si l'utilisateur n'est PAS authentifié, vérifier que l'email n'existe pas
+                var emailExists = await _context.Users.AnyAsync(u => u.Email.ToLower() == orderDto.Email.Trim().ToLower());
+
+                if (emailExists)
+                {
+                    return BadRequest(new
+                    {
+                        message = "Validation échouée",
+                        errors = new Dictionary<string, List<string>>
+                {
+                    { "Email", new List<string> { "Cet email est déjà associé à un compte. Veuillez vous connecter pour continuer." } }
+                }
+                    });
                 }
             }
 

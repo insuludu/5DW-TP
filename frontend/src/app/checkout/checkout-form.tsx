@@ -98,6 +98,34 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
         }
     }
 
+    const checkEmailExists = async (email: string): Promise<boolean> => {
+        // Si l'utilisateur est authentifié, ne pas vérifier
+        if (isAuthenticated) {
+            return false;
+        }
+
+        try {
+            const res = await fetch('/api/orders/validate-field', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fieldName: 'email',
+                    value: email
+                })
+            });
+
+            const data = await res.json();
+            
+            // Si l'API retourne isValid=false, c'est que l'email existe
+            return !data.isValid;
+        } catch (err) {
+            console.error('Erreur vérification email:', err);
+            return false;
+        }
+    };
+
     // Validation asynchrone avec le backend
     const validateFieldAsync = async (fieldName: keyof FormData, value: string) => {
         // Ne pas valider pendant la soumission du formulaire
@@ -181,6 +209,24 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
             pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 message: "Format email invalide"
+            },
+            // Validation asynchrone qui vérifie si l'email existe
+            validate: {
+                emailNotTaken: async (value: string) => {
+                    // Ne vérifier que pour les invités
+                    if (isAuthenticated) {
+                        return true;
+                    }
+
+                    // Validation de format d'abord
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(value)) {
+                        return true; // Laisser la validation pattern gérer ça
+                    }
+
+                    const exists = await checkEmailExists(value);
+                    return !exists || "Cet email est déjà associé à un compte. Veuillez vous connecter.";
+                }
             },
             onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
                 validateFieldAsync('email', e.target.value);
@@ -269,6 +315,21 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
         setLoading(true);
         setGeneralError('');
         setIsSubmittingForm(true); // 👈 Empêche la validation async
+
+        if (!isAuthenticated) {
+            const emailExists = await checkEmailExists(data.email);
+            if (emailExists) {
+                setError('email', {
+                    type: 'manual',
+                    message: "Cet email est déjà associé à un compte. Veuillez vous connecter."
+                });
+                setGeneralError('Veuillez corriger les erreurs dans le formulaire');
+                setLoading(false);
+                setIsSubmittingForm(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+        }
 
         try {
             const orderData = {
@@ -429,6 +490,13 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
                                         {errors.email && (
                                             <div className="invalid-feedback d-block">
                                                 {errors.email.message}
+                                                {errors.email.message?.includes('déjà associé') && (
+                                                    <div className="mt-2">
+                                                        <a href="/account/login" className="text-decoration-none fw-bold">
+                                                            → Se connecter maintenant
+                                                        </a>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
