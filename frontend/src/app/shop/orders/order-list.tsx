@@ -41,7 +41,7 @@ export default function OrderList() {
     useEffect(() => {
         async function getOrders() {
             try {
-                const endpoint = '/api/orders';
+                const endpoint = '/api/orders/get-orders';
                 const res = await fetch(endpoint);
                 
                 if (res.status === 401) {
