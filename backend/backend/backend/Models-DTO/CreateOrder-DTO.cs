@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Models;
+using backend.Models_DTO;
+using System.ComponentModel.DataAnnotations;
 
 public class CreateOrderDto
 {
@@ -34,4 +36,13 @@ public class CreateOrderDto
     // Items du panier envoyés depuis le frontend
     [Required]
     public List<CartItemDto> CartItems { get; set; }
+}
+
+public class OrderFullDTO
+{
+    public string OrderNumber { get; set; }
+    public OrderStatus OrderStatus { get; set; }
+    public List<CartProductDTO> ProductDTO { get; set; } = new List<CartProductDTO>();
+    public decimal TotalBeforeTaxes { get; set; }
+    public decimal Total { get; set; }
 }
