@@ -14,259 +14,266 @@ using System.Text.Json;
 
 namespace backend.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class CartController : ControllerBase
-	{
-		private ApplicationDbContext _context;
-		private readonly UserManager<User> _userManager;
-		private IDomainService _domainService;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CartController : ControllerBase
+    {
+        private ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private IDomainService _domainService;
 
-		public CartController(ApplicationDbContext context, UserManager<User> userManager, IDomainService domainService)
-		{
-			_context = context;
-			_userManager = userManager;
-			_domainService = domainService;
-		}
+        public CartController(ApplicationDbContext context, UserManager<User> userManager, IDomainService domainService)
+        {
+            _context = context;
+            _userManager = userManager;
+            _domainService = domainService;
+        }
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet d'ajouter un produit au cart de l'utilisateur
-		/// </summary>
-		/// <param name="Id">l'id du produit a ajouter</param>
-		/// <returns></returns>
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet d'ajouter un produit au cart de l'utilisateur
+        /// </summary>
+        /// <param name="Id">l'id du produit a ajouter</param>
+        /// <returns></returns>
 
-		[HttpPost("add")]
-		public async Task<ActionResult> addProductAsync([FromBody] int id)
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        [HttpPost("add")]
+        public async Task<ActionResult> addProductAsync([FromBody] int id)
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			User? user = await _userManager.FindByIdAsync(userId);
-			Product? product = _context.Products.Find(id);
+            User? user = await _userManager.FindByIdAsync(userId);
+            Product? product = _context.Products.Find(id);
 
-			if (user == null	)
-				return Unauthorized(new { message = "Unauthorized userId" });
-			if (product == null)
-				return NotFound();
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
+            if (product == null)
+                return NotFound();
 
-			Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
+            Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
 
 
-			productCart productcart = new productCart()
-			{
-				Product = product,
-				Amount = 1
-			};
+            productCart productcart = new productCart()
+            {
+                Product = product,
+                Amount = 1
+            };
 
-			if (cart == null)
-			{
+            if (cart == null)
+            {
 
-				cart = new Cart()
-				{
-					UserID = user.Id,
-					Products = { productcart }
-				};
-				_context.Carts.Add(cart);	
+                cart = new Cart()
+                {
+                    UserID = user.Id,
+                    Products = { productcart }
+                };
+                _context.Carts.Add(cart);
 
-			}
-			else
-			{
-				cart.Products.Add(productcart);
-			}
-			_context.SaveChanges();
+            }
+            else
+            {
+                cart.Products.Add(productcart);
+            }
+            _context.SaveChanges();
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet de vider le panier de l'utilisateur connecter
-		/// </summary>
-		/// <returns></returns>
-		[HttpPost("clear")]
-		public async Task<ActionResult> clearProduct()
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet de vider le panier de l'utilisateur connecter
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("clear")]
+        public async Task<ActionResult> clearProduct()
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			User? user = await _userManager.FindByIdAsync(userId);
+            User? user = await _userManager.FindByIdAsync(userId);
 
-			if (user == null)
-				return Unauthorized(new { message = "Unauthorized userId" });
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			Cart? cart = _context.Carts.FirstOrDefault(x => x.UserID == user.Id);
+            Cart? cart = _context.Carts.FirstOrDefault(x => x.UserID == user.Id);
 
-			if (cart != null)
-			{
-				_context.Carts.Remove(cart);
-				_context.SaveChanges();
-			}
+            if (cart != null)
+            {
+                var productCarts = await _context.ProductCarts
+    .Where(pc => pc.Id == cart.Id)
+    .ToListAsync();
 
-			return Ok();
-		}
+                _context.ProductCarts.RemoveRange(productCarts);
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet de vider le panier de l'utilisateur connecter
-		/// </summary>
-		/// <returns></returns>
-		[HttpGet("products")]
-		public async Task<ActionResult> getProduct()
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                _context.Carts.Remove(cart);
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+                await _context.SaveChangesAsync();
+            }
 
-			User? user = await _userManager.FindByIdAsync(userId);
+            return Ok();
+        }
 
-			if (user == null)
-				return Unauthorized(new { message = "Unauthorized userId" });
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet de vider le panier de l'utilisateur connecter
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("products")]
+        public async Task<ActionResult> getProduct()
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			Cart? cart = _context.Carts.Include(x => x.Products).ThenInclude(x => x.Product).ThenInclude(x => x.Images).FirstOrDefault(x => x.UserID == user.Id);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			if (cart == null)
-				return NotFound();
+            User? user = await _userManager.FindByIdAsync(userId);
 
-			var result = cart.Products
-				.Select(p => new CartProductDTO
-				{
-					id = p.Product.ID,
-					name = p.Product.Name,
-					Price = p.Product.Price,
-					DiscountPrice = p.Product.DiscountPrice,
-					Status = (int)p.Product.Status,
-					Amount = p.Amount,
-					MaxQuantity = p.Product.UnitsInStock,
-					ImagesData = p.Product.Images.Select(i => new ImageDTO
-					{
-						ID = i.Id,
-						Alt = i.ImageAlt,
-						Order = i.Order,
-						Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
-					}).FirstOrDefault(),
-				})
-				.ToArray();
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			if (result == null)
-				return NotFound();
+            Cart? cart = _context.Carts.Include(x => x.Products).ThenInclude(x => x.Product).ThenInclude(x => x.Images).FirstOrDefault(x => x.UserID == user.Id);
 
-			return Ok(result);
-		}
+            if (cart == null)
+                return NotFound();
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet de supprimer un produit au cart de l'utilisateur
-		/// </summary>
-		/// <param name="Id">l'id du produit a suppriemr</param>
-		/// <returns></returns>
-		[HttpPost("remove")]
-		public async Task<ActionResult> removeProduct([FromBody] int productId)
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = cart.Products
+                .Select(p => new CartProductDTO
+                {
+                    id = p.Product.ID,
+                    name = p.Product.Name,
+                    Price = p.Product.Price,
+                    DiscountPrice = p.Product.DiscountPrice,
+                    Status = (int)p.Product.Status,
+                    Amount = p.Amount,
+                    MaxQuantity = p.Product.UnitsInStock,
+                    ImagesData = p.Product.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).FirstOrDefault(),
+                })
+                .ToArray();
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+            if (result == null)
+                return NotFound();
 
-			User? user = await _userManager.FindByIdAsync(userId);
-			Product? product = _context.Products.Find(productId);
+            return Ok(result);
+        }
 
-			if (user == null)
-				return Unauthorized(new { message = "Unauthorized userId" });
-			if (product == null)
-				return NotFound();
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet de supprimer un produit au cart de l'utilisateur
+        /// </summary>
+        /// <param name="Id">l'id du produit a suppriemr</param>
+        /// <returns></returns>
+        [HttpPost("remove")]
+        public async Task<ActionResult> removeProduct([FromBody] int productId)
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			if (cart != null)
-			{
-				productCart productcart = cart.Products.First(x => x.Product == product);
-				cart.Products.Remove(productcart);
-				_context.ProductCarts.Remove(productcart);
-				_context.SaveChanges();
-			}
+            User? user = await _userManager.FindByIdAsync(userId);
+            Product? product = _context.Products.Find(productId);
 
-			return Ok();
-		}
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
+            if (product == null)
+                return NotFound();
 
-		public class idquantity
-		{
-			public int productId { get; set; }
-			public int quantity { get; set; }
-		}
+            Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet de mettre a jour la quantity d'un produit du cart de l'utilisateur
-		/// </summary>
-		/// <param name="Id">l'id du produit a modifier</param>
-		/// <returns></returns>
-		[HttpPost("update-quantity")]
-		public async Task<ActionResult> UpdateQuantityProduct([FromBody] idquantity values)
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (cart != null)
+            {
+                productCart productcart = cart.Products.First(x => x.Product == product);
+                cart.Products.Remove(productcart);
+                _context.ProductCarts.Remove(productcart);
+                _context.SaveChanges();
+            }
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+            return Ok();
+        }
 
-			User? user = await _userManager.FindByIdAsync(userId);
-			Product? product = _context.Products.Find(values.productId);
+        public class idquantity
+        {
+            public int productId { get; set; }
+            public int quantity { get; set; }
+        }
 
-			if (user == null)
-				return Unauthorized(new { message = "Unauthorized userId" });
-			if (product == null)
-				return NotFound();
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet de mettre a jour la quantity d'un produit du cart de l'utilisateur
+        /// </summary>
+        /// <param name="Id">l'id du produit a modifier</param>
+        /// <returns></returns>
+        [HttpPost("update-quantity")]
+        public async Task<ActionResult> UpdateQuantityProduct([FromBody] idquantity values)
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			if (cart != null)
-			{
-				productCart productcart = cart.Products.First(x => x.Product == product);
-				productcart.Amount = values.quantity;
-				_context.SaveChanges();
-			}
+            User? user = await _userManager.FindByIdAsync(userId);
+            Product? product = _context.Products.Find(values.productId);
 
-			return Ok();
-		}
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
+            if (product == null)
+                return NotFound();
 
-		/// <summary>
-		///		Alexis Bergeron
-		///		Permet de mettre a jour la quantity d'un produit du cart de l'utilisateur
-		/// </summary>
-		/// <param name="Id">l'id du produit a modifier</param>
-		/// <returns></returns>
-		[HttpGet("quantity/{productId}")]
-		public async Task<ActionResult> QuantityProduct(int productId)
-		{
-			string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
 
-			if (string.IsNullOrEmpty(userId))
-				return Unauthorized(new { message = "Unauthorized userId" });
+            if (cart != null)
+            {
+                productCart productcart = cart.Products.First(x => x.Product == product);
+                productcart.Amount = values.quantity;
+                _context.SaveChanges();
+            }
 
-			User? user = await _userManager.FindByIdAsync(userId);
-			Product? product = _context.Products.Find(productId);
+            return Ok();
+        }
 
-			if (user == null)
-				return Unauthorized(new { message = "Unauthorized userId" });
+        /// <summary>
+        ///		Alexis Bergeron
+        ///		Permet de mettre a jour la quantity d'un produit du cart de l'utilisateur
+        /// </summary>
+        /// <param name="Id">l'id du produit a modifier</param>
+        /// <returns></returns>
+        [HttpGet("quantity/{productId}")]
+        public async Task<ActionResult> QuantityProduct(int productId)
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			if (product == null)
-				return NotFound();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-			Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
+            User? user = await _userManager.FindByIdAsync(userId);
+            Product? product = _context.Products.Find(productId);
 
-			if (cart != null)
-			{
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
 
-				productCart? productcart = cart.Products.FirstOrDefault(x => x.Product == product);
-				return Ok(new { quantity = productcart?.Amount ?? 0 });
-			}
+            if (product == null)
+                return NotFound();
 
-			return Ok(new { quantity = 0 });
-		}
-	}
+            Cart? cart = _context.Carts.Include(x => x.Products).FirstOrDefault(x => x.UserID == user.Id);
+
+            if (cart != null)
+            {
+
+                productCart? productcart = cart.Products.FirstOrDefault(x => x.Product == product);
+                return Ok(new { quantity = productcart?.Amount ?? 0 });
+            }
+
+            return Ok(new { quantity = 0 });
+        }
+    }
 }

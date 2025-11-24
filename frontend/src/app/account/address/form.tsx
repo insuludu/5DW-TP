@@ -4,10 +4,11 @@ import styles from "@/app/styles/page.module.css";
 import { IAddress } from "@/interfaces"
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AddressForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [Errors, setErrors] = useState<string[]>([]);
 
     const {
@@ -17,6 +18,26 @@ export default function AddressForm() {
     } = useForm<IAddress>({
         mode: "onChange",
     });
+
+    const handleRedirectAfterSuccess = () => {
+        // Vérifier sessionStorage en premier (depuis checkout)
+        const sessionRedirect = sessionStorage.getItem('redirectAfterLogin');
+        if (sessionRedirect) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            router.push(sessionRedirect);
+            return;
+        }
+        
+        // Vérifier les paramètres d'URL
+        const redirectParam = searchParams.get('redirect');
+        if (redirectParam) {
+            router.push(redirectParam);
+            return;
+        }
+        
+        // Redirection par défaut
+        router.push("/home");
+    };
 
     const onSubmit = async (formData: IAddress) => {
         const url = '/api/account/signup/add-address/';
@@ -32,7 +53,7 @@ export default function AddressForm() {
         if (backendResponse.ok) {
             const data = await backendResponse.json();
             console.log("Address Added Successfully", data);
-            router.push("/home");
+            handleRedirectAfterSuccess();
         } else {
             const errorData = await backendResponse.json();
             if (errorData.Errors) {
@@ -42,6 +63,10 @@ export default function AddressForm() {
 
             console.error("Address Failed (Server Error):", errorData);
         }
+    };
+
+    const handleSkip = () => {
+        handleRedirectAfterSuccess();
     };
 
     return (
@@ -216,13 +241,14 @@ export default function AddressForm() {
 
                             <button
                                 type="button"
-                                onClick={() => router.push("/home")}
+                                onClick={handleSkip}
                                 style={{
                                     backgroundColor: "#6c757d",
                                     color: "white",
                                     padding: "8px 16px",
                                     marginTop: "10px",
                                     width: "100%",
+                                    cursor: "pointer",
                                 }}
                             >
                                 Passer pour le moment

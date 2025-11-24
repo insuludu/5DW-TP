@@ -29,7 +29,16 @@ export default function LoginForm() {
         });
 
         if (backendResponse.ok) {
-            router.push("/home");
+
+            const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+            sessionStorage.removeItem('redirectAfterLogin');
+
+            if (redirectPath) {
+                router.push(redirectPath);
+            } else {
+                router.push("/home");
+            }
+
         } else {
             const errorData = await backendResponse.json();
             if (errorData.Errors) {

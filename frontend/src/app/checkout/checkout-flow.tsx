@@ -65,14 +65,20 @@ export default function CheckoutFlow() {
                                 
                                 <div className="d-grid gap-3">
                                     <button 
-                                        onClick={() => router.push('/login?redirect=/checkout')}
+                                        onClick={() => {
+                                            sessionStorage.setItem('redirectAfterLogin', '/checkout');
+                                            router.push('/account/login');
+                                        }}
                                         className={`${styles.submitButton} py-3`}
                                     >
                                         Se connecter
                                     </button>
                                     
                                     <button 
-                                        onClick={() => router.push('/register?redirect=/checkout')}
+                                        onClick={() => {
+                                            sessionStorage.setItem('redirectAfterLogin', '/checkout');
+                                            router.push('/account/signup');
+                                        }}
                                         className={`${styles.submitButton} py-3`}
                                     >
                                         Créer un compte
