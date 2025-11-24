@@ -10,6 +10,8 @@ export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [roles, setRoles] = useState<string[] | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [orderNumber, setOrderNumber] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -99,6 +101,13 @@ export default function Header() {
         }
     }
 
+    function handleOrderCheck() {
+        if (orderNumber.trim() === "") return alert("Veuillez entrer un numéro de commande.");
+        router.push(`/shop/order/${orderNumber}`);
+        setIsModalOpen(false);
+        setOrderNumber("");
+    }
+
     return (
         <header>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
@@ -157,6 +166,7 @@ export default function Header() {
                                 <>
                                     <a href="/account/login" className="btn btn-outline-dark">Se connecter</a>
                                     <a href="/account/signup" className="btn btn-dark">S'inscrire</a>
+                                    <button onClick={() => setIsModalOpen(true)} className="btn btn-outline-primary">Vérifier commande</button>
                                 </>
                             )
                         )}
@@ -177,6 +187,20 @@ export default function Header() {
                         </a>
                     </div>
 
+
+                    {/* Modal pour numéro de commande */}
+                    {isModalOpen && (
+                        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 2000 }}>
+                            <div className="bg-white p-4 rounded" style={{ width: "300px" }}>
+                                <h5 className="mb-3">Entrer le numéro de commande</h5>
+                                <input type="text" value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)} className="form-control mb-3" />
+                                <div className="d-flex justify-content-between">
+                                    <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Annuler</button>
+                                    <button className="btn btn-primary" onClick={handleOrderCheck}>Valider</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {/* Bouton Hamburger Mobile */}
                     <button
                         className="d-lg-none btn btn-link text-dark p-0"
