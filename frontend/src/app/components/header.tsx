@@ -10,6 +10,8 @@ export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [roles, setRoles] = useState<string[] | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [orderNumber, setOrderNumber] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -87,16 +89,23 @@ export default function Header() {
             const response = await fetch('/api/account/logout', {
                 method: 'POST',
             });
-            window.location.reload();  
+
 
             if (response.ok) {
                 setIsLoggedIn(false);
-                router.push('/');
-                router.refresh();
+                window.location.reload();
+                window.location.replace("/home");
             }
         } catch (error) {
             console.error('Erreur lors de la déconnexion:', error);
         }
+    }
+
+    function handleOrderCheck() {
+        if (orderNumber.trim() === "") return alert("Veuillez entrer un numéro de commande.");
+        router.push(`/shop/order/${orderNumber}`);
+        setIsModalOpen(false);
+        setOrderNumber("");
     }
 
     return (
@@ -141,35 +150,26 @@ export default function Header() {
                 </div>
                 <div className="col-lg-4 col-md-12 d-flex justify-content-lg-end justify-content-center align-items-center p-3">
                     {/* Menu Desktop */}
-                    <div className="d-none d-lg-flex gap-3 align-items-center">
+                    <div className="d-none d-lg-flex flex-wrap gap-2 align-items-center">
                         {roles?.includes("Admin") && (
                             <a href="/create-product" className="btn btn-outline-dark">Créer produit</a>
                         )}
                         {isLoggedIn && (
-                            <a href="/shop/orders" className="btn btn-outline-dark">Mes commandes</a>
+                            <a href="/shop/orders" className="btn btn-outline-primary">Mes commandes</a>
                         )}
-
-                        {/* Affichage conditionnel selon l'état de connexion */}
                         {!isLoading && (
                             isLoggedIn ? (
-                                // Bouton Déconnexion
                                 <button onClick={handleLogout} className="btn btn-outline-danger">
                                     Se déconnecter
                                 </button>
                             ) : (
-                                // Boutons Connexion/Inscription
                                 <>
-                                    <a href="/account/login" className="btn btn-outline-dark">
-                                        Se connecter
-                                    </a>
-                                    <a href="/account/signup" className="btn btn-dark">
-                                        S'inscrire
-                                    </a>
+                                    <button onClick={() => setIsModalOpen(true)} className="btn btn-outline-dark">Vérifier commande</button>
+                                    <a href="/account/login" className="btn btn-outline-primary">Se connecter</a>
+                                    <a href="/account/signup" className="btn btn-dark">S'inscrire</a>
                                 </>
                             )
                         )}
-
-                        {/* Bouton Panier Desktop */}
                         <a
                             href="/shop/cart"
                             className="btn btn-outline-dark"
@@ -187,20 +187,21 @@ export default function Header() {
                         </a>
                     </div>
 
+
                     {/* Bouton Hamburger Mobile */}
                     <button
                         className="d-lg-none btn btn-link text-dark p-0"
                         onClick={toggleMenu}
                         aria-label="Menu"
                         style={{ border: "none", background: "none" }}
-                    >
+                        >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
                             fill="currentColor"
                             viewBox="0 0 16 16"
-                        >
+                            >
                             {isMenuOpen ? (
                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
                             ) : (
@@ -214,14 +215,14 @@ export default function Header() {
                         href="/shop/cart"
                         className="btn btn-outline-dark d-lg-none ms-3"
                         style={{ padding: "0.375rem 0.75rem" }}
-                    >
+                        >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
                             height="20"
                             fill="currentColor"
                             viewBox="0 0 16 16"
-                        >
+                            >
                             <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
                         </svg>
                     </a>
@@ -242,25 +243,25 @@ export default function Header() {
                         borderBottom: isMenuOpen ? "2px solid #ccc" : "none",
                         boxShadow: isMenuOpen ? "0 2px 4px rgba(0, 0, 0, 0.1)" : "none"
                     }}
-                >
+                    >
                     <div className="d-flex flex-column">
                         {roles?.includes("Admin") && (
-                        <a
+                            <a
                             href="/create-product"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
                             onClick={closeMenu}
                             style={{ transition: "background-color 0.2s" }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            CRÉER
-                        </a>
+                            >
+                                CRÉER
+                            </a>
                         )}
 
                         {isLoggedIn && (
                             <a href="/shop/orders" className="text-dark text-decoration-none fw-semibold p-3 text-center" onClick={closeMenu} style={{ transition: "background-color 0.2s" }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
                                 MES COMMANDES
                             </a>
@@ -270,23 +271,24 @@ export default function Header() {
                         {!isLoading && (
                             isLoggedIn ? (
                                 <button
-                                    onClick={() => {
-                                        handleLogout();
-                                        closeMenu();
-                                    }}
-                                    className="text-danger text-decoration-none fw-semibold p-3 text-center"
-                                    style={{
-                                        transition: "background-color 0.2s",
-                                        border: "none",
-                                        background: "transparent"
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                onClick={() => {
+                                    handleLogout();
+                                    closeMenu();
+                                }}
+                                className="text-danger text-decoration-none fw-semibold p-3 text-center"
+                                style={{
+                                    transition: "background-color 0.2s",
+                                    border: "none",
+                                    background: "transparent"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                 >
                                     SE DÉCONNECTER
                                 </button>
                             ) : (
                                 <>
+                                    <button onClick={() => setIsModalOpen(true)} className="text-dark fw-semibold p-3 text-center" style={{ border: "none", background: "transparent" }}>VÉRIFIER COMMANDE</button>
                                     <a
                                         href="/account/login"
                                         className="text-dark text-decoration-none fw-semibold p-3 text-center"
@@ -294,7 +296,7 @@ export default function Header() {
                                         style={{ transition: "background-color 0.2s" }}
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                    >
+                                        >
                                         SE CONNECTER
                                     </a>
                                     <a
@@ -304,7 +306,7 @@ export default function Header() {
                                         style={{ transition: "background-color 0.2s" }}
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                    >
+                                        >
                                         S'INSCRIRE
                                     </a>
                                 </>
@@ -313,6 +315,19 @@ export default function Header() {
                     </div>
                 </div>
             </div>
+            {/* Modal pour numéro de commande */}
+            {isModalOpen && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 2000 }}>
+                    <div className="bg-white p-4 rounded" style={{ width: "300px" }}>
+                        <h5 className="mb-3">Entrer le numéro de commande</h5>
+                        <input type="text" value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)} className="form-control mb-3" />
+                        <div className="d-flex justify-content-between">
+                            <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Annuler</button>
+                            <button className="btn btn-primary" onClick={handleOrderCheck}>Valider</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header >
     );
 }
