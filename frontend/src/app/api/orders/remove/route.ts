@@ -1,46 +1,50 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AuthCookieName } from "@/constants";
-import { json } from "stream/consumers";
 
 const backendUrl = process.env.API_BACKEND_URL;
 
 export async function POST(req: Request) {
     try {
-        const formData = await req.formData();
-        const orderNumber = formData.get("id");
+        const body = await req.json();
+        const orderNumber = body.id;
 
-        const headers: HeadersInit = {
-            "Content-Type": "application/json",
-        };
+        if (!orderNumber) {
+            return NextResponse.json(
+                { message: "Numéro commande manquant" },
+                { status: 400 }
+            );
+        }
 
-        const url = `${backendUrl}/api/Orders/remove`;
-        console.log('URL appelée:', url);
+        const cookieStore = await cookies();
+        const token = cookieStore.get(AuthCookieName);
 
-        const res = await fetch(url, {
-            method: "GET",
-            headers: headers,
+        if (!token) {
+            return NextResponse.json(
+                { message: "Non authentifié" },
+                { status: 401 }
+            );
+        }
+
+        const res = await fetch(`${backendUrl}/api/Orders/remove`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token.value}`
+            },
             body: JSON.stringify(orderNumber)
         });
 
         const data = await res.json();
-        console.log('Données reçues du backend:', data);
-
         if (!res.ok) {
-            console.error('Erreur du backend:', data);
             return NextResponse.json(data, { status: res.status });
         }
 
-        console.log('Commandes supprimé avec succès');
         return NextResponse.json(data, { status: 200 });
 
     } catch (err) {
-        console.error("Erreur API orders:", err);
-        console.error('Type:', typeof err);
-        console.error('Message:', err instanceof Error ? err.message : String(err));
-        
+        console.error("Erreur annulation :", err);
         return NextResponse.json(
-            { message: "Erreur lors de la récupération des commandes: " + (err instanceof Error ? err.message : String(err)) },
+            { message: "Erreur lors de l'annulation" },
             { status: 500 }
         );
     }
