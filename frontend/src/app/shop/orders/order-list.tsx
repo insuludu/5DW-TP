@@ -165,7 +165,7 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
                             (Avant taxes: {order.totalBeforeTaxes.toFixed(2)}$)
                         </p>
 
-                        {(orderStatus === 0 || orderStatus === 1) && (
+                        {(orderStatus === 0 || orderStatus === 2) && (
                             <button
                                 className="btn btn-danger btn-sm"
                                 disabled={isCancelling}

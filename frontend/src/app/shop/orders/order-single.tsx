@@ -105,13 +105,13 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
 
     const getOrderStatusBadge = (status: number) => {
         const statusMap: Record<number, { label: string; color: string }> = {
-        0: { label: "Confirmée", color: "bg-success" },     // Confirmed
-        1: { label: "Annulée", color: "bg-danger" },       // Canceled
-        2: { label: "En préparation", color: "bg-info" },  // Preperation
-        3: { label: "En expédition", color: "bg-primary" },// Shipping
-        4: { label: "Livrée", color: "bg-success" },       // Shipped
-        5: { label: "Retour", color: "bg-warning" }        // Returned
-    };
+            0: { label: "Confirmée", color: "bg-success" },     // Confirmed
+            1: { label: "Annulée", color: "bg-danger" },       // Canceled
+            2: { label: "En préparation", color: "bg-info" },  // Preperation
+            3: { label: "En expédition", color: "bg-primary" },// Shipping
+            4: { label: "Livrée", color: "bg-success" },       // Shipped
+            5: { label: "Retour", color: "bg-warning" }        // Returned
+        };
 
         return statusMap[status] || { label: "Inconnu", color: "bg-secondary" };
     };
@@ -180,7 +180,7 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
                         </p>
 
                         {/* Cancel Order Button - Only show if not already cancelled */}
-                        {order.orderStatus !== 4 && (
+                        {(order.orderStatus === 0 || order.orderStatus === 2) && (
                             <button
                                 className="btn btn-danger btn-sm"
                                 disabled={isCancelling}
