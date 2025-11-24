@@ -8,19 +8,19 @@ const backendUrl = process.env.API_BACKEND_URL;
 export async function POST(req: Request) {
     try {
         const formData = await req.formData();
-        const orderNumber = formData.get("id");
+        const ordernumber = formData.get("id");
 
         const headers: HeadersInit = {
             "Content-Type": "application/json",
         };
 
-        const url = `${backendUrl}/api/Orders/remove`;
+        const url = `${backendUrl}/api/Orders/getOrdersByNumber`;
         console.log('URL appelée:', url);
 
         const res = await fetch(url, {
             method: "GET",
             headers: headers,
-            body: JSON.stringify(orderNumber)
+            body: JSON.stringify(ordernumber)
         });
 
         const data = await res.json();

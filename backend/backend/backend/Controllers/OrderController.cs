@@ -332,6 +332,7 @@ namespace backend.Controllers
         /// </summary>
         /// <param name="orderNumber">Order number de la commande</param>
         /// <returns></returns>
+        [HttpPost("remove")]
         public IActionResult CancelOrder(string orderNumber)
         {
             Order? order = _context.Orders.FirstOrDefault(o => o.OrderNumber == orderNumber);
