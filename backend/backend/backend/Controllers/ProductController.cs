@@ -2,6 +2,7 @@
 using backend.Models;
 using backend.Models_DTO;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ namespace backend.Controllers
         /// </summary>
         /// <param name="newProduct">le produit convertie de json vers CreateProductDTO</param>
         /// <returns></returns>
+        [Authorize(Roles = "admin")]
         [HttpPost("CreateProduct")]
         public ActionResult CreateProduct([FromForm] CreateProductDTO newProduct)
         {
@@ -106,6 +108,7 @@ namespace backend.Controllers
         /// </summary>
         /// <param name="newProduct">le produit convertie de json vers CreateProductDTO</param>
         /// <returns></returns>
+        [Authorize(Roles = "admin")]
         [HttpPost("EditProduct")]
         public ActionResult EditProduct([FromForm] EditProductDTO editedProduct)
         {

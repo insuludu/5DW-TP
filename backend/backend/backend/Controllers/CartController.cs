@@ -99,12 +99,13 @@ namespace backend.Controllers
 			if (user == null)
 				return Unauthorized(new { message = "Unauthorized userId" });
 
-			Cart? cart = _context.Carts.FirstOrDefault(x => x.UserID == user.Id);
+            Cart? cart = _context.Carts.Include(c => c.Products).FirstOrDefault(x => x.UserID == user.Id);
 
-			if (cart != null)
+            if (cart != null)
 			{
-				_context.Carts.Remove(cart);
-				_context.SaveChanges();
+                _context.ProductCarts.RemoveRange(cart.Products);
+                _context.Carts.Remove(cart);
+                _context.SaveChanges();
 			}
 
 			return Ok();

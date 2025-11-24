@@ -150,7 +150,12 @@ namespace backend.Controllers
         [HttpPost(nameof(Logout))]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete(Constants.AuthCookieName);
+            Response.Cookies.Delete(Constants.AuthCookieName, new CookieOptions
+            {
+                Path = "/",       // indispensable si le cookie a été créé avec Path "/"
+                HttpOnly = true,  // optionnel mais recommandé
+                Secure = true     // optionnel mais recommandé si HTTPS
+            });
             return Ok(new { success = true });
         }
 

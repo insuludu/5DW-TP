@@ -1,16 +1,15 @@
 "use client";
-import styles from "../styles/page.module.css"
 import imageLogo from "../images/Logo.png"
 import Image from "next/image"
 import { useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import LoginStatusWrapper from "./login/loginStatusWrapper";
 
 export default function Header() {
     const [value, setValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [roles, setRoles] = useState<string[] | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -29,8 +28,31 @@ export default function Header() {
                 setIsLoading(false);
             }
         };
-        
+
         checkAuthStatus();
+    }, []);
+
+
+    useEffect(() => {
+        async function fetchRoles() {
+            try {
+                const res = await fetch("/api/auth/me", { cache: "no-store" });
+
+                if (!res.ok) {
+                    console.error("API /me failed");
+                    return setRoles([]);
+                }
+
+                const data = await res.json();
+
+                setRoles(data.roles || []);
+            } catch (err) {
+                console.error("Error fetching /api/auth/me:", err);
+                setRoles([]);
+            }
+        }
+
+        fetchRoles();
     }, []);
 
     function handleChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -65,6 +87,7 @@ export default function Header() {
             const response = await fetch('/api/account/logout', {
                 method: 'POST',
             });
+            window.location.reload();  
             
             if (response.ok) {
                 setIsLoggedIn(false);
@@ -119,8 +142,10 @@ export default function Header() {
                 <div className="col-lg-4 col-md-12 d-flex justify-content-lg-end justify-content-center align-items-center p-3">
                     {/* Menu Desktop */}
                     <div className="d-none d-lg-flex gap-3 align-items-center">
-                        <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
-                        
+                        {roles?.includes("Admin") && (
+                            <a href="/create-product" className="text-dark text-decoration-none fw-semibold">CRÉER</a>
+                        )}
+
                         {/* Affichage conditionnel selon l'état de connexion */}
                         {!isLoading && (
                             isLoggedIn ? (
@@ -140,10 +165,10 @@ export default function Header() {
                                 </>
                             )
                         )}
-                        
+
                         {/* Bouton Panier Desktop */}
-                        <a 
-                            href="/shop/cart" 
+                        <a
+                            href="/shop/cart"
                             className="btn btn-outline-dark"
                             style={{ padding: "0.375rem 0.75rem" }}
                         >
@@ -154,7 +179,7 @@ export default function Header() {
                                 fill="currentColor"
                                 viewBox="0 0 16 16"
                             >
-                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
                             </svg>
                         </a>
                     </div>
@@ -182,8 +207,8 @@ export default function Header() {
                     </button>
 
                     {/* Bouton Panier Mobile */}
-                    <a 
-                        href="/shop/cart" 
+                    <a
+                        href="/shop/cart"
                         className="btn btn-outline-dark d-lg-none ms-3"
                         style={{ padding: "0.375rem 0.75rem" }}
                     >
@@ -194,7 +219,7 @@ export default function Header() {
                             fill="currentColor"
                             viewBox="0 0 16 16"
                         >
-                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
                         </svg>
                     </a>
                 </div>
@@ -216,6 +241,7 @@ export default function Header() {
                     }}
                 >
                     <div className="d-flex flex-column">
+                        {roles?.includes("Admin") && (
                         <a
                             href="/create-product"
                             className="text-dark text-decoration-none fw-semibold p-3 text-center"
@@ -226,7 +252,8 @@ export default function Header() {
                         >
                             CRÉER
                         </a>
-                        
+                        )}
+
                         {/* Affichage conditionnel mobile */}
                         {!isLoading && (
                             isLoggedIn ? (
@@ -236,7 +263,7 @@ export default function Header() {
                                         closeMenu();
                                     }}
                                     className="text-danger text-decoration-none fw-semibold p-3 text-center"
-                                    style={{ 
+                                    style={{
                                         transition: "background-color 0.2s",
                                         border: "none",
                                         background: "transparent"
@@ -274,6 +301,6 @@ export default function Header() {
                     </div>
                 </div>
             </div>
-        </header>
+        </header >
     );
 }
