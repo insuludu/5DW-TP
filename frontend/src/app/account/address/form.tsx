@@ -27,14 +27,14 @@ export default function AddressForm() {
             router.push(sessionRedirect);
             return;
         }
-        
+
         // Vérifier les paramètres d'URL
         const redirectParam = searchParams.get('redirect');
         if (redirectParam) {
             router.push(redirectParam);
             return;
         }
-        
+
         // Redirection par défaut
         router.push("/home");
     };
@@ -129,8 +129,8 @@ export default function AddressForm() {
                                     {...register("StreetName", {
                                         required: "Le nom de rue est requis.",
                                         minLength: {
-                                            value: 2,
-                                            message: "Le nom doit contenir au moins 2 caractères.",
+                                            value: 4,
+                                            message: "Le nom doit contenir au moins 4 caractères.",
                                         },
                                         pattern: {
                                             value: /^[A-Za-zÀ-ÿ0-9 .'-]+$/,
@@ -165,19 +165,28 @@ export default function AddressForm() {
 
                             <div className="form-group mb-2">
                                 <label htmlFor="stateProvince">Province / État</label>
-                                <input
+                                <select
                                     id="stateProvince"
                                     className={`form-control ${errors.StateProvince ? "is-invalid" : ""}`}
-                                    type="text"
-                                    placeholder="QC, ON, etc."
                                     {...register("StateProvince", {
                                         required: "La province est requise.",
-                                        pattern: {
-                                            value: /^[A-Za-zÀ-ÿ .'-]+$/,
-                                            message: "Format invalide.",
-                                        },
                                     })}
-                                />
+                                >
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="QC">Québec</option>
+                                    <option value="ON">Ontario</option>
+                                    <option value="BC">Colombie-Britannique</option>
+                                    <option value="AB">Alberta</option>
+                                    <option value="MB">Manitoba</option>
+                                    <option value="SK">Saskatchewan</option>
+                                    <option value="NB">Nouveau-Brunswick</option>
+                                    <option value="NS">Nouvelle-Écosse</option>
+                                    <option value="PE">Île-du-Prince-Édouard</option>
+                                    <option value="NL">Terre-Neuve-et-Labrador</option>
+                                    <option value="YT">Yukon</option>
+                                    <option value="NT">Territoires du Nord-Ouest</option>
+                                    <option value="NU">Nunavut</option>
+                                </select>
                                 {errors.StateProvince && (
                                     <div className="invalid-feedback">{errors.StateProvince.message}</div>
                                 )}
@@ -187,17 +196,11 @@ export default function AddressForm() {
                                 <label htmlFor="country">Pays</label>
                                 <input
                                     id="country"
-                                    className={`form-control ${errors.Country ? "is-invalid" : ""}`}
+                                    className="form-control"
                                     type="text"
-                                    placeholder="Canada"
-                                    {...register("Country", {
-                                        required: "Le pays est requis.",
-                                        pattern: {
-                                            value: /^[A-Za-zÀ-ÿ .'-]+$/,
-                                            message: "Nom de pays invalide.",
-                                        },
-
-                                    })}
+                                    value="Canada"
+                                    disabled
+                                    {...register("Country")}
                                 />
                                 {errors.Country && (
                                     <div className="invalid-feedback">{errors.Country.message}</div>
