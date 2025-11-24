@@ -101,11 +101,12 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
     const [isCancelling, setIsCancelling] = useState(false);
 
     const statusMap: Record<number, { label: string; color: string }> = {
-        0: { label: "En attente", color: "bg-warning" },
-        1: { label: "En traitement", color: "bg-info" },
-        2: { label: "Expédiée", color: "bg-primary" },
-        3: { label: "Livrée", color: "bg-success" },
-        4: { label: "Annulée", color: "bg-danger" }
+        0: { label: "Confirmée", color: "bg-success" },     // Confirmed
+        1: { label: "Annulée", color: "bg-danger" },       // Canceled
+        2: { label: "En préparation", color: "bg-info" },  // Preperation
+        3: { label: "En expédition", color: "bg-primary" },// Shipping
+        4: { label: "Livrée", color: "bg-success" },       // Shipped
+        5: { label: "Retour", color: "bg-warning" }        // Returned
     };
 
     const productStatusMap: Record<number, string> = {
@@ -135,9 +136,8 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
 
             if (!res.ok) throw new Error("Annulation échouée");
 
-            setOrderStatus(4);
+            setOrderStatus(1);
         } catch (err) {
-            alert("Erreur lors de l'annulation de la commande.");
             console.error(err);
         } finally {
             setIsCancelling(false);
