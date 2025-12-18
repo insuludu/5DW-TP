@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
@@ -15,12 +16,14 @@ namespace backend.Models
         [Required]
         public string Name { get; set; }
 
+        // Argent = decimal (jamais float)
         [Required]
-        public float Price { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
 
-        public float? DiscountPrice { get; set; } = null;
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? DiscountPrice { get; set; } = null;
 
         public int Quantity { get; set; } = 0;
     }
-
 }

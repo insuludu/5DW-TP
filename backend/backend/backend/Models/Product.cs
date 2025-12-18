@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
@@ -21,21 +22,21 @@ namespace backend.Models
         [Required]
         public string Description { get; set; }
 
+        // Argent = decimal (JAMAIS float)
         [Required]
-        public float Price { get; set; }
-            
-        public float? DiscountPrice { get; set; } = null;
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? DiscountPrice { get; set; } = null;
 
         public int UnitsInStock { get; set; } = 0;
-        
-        // Ici l'on veut dire les units réservés, à voir
-        // public int UnitsOnOrder { get; set; } = 0;
 
-        public List<Category> Categories { get; set; } = new List<Category>();
+        public List<Category> Categories { get; set; } = new();
 
-        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
+        public List<ProductImage> Images { get; set; } = new();
 
-        public ProductStatus Status {  get; set; } = ProductStatus.Available;
+        public ProductStatus Status { get; set; } = ProductStatus.Available;
 
         public DateTime CreationDate { get; set; } = DateTime.Now;
 

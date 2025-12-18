@@ -18,8 +18,11 @@ namespace backend.Models_DTO
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
-        public float? DiscountedPrice { get; set; }
+
+        // ✅ Argent = decimal
+        public decimal Price { get; set; }
+        public decimal? DiscountedPrice { get; set; }
+
         public ProductStatus Status { get; set; }
         public List<CategoryDTO>? categories { get; set; }
         public List<ImageDTO>? imagesData { get; set; }
@@ -30,66 +33,73 @@ namespace backend.Models_DTO
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public float Price { get; set; }
-        public float? DiscountedPrice { get; set; }
-		public int UnitsInStock { get; set; }
+
+        // ✅ Argent = decimal
+        public decimal Price { get; set; }
+        public decimal? DiscountedPrice { get; set; }
+
+        public int UnitsInStock { get; set; }
         public ProductStatus Status { get; set; }
-		public List<CategoryDTO>? categories { get; set; }
+        public List<CategoryDTO>? categories { get; set; }
         public List<ImageDTO>? imagesData { get; set; }
     }
 
-	public class EditProductDTO
-	{
-		public int ID { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public float Price { get; set; }
-		public float? DiscountPrice { get; set; }
-		public int UnitsInStock { get; set; }
-		public int Status { get; set; }
-		public List<string>? Categories { get; set; }
-		public List<ImageFormDTO>? ImagesData { get; set; }
-	}
+    public class EditProductDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
 
-	public class CreateProductDTO
-	{
-		[Required(ErrorMessage = "Le nom du produit est requis.")]
-		[StringLength(100, MinimumLength = 3, ErrorMessage = "Le nom doit contenir entre 2 et 100 caractères.")]
-		public string Name { get; set; }
+        // ✅ Argent = decimal
+        public decimal Price { get; set; }
+        public decimal? DiscountPrice { get; set; }
 
-		[Required(ErrorMessage = "La description est requise.")]
-		[StringLength(1000, MinimumLength = 5, ErrorMessage = "La description doit avoir entre 5 et 1000 caractères.")]
-		public string Description { get; set; }
+        public int UnitsInStock { get; set; }
+        public int Status { get; set; }
+        public List<string>? Categories { get; set; }
+        public List<ImageFormDTO>? ImagesData { get; set; }
+    }
 
-		[Required(ErrorMessage = "Le prix est requis.")]
-		[Range(0.00f, 999999.99f, ErrorMessage = "Le prix doit être supérieur ou éguale à 0")]
-		public float Price { get; set; }
+    public class CreateProductDTO
+    {
+        [Required(ErrorMessage = "Le nom du produit est requis.")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Le nom doit contenir entre 2 et 100 caractères.")]
+        public string Name { get; set; }
 
-		[Range(0.00f, 999999.99f, ErrorMessage = "Le prix en rabais doit être supérieur ou éguale à 0")]
-		public float? DiscountPrice { get; set; }
+        [Required(ErrorMessage = "La description est requise.")]
+        [StringLength(1000, MinimumLength = 5, ErrorMessage = "La description doit avoir entre 5 et 1000 caractères.")]
+        public string Description { get; set; }
 
-		[Required(ErrorMessage = "Le nombre d'unités en stock est requis.")]
-		[Range(0, int.MaxValue, ErrorMessage = "Le stock doit être positif.")]
-		public int UnitsInStock { get; set; }
+        [Required(ErrorMessage = "Le prix est requis.")]
+        // ✅ Range pour decimal
+        [Range(typeof(decimal), "0.00", "999999.99", ErrorMessage = "Le prix doit être supérieur ou égale à 0")]
+        public decimal Price { get; set; }
 
-		[Required(ErrorMessage = "Au moins une catégorie doit être sélectionnée.")]
-		[MinLength(1, ErrorMessage = "Sélectionnez au moins une catégorie.")]
-		public string[] Categories { get; set; }
+        [Range(typeof(decimal), "0.00", "999999.99", ErrorMessage = "Le prix en rabais doit être supérieur ou égale à 0")]
+        public decimal? DiscountPrice { get; set; }
 
-		[Required(ErrorMessage = "Le statut est requis.")]
-		[Range(0, (int)ProductStatus.COUNT, ErrorMessage = "Le statut doit être valide.")]
-		public int Status { get; set; }
+        [Required(ErrorMessage = "Le nombre d'unités en stock est requis.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Le stock doit être positif.")]
+        public int UnitsInStock { get; set; }
 
-		// Optional: Validate uploaded images
-		[MaxLength(10, ErrorMessage = "Vous ne pouvez pas téléverser plus de 10 images.")]
-		public List<IFormFile>? ImagesData { get; set; }
-	}
+        [Required(ErrorMessage = "Au moins une catégorie doit être sélectionnée.")]
+        [MinLength(1, ErrorMessage = "Sélectionnez au moins une catégorie.")]
+        public string[] Categories { get; set; }
 
-	public class ImageFormDTO
-	{
-		public IFormFile? File { get; set; }
-		public ImageDTO? Image { get; set; }
-	}
+        [Required(ErrorMessage = "Le statut est requis.")]
+        [Range(0, (int)ProductStatus.COUNT, ErrorMessage = "Le statut doit être valide.")]
+        public int Status { get; set; }
+
+        // Optional: Validate uploaded images
+        [MaxLength(10, ErrorMessage = "Vous ne pouvez pas téléverser plus de 10 images.")]
+        public List<IFormFile>? ImagesData { get; set; }
+    }
+
+    public class ImageFormDTO
+    {
+        public IFormFile? File { get; set; }
+        public ImageDTO? Image { get; set; }
+    }
 
     /// <summary>
     ///     Alexandre Chagnon - 18 octobre 2025
@@ -106,15 +116,18 @@ namespace backend.Models_DTO
         public bool HasPreviousPage { get; set; }
     }
 
-	public class CartProductDTO
-	{
-		public int id { get; set; }
-		public string name { get; set; }
-		public float Price { get; set; }
-		public float? DiscountPrice { get; set; }
-		public int Status { get; set; }
-		public ImageDTO? ImagesData { get; set; }
-		public int Amount { get; set; } = 1;
-		public int MaxQuantity { get; set; }
-	}
+    public class CartProductDTO
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+
+        // Argent = decimal
+        public decimal Price { get; set; }
+        public decimal? DiscountPrice { get; set; }
+
+        public int Status { get; set; }
+        public ImageDTO? ImagesData { get; set; }
+        public int Amount { get; set; } = 1;
+        public int MaxQuantity { get; set; }
+    }
 }

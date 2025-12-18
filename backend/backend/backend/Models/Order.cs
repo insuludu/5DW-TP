@@ -11,7 +11,7 @@ namespace backend.Models
         Shipped,
         Returned
     }
-    
+
     public class Order
     {
         public int OrderID { get; set; }
@@ -52,12 +52,61 @@ namespace backend.Models
         [Required]
         public string OrderNumber { get; set; }
 
-		[Required]
+        [Required]
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Confirmed;
 
         public List<OrderProducts> Products { get; set; } = new();
+
+        // ==========================
+        // Paiement / Reçu
+        // ==========================
+
+        /// <summary>
+        /// Statut de paiement (simple, sans webhook):
+        /// "None", "Pending", "Succeeded", "Failed"
+        /// </summary>
+        public string? PaymentStatus { get; set; } = "None";
+
+        /// <summary>
+        /// Date/heure du paiement (UTC)
+        /// </summary>
+        public DateTime? PaidAtUtc { get; set; }
+
+        /// <summary>
+        /// Nom sur la carte (ou billing name)
+        /// </summary>
+        public string? BillingName { get; set; }
+
+        /// <summary>
+        /// Adresse de facturation (format texte)
+        /// </summary>
+        public string? BillingAddress { get; set; }
+
+        /// <summary>
+        /// Téléphone associé à la facturation
+        /// </summary>
+        public string? BillingPhone { get; set; }
+
+        /// <summary>
+        /// 4 derniers chiffres de la carte
+        /// </summary>
+        public string? CardLast4 { get; set; }
+
+        /// <summary>
+        /// Id de session Stripe Checkout (utile pour validation)
+        /// </summary>
+        public string? StripeCheckoutSessionId { get; set; }
+
+        /// <summary>
+        /// Id du PaymentIntent Stripe
+        /// </summary>
+        public string? StripePaymentIntentId { get; set; }
+
+        // ==========================
+        // Calculs
+        // ==========================
 
         public decimal SubTotal => Products.Sum(p =>
             (decimal)(p.DiscountPrice ?? p.Price) * p.Quantity
