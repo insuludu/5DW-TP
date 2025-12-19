@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import styles from "@/app/styles/page.module.css";
 import { CartProductDTO } from "@/interfaces";
@@ -184,12 +184,26 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
     return sum + price * item.amount;
   }, 0);
 
+    const searchParams = useSearchParams();
+    const isCanceled = searchParams.get('canceled');
+
   return (
     <section className={`min-vh-100 ${styles.backgroundPrimary} py-5`}>
       <div className="container">
-        <h1 className="display-4 text-light text-center mb-5">
-          Informations de livraison
-        </h1>
+        {isCanceled === '1' && (
+          <div className="text-center mb-5">
+            <i
+              className="bi bi-exclamation-triangle-fill text-warning mb-4"
+              style={{ fontSize: "4rem" }}
+            />
+            
+            <h1 className="display-4 text-light mb-3">Paiement annulé</h1>
+            
+            <p className="text-light fs-5">
+              Votre transaction a été interrompue. Aucun montant n'a été débité de votre compte.
+            </p>
+          </div>
+        )}
 
         {generalError && (
           <div className="alert alert-danger text-center mb-4">{generalError}</div>
