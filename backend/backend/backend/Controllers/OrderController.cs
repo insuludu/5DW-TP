@@ -429,7 +429,7 @@ namespace backend.Controllers
             return Ok(orders);
 		}
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("getOrdersAdmin")]
         public async Task<IActionResult> GetOrdersAdmin()
         {

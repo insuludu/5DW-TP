@@ -17,6 +17,7 @@ export default function ErrorPage() {
                     Une erreur est survenue.
                 </p>
             </h1>
+                <button><a  href="/home">Retour a la page d'accueil</a></button>
         </div>
     );
 }

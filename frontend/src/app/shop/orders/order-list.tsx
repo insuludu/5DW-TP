@@ -45,7 +45,7 @@ export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
                     res = await fetch("/api/orders/get-orders-admin");
 
                 if (res.status === 401) {
-                    window.location.href = "/account/auth";
+                    window.location.href = "/error";
                     return;
                 }
 
@@ -76,7 +76,14 @@ export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
     return (
         <section className={`min-vh-100 ${styles.backgroundPrimary} py-5`}>
             <div className="container">
-                <h1 className="display-4 text-light text-center mb-5">Mes Commandes</h1>
+                
+                {IsAdmin && (
+                    <h1 className="display-4 text-light text-center mb-5">Liste des Commandes</h1>
+                )}
+                {!IsAdmin && (
+                    <h1 className="display-4 text-light text-center mb-5">Mes Commandes</h1>
+                )}
+
 
                 {orders.length === 0 ? (
                     <div className="text-center py-5">
