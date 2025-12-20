@@ -402,7 +402,7 @@ namespace backend.Controllers
 			if (user == null)
 				return Unauthorized(new { message = "Unauthorized userId" });
 
-			List<OrderFullDTO> orders = _context.Orders.Where(x => x.UserID == user.Id).Select(x => new OrderFullDTO
+			List<OrderFullDTO> orders = _context.Orders.Where(x => x.UserID == user.Id && x.PaymentStatus != "Pending").Select(x => new OrderFullDTO
             {
                 OrderStatus = x.OrderStatus,
                 OrderNumber = x.OrderNumber,
