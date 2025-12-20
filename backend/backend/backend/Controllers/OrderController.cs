@@ -429,7 +429,49 @@ namespace backend.Controllers
             return Ok(orders);
 		}
 
-		[HttpPost("getOrdersByNumber")]
+        [Authorize(Roles = "admin")]
+        [HttpGet("getOrdersAdmin")]
+        public async Task<IActionResult> GetOrdersAdmin()
+        {
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Unauthorized userId" });
+
+            User? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return Unauthorized(new { message = "Unauthorized userId" });
+
+            List<OrderFullDTO> orders = _context.Orders.Select(x => new OrderFullDTO
+            {
+                OrderStatus = x.OrderStatus,
+                OrderNumber = x.OrderNumber,
+                TotalBeforeTaxes = (decimal)x.Products.Sum(p => (p.DiscountPrice ?? p.Price) * p.Quantity),
+                Total = (decimal)x.Products.Sum(p => (p.DiscountPrice ?? p.Price) * p.Quantity) * 1.14975m,
+                ProductDTO = x.Products.Select(p => new CartProductDTO
+                {
+                    id = p.Product.ID,
+                    name = p.Product.Name,
+                    Price = p.Product.Price,
+                    DiscountPrice = p.Product.DiscountPrice,
+                    Status = (int)p.Product.Status,
+                    Amount = p.Quantity,
+                    MaxQuantity = p.Product.UnitsInStock,
+                    ImagesData = p.Product.Images.Select(i => new ImageDTO
+                    {
+                        ID = i.Id,
+                        Alt = i.ImageAlt,
+                        Order = i.Order,
+                        Url = _domainService.GetCurrentDomain() + Constants.ImageApiRoute + i.Id.ToString()
+                    }).FirstOrDefault(),
+                }).ToList()
+            }).ToList();
+
+            return Ok(orders);
+        }
+
+        [HttpPost("getOrdersByNumber")]
 		public IActionResult GetOrdersbyNumber([FromBody] string ordernumber)
 		{
             if (ordernumber == null)
