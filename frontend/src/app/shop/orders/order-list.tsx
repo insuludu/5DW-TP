@@ -29,14 +29,20 @@ interface OrderFullDTO {
     total: number;
 }
 
-export default function OrderList() {
+export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
     const [orders, setOrders] = useState<OrderFullDTO[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function getOrders() {
             try {
-                const res = await fetch("/api/orders/get-orders");
+
+                var res;
+
+                if (!IsAdmin)
+                    res = await fetch("/api/orders/get-orders");
+                else
+                    res = await fetch("/api/orders/get-orders-admin");
 
                 if (res.status === 401) {
                     window.location.href = "/account/auth";

@@ -155,7 +155,10 @@ export default function Header() {
                             <a href="/create-product" className="btn btn-outline-dark">Créer produit</a>
                         )}
                         {isLoggedIn && (
-                            <a href="/shop/orders" className="btn btn-outline-primary">Mes commandes</a>
+                            <a href="/shop/orders?=isAdmin=false" className="btn btn-outline-primary">Mes commandes</a>
+                        )}
+                        {roles?.includes("Admin") && (
+                            <a href="/shop/orders?isAdmin=true" className="btn btn-outline-dark">List commandes</a>
                         )}
                         {!isLoading && (
                             isLoggedIn ? (
@@ -259,12 +262,15 @@ export default function Header() {
                         )}
 
                         {isLoggedIn && (
-                            <a href="/shop/orders" className="text-dark text-decoration-none fw-semibold p-3 text-center" onClick={closeMenu} style={{ transition: "background-color 0.2s" }}
+                            <a href="/shop/orders?isAdmin=false" className="text-dark text-decoration-none fw-semibold p-3 text-center" onClick={closeMenu} style={{ transition: "background-color 0.2s" }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
                                 MES COMMANDES
                             </a>
+                        )}
+                        {roles?.includes("Admin") && (
+                            <a href="/shop/orders?isAdmin=true" className="btn btn-outline-dark">LIST COMMANDES</a>
                         )}
 
                         {/* Affichage conditionnel mobile */}
