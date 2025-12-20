@@ -134,6 +134,13 @@ namespace backend.Controllers
             if (order.OrderStatus == OrderStatus.Canceled)
                 return BadRequest(new { message = "Commande annulée" });
 
+            foreach (OrderProducts op in order.Products)
+            {
+                Models.Product realProduct = _context.Products.FirstOrDefault(p => p.ID == op.ProductID);
+                if (realProduct is not null)
+                    realProduct.UnitsInStock -= op.Quantity;
+            }
+
             // ✅ Déjà confirmé => on renvoie le reçu directement (refresh safe)
             if (string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase))
             {
