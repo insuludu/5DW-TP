@@ -4,23 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import styles from "@/app/styles/page.module.css";
-import { CartProductDTO } from "@/interfaces";
+import { CartProductDTO, FormData } from "@/interfaces";
 
 interface CheckoutFormProps {
   isAuthenticated: boolean;
+  formAdress?: FormData;
 }
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  province: string;
-  country: string;
-  postalCode: string;
-}
+
 
 async function safeJson(res: Response) {
   const contentType = res.headers.get("content-type") || "";
@@ -36,7 +27,7 @@ async function safeJson(res: Response) {
   return res.json();
 }
 
-export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
+export default function CheckoutForm({ isAuthenticated, formAdress }: CheckoutFormProps) {
   const router = useRouter();
 
   const {
@@ -109,6 +100,9 @@ export default function CheckoutForm({ isAuthenticated }: CheckoutFormProps) {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     setGeneralError("");
+
+    if (formAdress)
+      data = formAdress;
 
     try {
       if (!cartItems || cartItems.length === 0) {

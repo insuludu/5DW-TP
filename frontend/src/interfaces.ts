@@ -132,3 +132,15 @@ export interface IUserData {
     LastName : string
     Roles : string[]
 }
+
+export interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  province: string;
+  country: string;
+  postalCode: string;
+}

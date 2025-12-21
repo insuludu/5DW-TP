@@ -3,13 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CheckoutForm from "./checkout-form";
+import CheckoutAdressForm from "./checkout-address-form";
 import styles from "@/app/styles/page.module.css";
+import { FormData } from "@/interfaces";
 
 export default function CheckoutFlow() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const [isPaiement, setIsPaiement] = useState(false);
+  const [formData, setFormData] = useState<FormData>();
 
   useEffect(() => {
     void checkAuthentication();
@@ -40,6 +44,11 @@ export default function CheckoutFlow() {
     } finally {
       setIsChecking(false);
     }
+  }
+
+  function handleAdressFormSuccess(data : any) {
+    setIsPaiement(true);
+    setFormData(data);
   }
 
   // Loader simple pendant la vérif
@@ -124,5 +133,10 @@ export default function CheckoutFlow() {
   }
 
   // Afficher le formulaire de commande
-  return <CheckoutForm isAuthenticated={true} />;
+  if (isPaiement) {
+    return <CheckoutForm isAuthenticated={true} formAdress={formData} />;
+  } else {
+  return <CheckoutAdressForm isAuthenticated={true} 
+   onSubmitSuccess={(data) => handleAdressFormSuccess(data)}/>;
+  }
 }

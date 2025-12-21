@@ -7,7 +7,7 @@ const backendUrl = process.env.API_BACKEND_URL;
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        
+        console.log(body)
         const cookieStore = await cookies();
         const authToken = cookieStore.get(AuthCookieName);
 
