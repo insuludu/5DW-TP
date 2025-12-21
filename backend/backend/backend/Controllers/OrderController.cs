@@ -509,7 +509,114 @@ namespace backend.Controllers
 
 			return Ok(orders);
 		}
+        /// <summary>
+        /// EF30 - Récupère les informations de reçu pour une commande
+        /// VERSION AVEC LOGS DE DÉBOGAGE
+        /// </summary>
+        [HttpPost("getReceipt")]
+        public async Task<IActionResult> GetReceipt([FromForm] string ordernumber)
+        {
+            // 🔍 DEBUG: Afficher ce qui est reçu
+            Console.WriteLine("========================================");
+            Console.WriteLine($" [GET-RECEIPT] Requête reçue");
+            Console.WriteLine($"   ordernumber reçu: '{ordernumber}'");
+            Console.WriteLine($"   ordernumber null?: {ordernumber == null}");
+            Console.WriteLine($"   ordernumber vide?: {string.IsNullOrWhiteSpace(ordernumber)}");
 
-	}
+            if (string.IsNullOrWhiteSpace(ordernumber))
+            {
+                Console.WriteLine(" [GET-RECEIPT] ordernumber est vide");
+                return BadRequest(new { message = "Numéro de commande requis" });
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"   UserID du claim: '{userIdClaim}'");
+
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                Console.WriteLine(" [GET-RECEIPT] Utilisateur non authentifié");
+                return Unauthorized(new { message = "Non authentifié" });
+            }
+
+            Console.WriteLine($"   UserID parsé: {userId}");
+            Console.WriteLine($"   Recherche commande avec:");
+            Console.WriteLine($"      - OrderNumber: '{ordernumber}'");
+            Console.WriteLine($"      - UserID: {userId}");
+
+            // Rechercher la commande
+            var order = await _context.Orders
+                .Where(o => o.OrderNumber == ordernumber && o.UserID == userId)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                Console.WriteLine("[GET-RECEIPT] Commande NON TROUVÉE");
+                Console.WriteLine($"   Vérification: Cherchons TOUTES les commandes de cet utilisateur...");
+
+                var userOrders = await _context.Orders
+                    .Where(o => o.UserID == userId)
+                    .Select(o => o.OrderNumber)
+                    .ToListAsync();
+
+                Console.WriteLine($"   Commandes trouvées pour UserID {userId}:");
+                foreach (var on in userOrders)
+                {
+                    Console.WriteLine($"      - {on}");
+                }
+
+                Console.WriteLine($"   Vérification: Cherchons cette commande SANS filtre UserID...");
+                var orderWithoutUser = await _context.Orders
+                    .Where(o => o.OrderNumber == ordernumber)
+                    .Select(o => new { o.OrderNumber, o.UserID })
+                    .FirstOrDefaultAsync();
+
+                if (orderWithoutUser != null)
+                {
+                    Console.WriteLine($" Commande existe mais avec UserID: {orderWithoutUser.UserID}");
+                    Console.WriteLine($" UserID recherché: {userId}");
+                    Console.WriteLine($" UserID correspondent?: {orderWithoutUser.UserID == userId}");
+                }
+                else
+                {
+                    Console.WriteLine($" Commande '{ordernumber}' n'existe pas du tout dans la DB");
+                }
+
+                return NotFound(new { message = "Commande introuvable" });
+            }
+
+            Console.WriteLine($"[GET-RECEIPT] Commande trouvée!");
+            Console.WriteLine($"   OrderNumber: {order.OrderNumber}");
+            Console.WriteLine($"   PaymentStatus: {order.PaymentStatus}");
+            Console.WriteLine($"   BillingName: {order.BillingName}");
+            Console.WriteLine($"   CardLast4: {order.CardLast4}");
+
+            // Créer le DTO
+            var receiptDto = new PaymentReceiptDTO
+            {
+                PaidAtUtc = order.PaidAtUtc,
+                BillingName = order.BillingName,
+                BillingAddress = order.BillingAddress,
+                BillingPhone = order.BillingPhone,
+                CardLast4 = order.CardLast4,
+                PaymentStatus = order.PaymentStatus
+            };
+
+            Console.WriteLine("[GET-RECEIPT] Reçu retourné avec succès");
+            Console.WriteLine("========================================");
+
+            return Ok(receiptDto);
+        }
+
+        // DTO pour le reçu de paiement (EF30)
+        public class PaymentReceiptDTO
+        {
+            public DateTime? PaidAtUtc { get; set; }
+            public string? BillingName { get; set; }
+            public string? BillingAddress { get; set; }
+            public string? BillingPhone { get; set; }
+            public string? CardLast4 { get; set; }
+            public string? PaymentStatus { get; set; }
+        }
+    }
 
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "@/app/styles/page.module.css";
 
-// Interfaces (same as before)
+// Interfaces
 interface ImageDTO {
     alt: string;
     url: string;
@@ -26,6 +26,16 @@ interface OrderFullDTO {
     productDTO: CartProductDTO[];
     totalBeforeTaxes: number;
     total: number;
+}
+
+// Interface pour le reçu de paiement (EF30)
+interface PaymentReceiptDTO {
+    paidAtUtc?: string;
+    billingName?: string;
+    billingAddress?: string;
+    billingPhone?: string;
+    cardLast4?: string;
+    paymentStatus?: string;
 }
 
 export default function OrderSingle({ orderNumber }: { orderNumber: string }) {
@@ -103,6 +113,11 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
     const [isExpanded, setIsExpanded] = useState(true);
     const [isCancelling, setIsCancelling] = useState(false);
 
+    // État pour le reçu de paiement (EF30)
+    const [receipt, setReceipt] = useState<PaymentReceiptDTO | null>(null);
+    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
+    const [showReceipt, setShowReceipt] = useState(false);
+
     const getOrderStatusBadge = (status: number) => {
         const statusMap: Record<number, { label: string; color: string }> = {
             0: { label: "Confirmée", color: "bg-success" },     // Confirmed
@@ -141,7 +156,7 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
 
             if (!res.ok) throw new Error("Annulation échouée");
 
-            // Update the order status to "Annulée" (4)
+            // Update the order status to "Annulée" (1)
             setOrder({
                 ...order,
                 orderStatus: 1
@@ -152,6 +167,50 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
         } finally {
             setIsCancelling(false);
         }
+    };
+
+    // Fonction pour charger le reçu de paiement (EF30)
+    const loadReceipt = async () => {
+        if (receipt) {
+            setShowReceipt(!showReceipt);
+            return;
+        }
+
+        setIsLoadingReceipt(true);
+        try {
+            const formData = new FormData();
+            formData.append("ordernumber", order.orderNumber);
+
+            const res = await fetch("/api/orders/get-receipt", {
+                method: "POST",
+                body: formData
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setReceipt(data);
+                setShowReceipt(true);
+            } else {
+                console.error("Erreur lors du chargement du reçu");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+        } finally {
+            setIsLoadingReceipt(false);
+        }
+    };
+
+    // Formater la date de paiement
+    const formatPaymentDate = (dateString?: string) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date.toLocaleString('fr-CA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     const statusInfo = getOrderStatusBadge(order.orderStatus);
@@ -166,8 +225,8 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
                             Commande #{order.orderNumber}
                         </h4>
                         <span className={`badge ${statusInfo.color} px-3 py-2 inline-block text-white rounded`}>
-    {statusInfo.label}
-</span>
+                            {statusInfo.label}
+                        </span>
                     </div>
                     <div className="col text-end">
                         <p className="fs-4 fw-bold mb-0">
@@ -191,16 +250,127 @@ function OrderCardOne({ order, setOrder }: { order: OrderFullDTO; setOrder: (ord
                 </div>
             </div>
 
-            {/* TOGGLE DETAILS */}
+            {/* TOGGLE DETAILS & RECEIPT */}
             <div className="p-3 border-bottom">
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className={`${styles.submitButton} w-100 d-flex justify-content-between align-items-center`}
-                >
-                    <span>{isExpanded ? "Masquer les détails" : "Voir les détails"}</span>
-                    <i className={`bi bi-chevron-${isExpanded ? "up" : "down"}`}></i>
-                </button>
+                <div className="d-flex gap-2 flex-column flex-md-row">
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className={`${styles.submitButton} flex-grow-1 d-flex justify-content-between align-items-center`}
+                    >
+                        <span>{isExpanded ? "Masquer les détails" : "Voir les détails"}</span>
+                        <i className={`bi bi-chevron-${isExpanded ? "up" : "down"}`}></i>
+                    </button>
+
+                    {/* Bouton pour afficher le reçu (EF30) */}
+                    <button
+                        onClick={loadReceipt}
+                        disabled={isLoadingReceipt}
+                        className={`${styles.submitButton} flex-grow-1 d-flex justify-content-between align-items-center`}
+                    >
+                        {isLoadingReceipt ? "Chargement..." : (showReceipt ? "Masquer le reçu" : "Voir le reçu")}
+                        <i className={`bi bi-receipt`} />
+                    </button>
+                </div>
             </div>
+
+            {/* Affichage du reçu de paiement (EF30) */}
+            {showReceipt && receipt && (
+                <div className="p-4 bg-light border-bottom">
+                    <h5 className="fw-bold mb-4 d-flex align-items-center">
+                        <i className="bi bi-receipt-cutoff me-2"></i>
+                        Reçu de paiement
+                    </h5>
+
+                    {receipt.paymentStatus === "Succeeded" ? (
+                        <div className="row g-4">
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-calendar-event text-primary me-2 fs-5"></i>
+                                            <span className="text-secondary small">Date et heure du paiement</span>
+                                        </div>
+                                        <p className="fw-semibold mb-0">{formatPaymentDate(receipt.paidAtUtc)}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-person text-primary me-2 fs-5"></i>
+                                            <span className="text-secondary small">Nom sur la carte</span>
+                                        </div>
+                                        <p className="fw-semibold mb-0">{receipt.billingName || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-geo-alt text-primary me-2 fs-5"></i>
+                                            <span className="text-secondary small">Adresse de facturation</span>
+                                        </div>
+                                        <p className="fw-semibold mb-0">{receipt.billingAddress || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-telephone text-primary me-2 fs-5"></i>
+                                            <span className="text-secondary small">Téléphone de facturation</span>
+                                        </div>
+                                        <p className="fw-semibold mb-0">{receipt.billingPhone || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-credit-card text-primary me-2 fs-5"></i>
+                                            <span className="text-secondary small">Carte utilisée</span>
+                                        </div>
+                                        <p className="fw-semibold mb-0">
+                                            {receipt.cardLast4 ? `•••• •••• •••• ${receipt.cardLast4}` : "N/A"}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="card h-100 border-0 shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-center mb-2">
+                                            <i className="bi bi-check-circle text-success me-2 fs-5"></i>
+                                            <span className="text-secondary small">Statut du paiement</span>
+                                        </div>
+                                        <span className="badge bg-success fs-6">
+                                            <i className="bi bi-check-lg me-1"></i>
+                                            Payé avec succès
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="alert alert-warning d-flex align-items-center" role="alert">
+                            <i className="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+                            <div>
+                                <strong>Paiement en attente</strong>
+                                <p className="mb-0">Le paiement n'a pas encore été complété pour cette commande.</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* PRODUCTS */}
             {isExpanded && (

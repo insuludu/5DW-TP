@@ -29,6 +29,15 @@ interface OrderFullDTO {
     total: number;
 }
 
+interface PaymentReceiptDTO {
+    paidAtUtc?: string;
+    billingName?: string;
+    billingAddress?: string;
+    billingPhone?: string;
+    cardLast4?: string;
+    paymentStatus?: string;
+}
+
 export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
     const [orders, setOrders] = useState<OrderFullDTO[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +45,6 @@ export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
     useEffect(() => {
         async function getOrders() {
             try {
-
                 var res;
 
                 if (!IsAdmin)
@@ -76,7 +84,7 @@ export default function OrderList({ IsAdmin }: { IsAdmin: boolean }) {
     return (
         <section className={`min-vh-100 ${styles.backgroundPrimary} py-5`}>
             <div className="container">
-                
+
                 {IsAdmin && (
                     <h1 className="display-4 text-light text-center mb-5">Liste des Commandes</h1>
                 )}
@@ -113,13 +121,18 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
     const [orderStatus, setOrderStatus] = useState(order.orderStatus);
     const [isCancelling, setIsCancelling] = useState(false);
 
+    const [receipt, setReceipt] = useState<PaymentReceiptDTO | null>(null);
+    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptError, setReceiptError] = useState<string | null>(null);
+
     const statusMap: Record<number, { label: string; color: string }> = {
-        0: { label: "Confirmée", color: "bg-success" },     // Confirmed
-        1: { label: "Annulée", color: "bg-danger" },       // Canceled
-        2: { label: "En préparation", color: "bg-info" },  // Preperation
-        3: { label: "En expédition", color: "bg-primary" },// Shipping
-        4: { label: "Livrée", color: "bg-success" },       // Shipped
-        5: { label: "Retour", color: "bg-warning" }        // Returned
+        0: { label: "Confirmée", color: "bg-success" },
+        1: { label: "Annulée", color: "bg-danger" },
+        2: { label: "En préparation", color: "bg-info" },
+        3: { label: "En expédition", color: "bg-primary" },
+        4: { label: "Livrée", color: "bg-success" },
+        5: { label: "Retour", color: "bg-warning" }
     };
 
     const productStatusMap: Record<number, string> = {
@@ -157,6 +170,80 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
         }
     };
 
+    const loadReceipt = async () => {
+        if (receipt) {
+            setShowReceipt(!showReceipt);
+            return;
+        }
+
+        setIsLoadingReceipt(true);
+        setReceiptError(null);
+
+        try {
+            const formData = new FormData();
+            formData.append("ordernumber", order.orderNumber);
+
+            // 🔍 DEBUG: Afficher ce qui est envoyé
+            console.log("========================================");
+            console.log("🔍 [DEBUG] Données envoyées:");
+            console.log("   orderNumber:", order.orderNumber);
+            console.log("   Type:", typeof order.orderNumber);
+            console.log("   Longueur:", order.orderNumber?.length);
+            console.log("========================================");
+
+            const res = await fetch("/api/orders/getReceipt", {
+                method: "POST",
+                body: formData
+            });
+
+            console.log("📡 [DEBUG] Statut réponse:", res.status);
+            console.log("📡 [DEBUG] URL appelée:", res.url);
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log(" [DEBUG] Données reçues:", data);
+                setReceipt(data);
+                setShowReceipt(true);
+            } else {
+                // 🔍 DEBUG: Lire la réponse d'erreur complète
+                const errorText = await res.text();
+                console.error(" [DEBUG] Erreur complète:", errorText);
+
+                let errorMessage = "Erreur lors du chargement du reçu";
+
+                if (res.status === 401) {
+                    errorMessage = "Vous devez être connecté pour voir le reçu";
+                } else if (res.status === 404) {
+                    errorMessage = "Reçu non trouvé pour cette commande";
+                    // 🔍 Afficher plus d'infos pour déboguer
+                    console.error("❌ Commande recherchée:", order.orderNumber);
+                    console.error("❌ Vérifiez que cette commande existe et vous appartient");
+                } else if (res.status === 400) {
+                    errorMessage = "Numéro de commande invalide";
+                }
+
+                setReceiptError(errorMessage);
+            }
+        } catch (error) {
+            console.error("❌ [DEBUG] Erreur réseau:", error);
+            setReceiptError("Erreur de connexion au serveur");
+        } finally {
+            setIsLoadingReceipt(false);
+        }
+    };
+
+    const formatPaymentDate = (dateString?: string) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date.toLocaleString('fr-CA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     const statusInfo = getOrderStatusBadge(orderStatus);
 
     return (
@@ -191,16 +278,102 @@ function OrderCardComponent({ order }: { order: OrderFullDTO }) {
                 </div>
             </div>
 
-            {/* BOUTON DÉTAILS */}
+            {/* BOUTONS DÉTAILS ET REÇU */}
             <div className="p-3 border-bottom">
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className={`${styles.submitButton} w-100 d-flex justify-content-between align-items-center`}
-                >
-                    {isExpanded ? "Masquer les détails" : "Voir les détails"}
-                    <i className={`bi bi-chevron-${isExpanded ? "up" : "down"}`} />
-                </button>
+                <div className="d-flex gap-2 flex-column flex-md-row">
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className={`${styles.submitButton} flex-grow-1 d-flex justify-content-between align-items-center`}
+                    >
+                        {isExpanded ? "Masquer les détails" : "Voir les détails"}
+                        <i className={`bi bi-chevron-${isExpanded ? "up" : "down"}`} />
+                    </button>
+
+                    <button
+                        onClick={loadReceipt}
+                        disabled={isLoadingReceipt}
+                        className={`${styles.submitButton} flex-grow-1 d-flex justify-content-between align-items-center`}
+                    >
+                        {isLoadingReceipt ? "Chargement..." : (showReceipt ? "Masquer le reçu" : "Voir le reçu")}
+                        <i className={`bi bi-receipt`} />
+                    </button>
+                </div>
             </div>
+
+            {/* ERREUR REÇU */}
+            {receiptError && (
+                <div className="p-3 bg-danger bg-opacity-10 border-bottom">
+                    <div className="alert alert-danger mb-0 d-flex align-items-center">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        {receiptError}
+                    </div>
+                </div>
+            )}
+
+            {/* AFFICHAGE DU REÇU */}
+            {showReceipt && receipt && (
+                <div className="p-4 bg-light border-bottom">
+                    <h6 className="fw-bold mb-3 d-flex align-items-center">
+                        <i className="bi bi-receipt me-2"></i>
+                        Informations de paiement
+                    </h6>
+
+                    {receipt.paymentStatus === "Succeeded" ? (
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Date et heure du paiement</span>
+                                    <span className="fw-semibold">{formatPaymentDate(receipt.paidAtUtc)}</span>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Nom sur la carte</span>
+                                    <span className="fw-semibold">{receipt.billingName || "N/A"}</span>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Adresse de facturation</span>
+                                    <span className="fw-semibold">{receipt.billingAddress || "N/A"}</span>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Téléphone de facturation</span>
+                                    <span className="fw-semibold">{receipt.billingPhone || "N/A"}</span>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Carte utilisée</span>
+                                    <span className="fw-semibold">
+                                        {receipt.cardLast4 ? `•••• ${receipt.cardLast4}` : "N/A"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="d-flex flex-column">
+                                    <span className="text-secondary small">Statut du paiement</span>
+                                    <span className="badge bg-success d-inline-block align-self-start mt-1">
+                                        Payé
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="alert alert-warning mb-0">
+                            <i className="bi bi-exclamation-triangle me-2"></i>
+                            Le paiement n'a pas encore été complété pour cette commande.
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* PRODUITS */}
             {isExpanded && (
